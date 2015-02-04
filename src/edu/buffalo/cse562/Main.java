@@ -3,7 +3,7 @@ package edu.buffalo.cse562;
 public class Project0{
 	
 	public static void main(String[] args){
-		System.out.println("We, the members of our team, agree that we will not submit any code that we have not written ourselves, share our code with anyone outside of our group, or use code that we have not written ourselves as a reference.");
+		System.out.print("We, the members of our team, agree that we will not submit any code that we have not written ourselves, share our code with anyone outside of our group, or use code that we have not written ourselves as a reference.");
 	}
 
 }
