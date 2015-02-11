@@ -21,6 +21,9 @@ public class Main {
 		}
 		if (dataFolder == null) {
 			System.out.println("Data file not present");
+			System.exit(0);
 		}
+		
+		
 	}
 }
