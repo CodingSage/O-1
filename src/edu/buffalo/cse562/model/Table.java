@@ -7,24 +7,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.buffalo.cse562.core.DataManager;
+
 public class Table {
 
-	private String name;
-	private List<String> rows;
+	public List<Tuple> rows;
+	public String name;
 
 	public Table() {
-		rows = new ArrayList<String>();
+		rows = new ArrayList<Tuple>();
 	}
 
 	public Table(String tableName) {
-		rows = new ArrayList<String>();
-		setName(tableName);
-		File file = new File("/home/vinayak/CourseWork/Databases/Sanity_Check_Examples/data/r.dat");
+
+		rows = new ArrayList<Tuple>();
+		this.setName(tableName);
+
+		File file = new File(DataManager.getInstance().getDataPath()+File.separator+tableName);
+
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line;
+			Tuple row = null;
+			String[] datas;
 			while ((line = reader.readLine()) != null) {
-				rows.add(line);
+				row = new Tuple();
+				datas = line.split("\\|");
+				if (datas.length > 0) {
+					for (String col : datas)
+						row.insertColumn(col);
+				}
+				rows.add(row);
 			}
 			reader.close();
 		} catch (Exception e) {
@@ -32,16 +45,12 @@ public class Table {
 		}
 	}
 
-	public String getStringElement(int row, int col) {
-		return rows.get(row).split("|")[col];
+	public List<Tuple> getRows() {
+		return rows;
 	}
 
-	public int getIntElement(int row, int col) {
-		return Integer.parseInt(rows.get(row).split("|")[col]);
-	}
-
-	public Date getDateElement(int row, int col) {
-		return new Date(Date.parse(rows.get(row).split("|")[col]));
+	public void setRows(List<Tuple> rows) {
+		this.rows = rows;
 	}
 
 	public String getName() {
@@ -51,14 +60,10 @@ public class Table {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	@Override
-	public String toString() {
-		String res = "";
-		for(String str : rows){
-			res += str + "\n";
-		}
-		return res;
-	}
 
+	public ArrayList<String> appendTuples(Tuple X, Tuple Y) {
+
+		List<String> retTuple = new ArrayList<String>();
+		return (ArrayList<String>) retTuple;
+	}
 }
