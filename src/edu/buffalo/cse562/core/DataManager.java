@@ -11,15 +11,6 @@ public class DataManager {
 	private static DataManager instance;
 	private Map<String, Schema> schemas = new HashMap<String, Schema>();
 	private Map<String, Table> tables = new HashMap<String, Table>();
-	private String dataPath;
-
-	public String getDataPath() {
-		return dataPath;
-	}
-
-	public void setDataPath(String dataPath) {
-		this.dataPath = dataPath;
-	}
 
 	public static DataManager getInstance() {
 		if (instance == null)
