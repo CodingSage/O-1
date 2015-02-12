@@ -11,7 +11,8 @@ public class Query {
 	}
 	
 	public void evaluate(){
-		
+		StatementEvaluator evaluator = new StatementEvaluator();
+		query.accept(evaluator);
 	}
 	
 }
