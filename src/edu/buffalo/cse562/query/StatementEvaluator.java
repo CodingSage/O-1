@@ -1,12 +1,5 @@
 package edu.buffalo.cse562.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.model.Schema;
-import edu.buffalo.cse562.model.Table;
-import edu.buffalo.cse562.model.Tuple;
 import net.sf.jsqlparser.statement.StatementVisitor;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
@@ -17,18 +10,23 @@ import net.sf.jsqlparser.statement.replace.Replace;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.truncate.Truncate;
 import net.sf.jsqlparser.statement.update.Update;
+import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.model.Schema;
+import edu.buffalo.cse562.model.Table;
 
 public class StatementEvaluator implements StatementVisitor {
 
-	public List<Tuple> getResult(){
-		//TODO return results
-		return new ArrayList<Tuple>();
+	public Table result;
+	
+	public Table getResult(){
+		return result;
 	}
 	
 	@Override
 	public void visit(Select select) {
 		SelectEvaluator eval = new SelectEvaluator();
 		select.getSelectBody().accept(eval);
+		result = eval.getResult();
 	}
 
 	@Override
