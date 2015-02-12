@@ -1,11 +1,8 @@
 
-package org.sample;
+package edu.buffalo.cse562.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-
-import net.sf.jsqlparser.schema.Table;
 
 public class CartesianProduct {
 
@@ -19,7 +16,7 @@ public class CartesianProduct {
                                         mytable = tables;
                                         siz = tables.size();
                                         for(int i=0;i<tables.size();i++)
-                                                        data.add(tables[i].rows);
+                                                        data.add((ArrayList<Tuple>) tables.get(i).rows);
                         }
                         
                         public void CalculateCartesianProduct(int cur, ArrayList<Tuple> tillnow)
@@ -30,11 +27,14 @@ public class CartesianProduct {
                                                         return ;
                                         }
 
-                                        ArrayList<Tuple> tmp = data[cur];
+                                        ArrayList<Tuple> tmp = data.get(cur);
 
                                         for(int i=0;i<tmp.size();i++)
-                                                        doit(cur + 1, tillnow.add(tmp[i]));
-
+                                        {
+                                        	ArrayList<Tuple> ttillnow = tillnow;
+                                        	ttillnow.add(tmp.get(i));
+                                        	CalculateCartesianProduct(cur + 1, ttillnow);
+                                        }
                                         return ;
                         }
 }
