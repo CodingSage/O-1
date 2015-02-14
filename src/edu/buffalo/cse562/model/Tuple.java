@@ -5,15 +5,32 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tuple {
+public class Tuple  {
 
 	Table mytable;
 	String[] mytuple;
     List<String> tupleVal  ;
    
-    public Tuple(){
+    
+    public static Tuple merge(Tuple row1,Tuple row2){
     	
+    	List<String> retRow = new ArrayList<String>();
+    	if(row1!= null)
+    		retRow.addAll(row1.getTupleValue());
+    	if(row2!= null) retRow.addAll(row2.getTupleValue());	
+    	
+    	Tuple newTuple = new Tuple(retRow);
+    	return newTuple;
+    }
+    
+    public Tuple(){
     	tupleVal = new ArrayList<String>();
+    }
+    
+    public Tuple(List<String> row){
+    	
+    	tupleVal  = new ArrayList<String>(row);
+    	
     }
     
     public Tuple(Table table, String tuple) {
@@ -37,6 +54,7 @@ public class Tuple {
 		System.out.println("Tuple: " + mytuple);
 	}
 
+	
 //	public String getAlias() {
 //		if (mytable.getAlias() == null)
 //			return mytable.getWholeTableName();
