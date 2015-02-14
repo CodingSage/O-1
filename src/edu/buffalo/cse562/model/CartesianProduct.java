@@ -7,7 +7,7 @@ public class CartesianProduct {
 
 	private List<Table> mytable;
 	private List<ArrayList<Tuple>> data;
-	private List<ArrayList<Tuple>> output;
+	private List<Tuple> output;
 	private int siz;
 
 	public CartesianProduct(List<Table> tables) {
@@ -17,7 +17,7 @@ public class CartesianProduct {
 			data.add((ArrayList<Tuple>) tables.get(i).rows);
 	}
 
-	public void CalculateCartesianProduct(int cur, ArrayList<Tuple> tillnow) {
+	public void CalculateCartesianProduct(int cur, Tuple tillnow) {
 		if (cur == siz) {
 			output.add(tillnow);
 			return;
@@ -26,9 +26,8 @@ public class CartesianProduct {
 		ArrayList<Tuple> tmp = data.get(cur);
 
 		for (int i = 0; i < tmp.size(); i++) {
-			ArrayList<Tuple> ttillnow = tillnow;
-			ttillnow.add(tmp.get(i));
-			CalculateCartesianProduct(cur + 1, ttillnow);
+			Tuple ttillnow = tillnow;
+			ttillnow.append(tmp.get(i));
 		}
 		return;
 	}
