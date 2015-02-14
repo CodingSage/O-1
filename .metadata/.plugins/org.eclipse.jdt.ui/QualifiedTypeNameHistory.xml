@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.sun.xml.internal.bind.v2.schemagen.xmlschema.List"/>
-<fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="edu.buffalo.cse562.core.DataManager"/>
-<fullyQualifiedTypeName name="edu.buffalo.cse562.model.Table"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
-</qualifiedTypeNameHistroy>
