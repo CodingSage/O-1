@@ -48,11 +48,11 @@ public class CartesianProduct {
 		this.data = data;
 	}
 
-	public List<ArrayList<Tuple>> getOutput() {
+	public List<Tuple> getOutput() {
 		return output;
 	}
 
-	public void setOutput(List<ArrayList<Tuple>> output) {
+	public void setOutput(List<Tuple> output) {
 		this.output = output;
 	}
 
