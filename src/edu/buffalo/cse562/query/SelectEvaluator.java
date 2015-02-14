@@ -1,11 +1,16 @@
 package edu.buffalo.cse562.query;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.statement.select.AllColumns;
+import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.FromItemVisitor;
 import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.SelectExpressionItem;
+import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.statement.select.SelectItemVisitor;
 import net.sf.jsqlparser.statement.select.SelectVisitor;
 import net.sf.jsqlparser.statement.select.SubJoin;
 import net.sf.jsqlparser.statement.select.SubSelect;
@@ -13,13 +18,13 @@ import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CartesianProduct;
 import edu.buffalo.cse562.model.Table;
-import edu.buffalo.cse562.model.Tuple;
 
-public class SelectEvaluator implements SelectVisitor, FromItemVisitor {
+public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectItemVisitor {
 
 	Table result;
 	List<Table> tables;
-	
+	List<String> columnNames;
+
 	public Table getResult() {
 		return result;
 	}
@@ -30,7 +35,11 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor {
 		item.accept(this);
 		//TODO joins
 		CartesianProduct prod = new CartesianProduct(tables);
-		List<ArrayList<Tuple>> result = prod.getOutput();
+		result = new Table();
+		result.setRows(prod.getOutput());
+		for(Object sitem : select.getSelectItems()){
+			((SelectItem)sitem).accept(this);
+		}
 	}
 
 	@Override
@@ -44,15 +53,30 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor {
 	}
 
 	@Override
-	public void visit(SubSelect arg0) {
+	public void visit(SubSelect arg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void visit(SubJoin arg0) {
+	public void visit(SubJoin arg) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void visit(AllColumns arg) {
+		return;
+	}
+
+	@Override
+	public void visit(AllTableColumns arg) {
+		//TODO
+	}
+
+	@Override
+	public void visit(SelectExpressionItem arg) {
+		//TODO evaluate expression
+		Expression exp = arg.getExpression(); 
 	}
 
 }
