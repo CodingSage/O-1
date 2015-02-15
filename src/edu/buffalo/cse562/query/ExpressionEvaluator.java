@@ -54,7 +54,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	private String s;
 	private Date date;
 	private boolean res;
-
+    
 	public List<String> getResult() {
 		return columnNames;
 	}
@@ -84,21 +84,22 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	}
 
 	@Override
-	public void visit(DoubleValue arg0) {
+	public void visit(DoubleValue arg) {
 		// TODO Auto-generated method stub
+		dval = arg.getValue();
 
 	}
 
 	@Override
-	public void visit(LongValue arg0) {
+	public void visit(LongValue arg) {
 		// TODO Auto-generated method stub
-
+		l = arg.getValue();
 	}
 
 	@Override
-	public void visit(DateValue arg0) {
+	public void visit(DateValue arg) {
 		// TODO Auto-generated method stub
-
+        date = arg.getValue();
 	}
 
 	@Override
@@ -120,9 +121,9 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	}
 
 	@Override
-	public void visit(StringValue arg0) {
+	public void visit(StringValue arg) {
 		// TODO Auto-generated method stub
-
+        s = new String(arg.getValue());
 	}
 
 	@Override
@@ -580,6 +581,54 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	public void visit(BitwiseXor arg0) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public List<String> getColumnNames() {
+		return columnNames;
+	}
+
+	public void setColumnNames(List<String> columnNames) {
+		this.columnNames = columnNames;
+	}
+
+	public double getDval() {
+		return dval;
+	}
+
+	public void setDval(double dval) {
+		this.dval = dval;
+	}
+
+	public long getL() {
+		return l;
+	}
+
+	public void setL(long l) {
+		this.l = l;
+	}
+
+	public String getS() {
+		return s;
+	}
+
+	public void setS(String s) {
+		this.s = s;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public boolean isRes() {
+		return res;
+	}
+
+	public void setRes(boolean res) {
+		this.res = res;
 	}
 
 }
