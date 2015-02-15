@@ -1,6 +1,7 @@
 package edu.buffalo.cse562.query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.AllComparisonExpression;
@@ -49,8 +50,10 @@ public class ExpressionEvaluator implements ExpressionVisitor{
 	List<String> columnNames = new ArrayList<String>();
 	
 	private double dval ;
-
-	private boolean bval;
+	private long l;
+	private String s;
+	private Date date;
+	private boolean res;
 	
 	public List<String> getResult() {
 		return columnNames;
@@ -167,25 +170,131 @@ public class ExpressionEvaluator implements ExpressionVisitor{
 	@Override
 	public void visit(EqualsTo arg) {
 		dval = Double.MAX_VALUE;
-		arg.getLeftExpression().accept(this);
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
 		
+		arg.getLeftExpression().accept(this);
+	
 		if(dval != Double.MAX_VALUE) // am a double
 		{
 				double lval = dval;
 				arg.getRightExpression().accept(this);
-				bval = dval == lval; 
+				res = (dval == lval); 
 		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg.getRightExpression().accept(this);
+				res = (lval == s);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg.getRightExpression().accept(this);
+				res = (lval == l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg.getRightExpression().accept(this);
+				
+				if(date.compareTo(ldate) == 0)
+						res = true;
+				else res = false;
+		}
+		
 	}
 
 	@Override
 	public void visit(GreaterThan arg0) {
 		// TODO Auto-generated method stub
+		dval = Double.MAX_VALUE;
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
+		
+		arg0.getLeftExpression().accept(this);
+	
+		if(dval != Double.MAX_VALUE) // am a double
+		{
+				double lval = dval;
+				arg0.getRightExpression().accept(this);
+				res = (lval > dval); 
+		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg0.getRightExpression().accept(this);
+				res = (lval.compareTo(s) > 0);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg0.getRightExpression().accept(this);
+				res = (lval > l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg0.getRightExpression().accept(this);
+				
+				if(ldate.compareTo(date) > 0)
+						res = true;
+				else res = false;
+		}
+		
 		
 	}
 
 	@Override
 	public void visit(GreaterThanEquals arg0) {
 		// TODO Auto-generated method stub
+		
+		dval = Double.MAX_VALUE;
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
+		
+		arg0.getLeftExpression().accept(this);
+	
+		if(dval != Double.MAX_VALUE) // am a double
+		{
+				double lval = dval;
+				arg0.getRightExpression().accept(this);
+				res = (lval >= dval); 
+		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg0.getRightExpression().accept(this);
+				res = (lval.compareTo(s) >= 0);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg0.getRightExpression().accept(this);
+				res = (lval >= l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg0.getRightExpression().accept(this);
+				
+				if(ldate.compareTo(date) >= 0)
+						res = true;
+				else res = false;
+		}
+		
 		
 	}
 
@@ -210,6 +319,44 @@ public class ExpressionEvaluator implements ExpressionVisitor{
 	@Override
 	public void visit(MinorThan arg0) {
 		// TODO Auto-generated method stub
+		dval = Double.MAX_VALUE;
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
+		
+		arg0.getLeftExpression().accept(this);
+	
+		if(dval != Double.MAX_VALUE) // am a double
+		{
+				double lval = dval;
+				arg0.getRightExpression().accept(this);
+				res = (lval < dval); 
+		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg0.getRightExpression().accept(this);
+				res = (lval.compareTo(s) < 0);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg0.getRightExpression().accept(this);
+				res = (lval < l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg0.getRightExpression().accept(this);
+				
+				if(ldate.compareTo(date) < 0)
+						res = true;
+				else res = false;
+		}
+		
 		
 	}
 
@@ -217,11 +364,88 @@ public class ExpressionEvaluator implements ExpressionVisitor{
 	public void visit(MinorThanEquals arg0) {
 		// TODO Auto-generated method stub
 		
+		dval = Double.MAX_VALUE;
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
+		
+		arg0.getLeftExpression().accept(this);
+	
+		if(dval != Double.MAX_VALUE) // am a double
+		{
+				double lval = dval;
+				arg0.getRightExpression().accept(this);
+				res = (lval <= dval); 
+		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg0.getRightExpression().accept(this);
+				res = (lval.compareTo(s) <= 0);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg0.getRightExpression().accept(this);
+				res = (lval <= l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg0.getRightExpression().accept(this);
+				
+				if(ldate.compareTo(date) <= 0)
+						res = true;
+				else res = false;
+		}
+		
+		
 	}
 
 	@Override
 	public void visit(NotEqualsTo arg0) {
 		// TODO Auto-generated method stub
+		dval = Double.MAX_VALUE;
+		s = null;
+		l = Long.MAX_VALUE;
+		date = null;
+		
+		arg0.getLeftExpression().accept(this);
+	
+		if(dval != Double.MAX_VALUE) // am a double
+		{
+				double lval = dval;
+				arg0.getRightExpression().accept(this);
+				res = (lval != dval); 
+		}		
+		
+		if(s != null) // am a string
+		{
+				String lval = s;
+				arg0.getRightExpression().accept(this);
+				res = (lval.compareTo(s) != 0);
+		}
+		
+		if(l != Long.MAX_VALUE) // am a long
+		{
+				Long lval = l;
+				arg0.getRightExpression().accept(this);
+				res = (lval != l);
+		}
+		
+		if(date != null)
+		{	
+				Date ldate = date;
+				arg0.getRightExpression().accept(this);
+				
+				if(ldate.compareTo(date) != 0)
+						res = true;
+				else res = false;
+		}
+	
 		
 	}
 
