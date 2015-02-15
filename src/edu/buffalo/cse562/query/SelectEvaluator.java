@@ -8,6 +8,7 @@ import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.FromItemVisitor;
+import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
@@ -20,13 +21,14 @@ import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CartesianProduct;
 import edu.buffalo.cse562.model.Table;
 
-public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectItemVisitor {
+public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
+		SelectItemVisitor {
 
 	Table result;
 	List<Table> tables;
 	List<String> columnNames;
-	
-	public SelectEvaluator(){
+
+	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
 		columnNames = new ArrayList<String>();
 	}
@@ -39,23 +41,27 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 	public void visit(PlainSelect select) {
 		FromItem item = select.getFromItem();
 		item.accept(this);
-		//TODO joins
+
+		for (Object join : select.getJoins()) {
+			Join j = (Join) join;
+			j.getRightItem().accept(this);
+		}
+
 		CartesianProduct prod = new CartesianProduct(tables);
 		result = new Table();
 		result.setRows(prod.getOutput());
-		select.getGroupByColumnReferences();
-		for(Object sitem : select.getSelectItems()){
-			((SelectItem)sitem).accept(this);
+		for (Object sitem : select.getSelectItems()) {
+			((SelectItem) sitem).accept(this);
 		}
 		ExpressionEvaluator eval = new ExpressionEvaluator();
 		Expression where = select.getWhere();
-		if(where != null)
+		if (where != null)
 			where.accept(eval);
 	}
 
 	@Override
-	public void visit(Union arg0) {
-		// TODO Auto-generated method stub
+	public void visit(Union arg) {
+		System.out.println("union");
 	}
 
 	@Override
@@ -81,12 +87,12 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 
 	@Override
 	public void visit(AllTableColumns arg) {
-		//TODO
+		// TODO
 	}
 
 	@Override
 	public void visit(SelectExpressionItem arg) {
-		//TODO evaluate expression
+		// TODO evaluate expression
 		Expression exp = arg.getExpression();
 		ExpressionEvaluator eval = new ExpressionEvaluator();
 		exp.accept(eval);

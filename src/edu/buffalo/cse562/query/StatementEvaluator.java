@@ -17,11 +17,11 @@ import edu.buffalo.cse562.model.Table;
 public class StatementEvaluator implements StatementVisitor {
 
 	public Table result;
-	
-	public Table getResult(){
+
+	public Table getResult() {
 		return result;
 	}
-	
+
 	@Override
 	public void visit(Select select) {
 		SelectEvaluator eval = new SelectEvaluator();
