@@ -36,6 +36,7 @@ public class Main {
 				while ((statement = parser.Statement()) != null) {
 					new Query(statement).evaluate();
 				}
+				reader.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

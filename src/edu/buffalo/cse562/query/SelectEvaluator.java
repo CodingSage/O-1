@@ -1,9 +1,9 @@
 package edu.buffalo.cse562.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.FromItem;
@@ -25,6 +25,11 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 	Table result;
 	List<Table> tables;
 	List<String> columnNames;
+	
+	public SelectEvaluator(){
+		tables = new ArrayList<Table>();
+		columnNames = new ArrayList<String>();
+	}
 
 	public Table getResult() {
 		return result;
@@ -43,7 +48,9 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 			((SelectItem)sitem).accept(this);
 		}
 		ExpressionEvaluator eval = new ExpressionEvaluator();
-		select.getWhere().accept(eval);
+		Expression where = select.getWhere();
+		if(where != null)
+			where.accept(eval);
 	}
 
 	@Override

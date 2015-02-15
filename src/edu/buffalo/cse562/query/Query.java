@@ -15,7 +15,8 @@ public class Query {
 		StatementEvaluator evaluator = new StatementEvaluator();
 		query.accept(evaluator);
 		Table result = evaluator.getResult();
-		System.out.println(result.toString());
+		if(result != null)
+			System.out.println(result.toString());
 	}
 	
 }

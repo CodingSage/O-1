@@ -6,8 +6,8 @@ import java.util.List;
 public class CartesianProduct {
 
 	private List<Table> mytable;
-	private List<ArrayList<Tuple>> data;
-	private List<Tuple> output;
+	private List<ArrayList<Tuple>> data = new ArrayList<ArrayList<Tuple>>();
+	private List<Tuple> output = new ArrayList<Tuple>();
 	private int siz;
 
 	public CartesianProduct(List<Table> tables) {
@@ -28,7 +28,7 @@ public class CartesianProduct {
 		for (int i = 0; i < tmp.size(); i++) {
 			Tuple ttillnow = tillnow;
 			ttillnow = Tuple.merge(tmp.get(i), tillnow);
-			CalculateCartesianProduct(cur, ttillnow);
+			CalculateCartesianProduct(cur+1, ttillnow);
 		}
 		return;
 	}
@@ -50,6 +50,7 @@ public class CartesianProduct {
 	}
 
 	public List<Tuple> getOutput() {
+		CalculateCartesianProduct(0, new Tuple());
 		return output;
 	}
 

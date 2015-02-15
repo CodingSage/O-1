@@ -18,14 +18,13 @@ public class Table {
 	}
 
 	public Table(String tableName) {
-
 		rows = new ArrayList<Tuple>();
 		this.setName(tableName);
-
-		File file = new File(DataManager.getInstance().getDataPath()+File.separator+tableName);
-
+		File file = new File(DataManager.getInstance().getDataPath()
+				+ File.separator + tableName + ".dat");
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			FileReader fileread = new FileReader(file);
+			BufferedReader reader = new BufferedReader(fileread);
 			String line;
 			Tuple row = null;
 			String[] datas;
@@ -39,6 +38,7 @@ public class Table {
 				rows.add(row);
 			}
 			reader.close();
+			fileread.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -61,8 +61,17 @@ public class Table {
 	}
 
 	public ArrayList<String> appendTuples(Tuple X, Tuple Y) {
-
 		List<String> retTuple = new ArrayList<String>();
 		return (ArrayList<String>) retTuple;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		if(rows == null) return s;
+		for(Tuple r : rows){
+			s += r.toString() + "\n";
+		}
+		return s;
 	}
 }

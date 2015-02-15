@@ -53,6 +53,15 @@ public class Tuple  {
 	public void displayTuple() {
 		System.out.println("Tuple: " + mytuple);
 	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		for(String str : tupleVal){
+			s += str + " ";
+		}
+		return s;
+	}
 
 	
 //	public String getAlias() {
