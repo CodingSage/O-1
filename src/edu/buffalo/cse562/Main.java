@@ -13,8 +13,7 @@ import edu.buffalo.cse562.query.Query;
 public class Main {
 
 	public static void main(String[] args) {
-		System.out
-				.print("We, the members of our team, agree that we will not submit any code "
+		System.out.print("We, the members of our team, agree that we will not submit any code "
 						+ "that we have not written ourselves, share our code with anyone outside of "
 						+ "our group, or use code that we have not written ourselves as a reference.");
 		List<File> sqlFiles = new ArrayList<File>();

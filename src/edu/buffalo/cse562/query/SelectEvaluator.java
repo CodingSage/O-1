@@ -3,6 +3,7 @@ package edu.buffalo.cse562.query;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.FromItem;
@@ -37,9 +38,12 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 		CartesianProduct prod = new CartesianProduct(tables);
 		result = new Table();
 		result.setRows(prod.getOutput());
+		select.getGroupByColumnReferences();
 		for(Object sitem : select.getSelectItems()){
 			((SelectItem)sitem).accept(this);
 		}
+		ExpressionEvaluator eval = new ExpressionEvaluator();
+		select.getWhere().accept(eval);
 	}
 
 	@Override
@@ -76,7 +80,10 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor, SelectIt
 	@Override
 	public void visit(SelectExpressionItem arg) {
 		//TODO evaluate expression
-		Expression exp = arg.getExpression(); 
+		Expression exp = arg.getExpression();
+		ExpressionEvaluator eval = new ExpressionEvaluator();
+		exp.accept(eval);
+		columnNames.addAll(eval.getResult());
 	}
 
 }
