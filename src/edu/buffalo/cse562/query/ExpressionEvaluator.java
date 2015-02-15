@@ -1,18 +1,23 @@
 package edu.buffalo.cse562.query;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.buffalo.cse562.model.Table;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.CaseExpression;
 import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.DoubleValue;
+import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.expression.InverseExpression;
 import net.sf.jsqlparser.expression.JdbcParameter;
+import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.Parenthesis;
@@ -48,33 +53,39 @@ import net.sf.jsqlparser.statement.select.SubSelect;
 public class ExpressionEvaluator implements ExpressionVisitor {
 
 	List<String> columnNames = new ArrayList<String>();
-
+	private Table operand;
+	private Evaluator eval;
 	private double dval;
 	private long l;
 	private String s;
 	private Date date;
 	private boolean res;
-    
+
+	public ExpressionEvaluator() {
+	}
+
+	public ExpressionEvaluator(Table result, List<String> names) {
+		operand = result;
+		eval = new Evaluator(operand, names);
+	}
+
 	public List<String> getResult() {
 		return columnNames;
 	}
 
 	@Override
 	public void visit(NullValue arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(Function arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(InverseExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
@@ -85,431 +96,118 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(DoubleValue arg) {
-		// TODO Auto-generated method stub
 		dval = arg.getValue();
-
 	}
 
 	@Override
 	public void visit(LongValue arg) {
-		// TODO Auto-generated method stub
 		l = arg.getValue();
 	}
 
 	@Override
 	public void visit(DateValue arg) {
-		// TODO Auto-generated method stub
-        date = arg.getValue();
+		date = arg.getValue();
 	}
 
 	@Override
 	public void visit(TimeValue arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(TimestampValue arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(Parenthesis arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(StringValue arg) {
 		// TODO Auto-generated method stub
-        s = new String(arg.getValue());
+		s = new String(arg.getValue());
 	}
 
 	@Override
 	public void visit(Addition arg) {
-		// TODO Auto-generated method stub
-		dval = Double.MAX_VALUE;
-		l = Long.MAX_VALUE;
-		arg.getLeftExpression().accept(this);
-
-		if (l != Long.MAX_VALUE) // am a double
-		{
-			long lval = l;
-			arg.getRightExpression().accept(this);
-			l = l + lval;
-		}
-
-		arg.getLeftExpression().accept(this);
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg.getRightExpression().accept(this);
-			dval = lval + dval;
-		}
+		expressionEvaluate(arg);
 	}
 
 	@Override
 	public void visit(Division arg) {
-		
-		dval = Double.MAX_VALUE;
-		l = Long.MAX_VALUE;
-		arg.getLeftExpression().accept(this);
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			long lval = l;
-			arg.getRightExpression().accept(this);
-			l = l / lval;
-		}
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg.getRightExpression().accept(this);
-			dval = lval / dval;
-		}
-
+		expressionEvaluate(arg);
 	}
 
 	@Override
 	public void visit(Multiplication arg) {
-		
-		dval = Double.MAX_VALUE;
-		l = Long.MAX_VALUE;
-		arg.getLeftExpression().accept(this);
-
-		if (l != Long.MAX_VALUE) // am a double
-		{
-			long lval = l;
-			arg.getRightExpression().accept(this);
-			l = l * lval;
-		}
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg.getRightExpression().accept(this);
-			dval = lval * dval;
-		}
+		expressionEvaluate(arg);
 	}
 
 	@Override
 	public void visit(Subtraction arg) {
-		
-		dval = Double.MAX_VALUE;
-		l = Long.MAX_VALUE;
-		arg.getLeftExpression().accept(this);
-
-		if (l != Long.MAX_VALUE) // am a double
-		{
-			long lval = l;
-			arg.getRightExpression().accept(this);
-			l = l - lval;
-		}
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg.getRightExpression().accept(this);
-			dval = lval - dval;
-		}
-
+		expressionEvaluate(arg);
 	}
 
 	@Override
 	public void visit(AndExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(OrExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(Between arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(EqualsTo arg) {
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg.getRightExpression().accept(this);
-			res = (dval == lval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg.getRightExpression().accept(this);
-			res = (lval.equals(s));
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg.getRightExpression().accept(this);
-			res = (lval == l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg.getRightExpression().accept(this);
-
-			if (date.compareTo(ldate) == 0)
-				res = true;
-			else
-				res = false;
-		}
-
+		expressionEvaluate(arg);
 	}
 
 	@Override
-	public void visit(GreaterThan arg0) {
-		// TODO Auto-generated method stub
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg0.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg0.getRightExpression().accept(this);
-			res = (lval > dval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg0.getRightExpression().accept(this);
-			res = (lval.compareTo(s) > 0);
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg0.getRightExpression().accept(this);
-			res = (lval > l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg0.getRightExpression().accept(this);
-
-			if (ldate.compareTo(date) > 0)
-				res = true;
-			else
-				res = false;
-		}
-
+	public void visit(GreaterThan arg) {
+		expressionEvaluate(arg);
 	}
 
 	@Override
 	public void visit(GreaterThanEquals arg0) {
-		// TODO Auto-generated method stub
-
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg0.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg0.getRightExpression().accept(this);
-			res = (lval >= dval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg0.getRightExpression().accept(this);
-			res = (lval.compareTo(s) >= 0);
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg0.getRightExpression().accept(this);
-			res = (lval >= l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg0.getRightExpression().accept(this);
-
-			if (ldate.compareTo(date) >= 0)
-				res = true;
-			else
-				res = false;
-		}
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(InExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(IsNullExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(LikeExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(MinorThan arg0) {
-		// TODO Auto-generated method stub
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg0.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg0.getRightExpression().accept(this);
-			res = (lval < dval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg0.getRightExpression().accept(this);
-			res = (lval.compareTo(s) < 0);
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg0.getRightExpression().accept(this);
-			res = (lval < l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg0.getRightExpression().accept(this);
-
-			if (ldate.compareTo(date) < 0)
-				res = true;
-			else
-				res = false;
-		}
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(MinorThanEquals arg0) {
-		// TODO Auto-generated method stub
-
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg0.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg0.getRightExpression().accept(this);
-			res = (lval <= dval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg0.getRightExpression().accept(this);
-			res = (lval.compareTo(s) <= 0);
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg0.getRightExpression().accept(this);
-			res = (lval <= l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg0.getRightExpression().accept(this);
-
-			if (ldate.compareTo(date) <= 0)
-				res = true;
-			else
-				res = false;
-		}
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(NotEqualsTo arg0) {
-		// TODO Auto-generated method stub
-		dval = Double.MAX_VALUE;
-		s = null;
-		l = Long.MAX_VALUE;
-		date = null;
-
-		arg0.getLeftExpression().accept(this);
-
-		if (dval != Double.MAX_VALUE) // am a double
-		{
-			double lval = dval;
-			arg0.getRightExpression().accept(this);
-			res = (lval != dval);
-		}
-
-		if (s != null) // am a string
-		{
-			String lval = s;
-			arg0.getRightExpression().accept(this);
-			res = (lval.compareTo(s) != 0);
-		}
-
-		if (l != Long.MAX_VALUE) // am a long
-		{
-			Long lval = l;
-			arg0.getRightExpression().accept(this);
-			res = (lval != l);
-		}
-
-		if (date != null) {
-			Date ldate = date;
-			arg0.getRightExpression().accept(this);
-
-			if (ldate.compareTo(date) != 0)
-				res = true;
-			else
-				res = false;
-		}
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
@@ -519,68 +217,72 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(SubSelect arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(CaseExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(WhenClause arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(ExistsExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(AllComparisonExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(AnyComparisonExpression arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(Concat arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(Matches arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(BitwiseAnd arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(BitwiseOr arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
 	}
 
 	@Override
 	public void visit(BitwiseXor arg0) {
-		// TODO Auto-generated method stub
-
+		expressionEvaluate(arg0);
+	}
+	
+	private void expressionEvaluate(Expression arg){
+		eval.reset();
+		while (eval.hasNext()) {
+			try {
+				eval.next();
+				boolean flag;
+				LeafValue val = eval.eval(arg);
+				if (!((BooleanValue) val).getValue())
+					eval.remove();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public List<String> getColumnNames() {

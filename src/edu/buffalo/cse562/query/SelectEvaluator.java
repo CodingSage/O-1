@@ -41,22 +41,25 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void visit(PlainSelect select) {
 		FromItem item = select.getFromItem();
 		item.accept(this);
-
-		for (Object join : select.getJoins()) {
-			Join j = (Join) join;
-			j.getRightItem().accept(this);
+		if(select.getJoins() != null){
+			for (Object join : select.getJoins()) {
+				Join j = (Join) join;
+				j.getRightItem().accept(this);
+			}
 		}
-
 		CartesianProduct prod = new CartesianProduct(tables);
 		result = new Table();
 		result.setRows(prod.getOutput());
-		for (Object sitem : select.getSelectItems()) {
-			((SelectItem) sitem).accept(this);
-		}
-		ExpressionEvaluator eval = new ExpressionEvaluator();
+		List<String> names = new ArrayList<String>();
+		for(Table table : tables)
+			names.add(table.getName());
+		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
 		Expression where = select.getWhere();
 		if (where != null)
 			where.accept(eval);
+		for (Object sitem : select.getSelectItems()) {
+			((SelectItem) sitem).accept(this);
+		}
 	}
 
 	@Override

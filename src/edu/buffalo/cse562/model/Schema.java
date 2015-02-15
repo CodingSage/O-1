@@ -17,10 +17,18 @@ public class Schema {
 		colName.add(name);
 		colType.add(type);
 	}
-	
-	public String getType(String name){
+
+	public String getType(String name) {
 		int index = colName.indexOf(name);
 		return colType.get(index);
+	}
+
+	public int getColIndex(String col) {
+		return colName.indexOf(col);
+	}
+
+	public int getNumberColumns() {
+		return colName.size();
 	}
 
 }
