@@ -10,6 +10,7 @@ import net.sf.jsqlparser.statement.replace.Replace;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.truncate.Truncate;
 import net.sf.jsqlparser.statement.update.Update;
+import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
@@ -73,7 +74,7 @@ public class StatementEvaluator implements StatementVisitor {
 		for (Object def : table.getColumnDefinitions()) {
 			ColumnDefinition defn = (ColumnDefinition) def;
 			String type = defn.getColDataType().getDataType();
-			schema.addColumn(name + "$" + defn.getColumnName(), type);
+			schema.addColumn(name + Constants.COLNAME_DELIMITER + defn.getColumnName(),	type);
 		}
 		DataManager instance = DataManager.getInstance();
 		instance.addNewTable(schema, t);

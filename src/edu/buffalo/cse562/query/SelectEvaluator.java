@@ -29,7 +29,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	Table result;
 	List<Table> tables;
 	List<String> columnNames;
-    Schema resultSchema ;
+	Schema resultSchema;
+
 	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
 		columnNames = new ArrayList<String>();
@@ -43,7 +44,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void visit(PlainSelect select) {
 		FromItem item = select.getFromItem();
 		item.accept(this);
-		if(select.getJoins() != null){
+		if (select.getJoins() != null) {
 			for (Object join : select.getJoins()) {
 				Join j = (Join) join;
 				j.getRightItem().accept(this);
@@ -53,23 +54,23 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		result = new Table();
 		result.setRows(prod.getOutput());
 		resultSchema = new Schema();
-		resultSchema = prod.getResSchema(); 
+		resultSchema = prod.getResSchema();
 		List<String> names = new ArrayList<String>();
-		for(Table table : tables)
+		for (Table table : tables)
 			names.add(table.getName());
 		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
 		Expression where = select.getWhere();
 		if (where != null)
 			where.accept(eval);
-		//SelectEvaluator opProjection = new SelectEvaluator();
+		// SelectEvaluator opProjection = new SelectEvaluator();
 		for (Object sitem : select.getSelectItems()) {
 			((SelectItem) sitem).accept(this);
 		}
 		setFinalProjection();
-		//Set the projected columns to the new relation - this relation is the final output
+		// Set the projected columns to the new relation - this relation is the
+		// final output
 	}
-    
-	
+
 	@Override
 	public void visit(Union arg) {
 		System.out.println("union");
@@ -83,19 +84,15 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	@Override
 	public void visit(SubSelect arg) {
 		// TODO Auto-generated method stub
-		System.out.println("Reached");
-
 	}
 
 	@Override
 	public void visit(SubJoin arg) {
 		// TODO Auto-generated method stub
-		System.out.println("Reached");
 	}
 
 	@Override
 	public void visit(AllColumns arg) {
-		System.out.println("Reached");
 		return;
 	}
 
@@ -111,23 +108,24 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		ExpressionEvaluator eval = new ExpressionEvaluator();
 		exp.accept(eval);
 		columnNames.addAll(eval.getResult());
-		
 	}
 
 	/* Set the final projection based on the select items */
-	public void setFinalProjection(){
+	public void setFinalProjection() {
+		if (columnNames.size() == 0)
+			return;
 		Table rsResult = new Table();
 		List<Tuple> rsResultRows = new ArrayList<Tuple>();
-			if(result.getRows()!= null){
-		   	for(int i = 0;i< result.getRows().size();i++){  
-		   		Tuple resRow = new Tuple(); 
-		   		for(String column : columnNames){
-		   			  resRow.insertColumn((result.getRows().get(i).getTupleValue().get(resultSchema.getColIndex(column))));
-		   		}
-		   		rsResultRows.add(resRow);
-		   	}
-		   	rsResult.setRows(rsResultRows);
-		   }
+		if (result.getRows() != null) {
+			for (int i = 0; i < result.getRows().size(); i++) {
+				Tuple resRow = new Tuple();
+				for (String column : columnNames) {
+					resRow.insertColumn((result.getRows().get(i).getTupleValue().get(resultSchema.getColIndex(column))));
+				}
+				rsResultRows.add(resRow);
+			}
+			rsResult.setRows(rsResultRows);
+		}
 		result.setRows(rsResultRows);
 	}
 }

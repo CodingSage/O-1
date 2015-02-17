@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import edu.buffalo.cse562.model.Table;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
 import net.sf.jsqlparser.expression.BooleanValue;
@@ -49,6 +48,7 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
+import edu.buffalo.cse562.model.Table;
 
 public class ExpressionEvaluator implements ExpressionVisitor {
 
@@ -168,7 +168,6 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	@Override
 	public void visit(EqualsTo arg) {
 		expressionEvaluate(arg);
-		System.out.println("I am abug");
 	}
 
 	@Override
@@ -213,7 +212,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(Column col) {
-		columnNames.add(col.getColumnName());
+		columnNames.add(col.getWholeColumnName());
 	}
 
 	@Override
@@ -270,13 +269,12 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	public void visit(BitwiseXor arg0) {
 		expressionEvaluate(arg0);
 	}
-	
-	private void expressionEvaluate(Expression arg){
+
+	private void expressionEvaluate(Expression arg) {
 		eval.reset();
 		while (eval.hasNext()) {
 			try {
 				eval.next();
-				boolean flag;
 				LeafValue val = eval.eval(arg);
 				if (!((BooleanValue) val).getValue())
 					eval.remove();

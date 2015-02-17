@@ -1,6 +1,7 @@
 package edu.buffalo.cse562.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Tuple {
@@ -36,6 +37,11 @@ public class Tuple {
 
 	public String getValue(int index) {
 		return tupleVal.get(index);
+	}
+
+	public void reverse() {
+		if (tupleVal != null && tupleVal.size() != 0)
+			Collections.reverse(tupleVal);
 	}
 
 	@Override

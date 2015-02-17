@@ -11,6 +11,7 @@ import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.schema.Column;
+import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.Eval;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Schema;
@@ -34,7 +35,7 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		String col = arg.getColumnName();
 		String tableName = arg.getTable().getName();
 		if (tableName != null)
-			col =  tableName + "$" + col;
+			col =  tableName + Constants.COLNAME_DELIMITER + col;
 		int i = -1;
 		String type = "";
 		// TODO check multiple same tables
