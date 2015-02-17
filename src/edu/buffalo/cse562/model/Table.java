@@ -69,9 +69,14 @@ public class Table {
 	public String toString() {
 		String s = "";
 		if(rows == null) return s;
+		
+		int cnt = 0;
 		for(Tuple r : rows){
-			s += r.toString() + "\n";
+			if(cnt > 0)s += "|" + r.toString() + "\n";
+			else s += r.toString() + "\n";
+			cnt++;
 		}
+		
 		return s;
 	}
 }
