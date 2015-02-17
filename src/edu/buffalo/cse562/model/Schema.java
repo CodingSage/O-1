@@ -19,16 +19,31 @@ public class Schema {
 	}
 
 	public String getType(String name) {
-		int index = colName.indexOf(name);
+		int index = getColIndex(name);
 		return colType.get(index);
 	}
 
 	public int getColIndex(String col) {
-		return colName.indexOf(col);
+		int index = colName.indexOf(col);
+		if (index == -1)
+			for (int j = 0; j < colName.size(); j++)
+				if (colName.get(j).endsWith(col)) {
+					index = j;
+					break;
+				}
+		return index;
 	}
 
 	public int getNumberColumns() {
 		return colName.size();
+	}
+
+	public List<String> getColName() {
+		return colName;
+	}
+
+	public List<String> getColType() {
+		return colType;
 	}
 
 }
