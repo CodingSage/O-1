@@ -168,6 +168,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	@Override
 	public void visit(EqualsTo arg) {
 		expressionEvaluate(arg);
+		System.out.println("I am abug");
 	}
 
 	@Override

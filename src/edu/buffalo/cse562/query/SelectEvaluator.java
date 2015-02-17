@@ -19,7 +19,9 @@ import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CartesianProduct;
+import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.model.Tuple;
 
 public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		SelectItemVisitor {
@@ -27,7 +29,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	Table result;
 	List<Table> tables;
 	List<String> columnNames;
-
+    Schema resultSchema ;
 	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
 		columnNames = new ArrayList<String>();
@@ -50,6 +52,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		CartesianProduct prod = new CartesianProduct(tables);
 		result = new Table();
 		result.setRows(prod.getOutput());
+		resultSchema = new Schema();
+		resultSchema = prod.getResSchema(); 
 		List<String> names = new ArrayList<String>();
 		for(Table table : tables)
 			names.add(table.getName());
@@ -57,11 +61,15 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		Expression where = select.getWhere();
 		if (where != null)
 			where.accept(eval);
+		//SelectEvaluator opProjection = new SelectEvaluator();
 		for (Object sitem : select.getSelectItems()) {
 			((SelectItem) sitem).accept(this);
 		}
+		setFinalProjection();
+		//Set the projected columns to the new relation - this relation is the final output
 	}
-
+    
+	
 	@Override
 	public void visit(Union arg) {
 		System.out.println("union");
@@ -75,16 +83,19 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	@Override
 	public void visit(SubSelect arg) {
 		// TODO Auto-generated method stub
+		System.out.println("Reached");
 
 	}
 
 	@Override
 	public void visit(SubJoin arg) {
 		// TODO Auto-generated method stub
+		System.out.println("Reached");
 	}
 
 	@Override
 	public void visit(AllColumns arg) {
+		System.out.println("Reached");
 		return;
 	}
 
@@ -100,6 +111,23 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		ExpressionEvaluator eval = new ExpressionEvaluator();
 		exp.accept(eval);
 		columnNames.addAll(eval.getResult());
+		
 	}
 
+	/* Set the final projection based on the select items */
+	public void setFinalProjection(){
+		Table rsResult = new Table();
+		List<Tuple> rsResultRows = new ArrayList<Tuple>();
+			if(result.getRows()!= null){
+		   	for(int i = 0;i< result.getRows().size();i++){  
+		   		Tuple resRow = new Tuple(); 
+		   		for(String column : columnNames){
+		   			  resRow.insertColumn((result.getRows().get(i).getTupleValue().get(resultSchema.getColIndex(column))));
+		   		}
+		   		rsResultRows.add(resRow);
+		   	}
+		   	rsResult.setRows(rsResultRows);
+		   }
+		result.setRows(rsResultRows);
+	}
 }

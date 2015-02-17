@@ -45,5 +45,4 @@ public class Schema {
 	public List<String> getColType() {
 		return colType;
 	}
-
 }

@@ -14,7 +14,7 @@ public class Table {
 
 	public List<Tuple> rows;
 	public String name;
-
+    
 	public Table() {
 		rows = new ArrayList<Tuple>();
 	}
