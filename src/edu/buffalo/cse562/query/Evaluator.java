@@ -32,6 +32,9 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 	@Override
 	public LeafValue eval(Column arg) throws SQLException {
 		String col = arg.getColumnName();
+		String tableName = arg.getTable().getName();
+		if (tableName != null)
+			col =  tableName + "$" + col;
 		int i = -1;
 		String type = "";
 		// TODO check multiple same tables
@@ -39,8 +42,8 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		for (String table : tableNames) {
 			Schema schema = DataManager.getInstance().getSchema(table);
 			i = schema.getColIndex(col);
-			type = schema.getType(col);
 			if (i != -1) {
+				type = schema.getType(col);
 				i += offset;
 				break;
 			}
