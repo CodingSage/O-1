@@ -47,8 +47,11 @@ public class Tuple {
 	@Override
 	public String toString() {
 		String s = "";
+		int cnt = 0;
 		for (String str : tupleVal) {
-			s += str + " ";
+			if(cnt > 0)s += "|" + str; 	
+			else s += str;
+			cnt++;
 		}
 		return s;
 	}
