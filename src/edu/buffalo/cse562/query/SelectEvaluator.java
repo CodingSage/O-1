@@ -115,12 +115,16 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		if (columnNames.size() == 0)
 			return;
 		Table rsResult = new Table();
+		int columnId = 0;
+		String colVal = null;
 		List<Tuple> rsResultRows = new ArrayList<Tuple>();
 		if (result.getRows() != null) {
 			for (int i = 0; i < result.getRows().size(); i++) {
 				Tuple resRow = new Tuple();
 				for (String column : columnNames) {
-					resRow.insertColumn((result.getRows().get(i).getTupleValue().get(resultSchema.getColIndex(column))));
+					columnId = resultSchema.getColIndex(column);
+		   			colVal = result.getRows().get(i).getTupleValue().get(columnId);
+		   			resRow.insertColumn(colVal);
 				}
 				rsResultRows.add(resRow);
 			}
