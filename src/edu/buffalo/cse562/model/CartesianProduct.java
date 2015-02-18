@@ -43,7 +43,7 @@ public class CartesianProduct {
 
 		for (int i = 0; i < tmp.size(); i++) {
 			Tuple ttillnow = tillnow;
-			ttillnow = Tuple.merge(tmp.get(i), tillnow);
+			ttillnow = Tuple.merge(tillnow, tmp.get(i));
 			CalculateCartesianProduct(cur + 1, ttillnow);
 		}
 		return;
