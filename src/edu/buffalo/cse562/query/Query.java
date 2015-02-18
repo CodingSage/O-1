@@ -16,7 +16,7 @@ public class Query {
 		query.accept(evaluator);
 		Table result = evaluator.getResult();
 		if(result != null)
-			System.out.println(result.toString());
+			System.out.print(result.toString());
 	}
 	
 }

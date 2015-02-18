@@ -70,9 +70,13 @@ public class Table {
 		String s = "";
 		if(rows == null) return s;
 	
+		int cnt = 0;
 		for(Tuple r : rows)
 		{
-			s += r.toString() + "\n";
+			if(cnt > 0)
+			 s += "\n" + r.toString() ;
+			else s += r.toString();
+			cnt++;
 		}
 		
 		return s;
