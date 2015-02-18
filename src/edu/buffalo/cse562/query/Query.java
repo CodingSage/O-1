@@ -1,11 +1,7 @@
 package edu.buffalo.cse562.query;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
-import edu.buffalo.cse562.model.Table;
 import net.sf.jsqlparser.statement.Statement;
+import edu.buffalo.cse562.model.Table;
 
 public class Query {
 

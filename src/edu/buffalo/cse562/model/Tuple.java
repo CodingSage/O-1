@@ -1,7 +1,6 @@
 package edu.buffalo.cse562.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Tuple {
