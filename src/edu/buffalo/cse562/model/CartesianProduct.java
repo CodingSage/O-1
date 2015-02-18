@@ -34,7 +34,6 @@ public class CartesianProduct {
 	
 	public void CalculateCartesianProduct(int cur, Tuple tillnow) {
 		if (cur == siz) {
-			tillnow.reverse();
 			output.add(tillnow);
 			return;
 		}

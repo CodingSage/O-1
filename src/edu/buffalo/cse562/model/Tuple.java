@@ -39,11 +39,6 @@ public class Tuple {
 		return tupleVal.get(index);
 	}
 
-	public void reverse() {
-		if (tupleVal != null && tupleVal.size() != 0)
-			Collections.reverse(tupleVal);
-	}
-
 	@Override
 	public String toString() {
 		String s = "";
