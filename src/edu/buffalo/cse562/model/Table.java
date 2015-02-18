@@ -12,7 +12,7 @@ public class Table {
 
 	public List<Tuple> rows;
 	public String name;
-    
+
 	public Table() {
 		rows = new ArrayList<Tuple>();
 	}
@@ -64,21 +64,24 @@ public class Table {
 		List<String> retTuple = new ArrayList<String>();
 		return (ArrayList<String>) retTuple;
 	}
-	
+
+	public void append(Table table) {
+		rows.addAll(table.getRows());
+	}
+
 	@Override
 	public String toString() {
 		String s = "";
-		if(rows == null) return s;
-	
+		if (rows == null)
+			return s;
 		int cnt = 0;
-		for(Tuple r : rows)
-		{
-			if(cnt > 0)
-			 s += "\n" + r.toString() ;
-			else s += r.toString();
+		for (Tuple r : rows) {
+			if (cnt > 0)
+				s += "\n" + r.toString();
+			else
+				s += r.toString();
 			cnt++;
 		}
-		
 		return s;
 	}
 }
