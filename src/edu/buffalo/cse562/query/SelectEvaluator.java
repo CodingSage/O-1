@@ -93,7 +93,13 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	@Override
 	public void visit(Union arg) {
-		System.out.println("union");
+		Table union = new Table();
+		for(Object select : arg.getPlainSelects()){
+			SelectEvaluator s = new SelectEvaluator();
+			((PlainSelect)select).accept(s);
+			union.append(s.getResult());
+		}
+		result = union;
 	}
 
 	@Override
