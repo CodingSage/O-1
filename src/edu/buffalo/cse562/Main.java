@@ -35,10 +35,7 @@ public class Main {
 				Statement statement = null;
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				while ((statement = parser.Statement()) != null) {
-					if(statement instanceof CreateTable)
 						new Query(statement).evaluate();
-					else
-						throw new Exception(statement.toString());
 				}
 				reader.close();
 			} catch (Exception e) {
