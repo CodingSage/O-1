@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.query.Query;
 
@@ -34,8 +35,9 @@ public class Main {
 				Statement statement = null;
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				while ((statement = parser.Statement()) != null) {
+					if(statement instanceof CreateTable)
+						new Query(statement).evaluate();
 					throw new Exception(statement.toString());
-					//new Query(statement).evaluate();
 				}
 				reader.close();
 			} catch (Exception e) {
