@@ -37,7 +37,8 @@ public class Main {
 				while ((statement = parser.Statement()) != null) {
 					if(statement instanceof CreateTable)
 						new Query(statement).evaluate();
-					throw new Exception(statement.toString());
+					else
+						throw new Exception(statement.toString());
 				}
 				reader.close();
 			} catch (Exception e) {
