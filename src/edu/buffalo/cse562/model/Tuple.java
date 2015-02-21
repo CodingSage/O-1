@@ -3,6 +3,9 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jsqlparser.expression.LeafValue;
+import net.sf.jsqlparser.schema.Column;
+
 public class Tuple {
 
 	List<String> tupleVal;
@@ -34,6 +37,13 @@ public class Tuple {
 
 	}
 
+	public String eval(Column x){
+		
+		int colID =  1;
+		return tupleVal.get(colID);
+		
+	}
+	
 	public String getValue(int index) {
 		return tupleVal.get(index);
 	}

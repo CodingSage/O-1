@@ -1,10 +1,14 @@
 package edu.buffalo.cse562.query;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.parser.CCJSqlParser;
+import net.sf.jsqlparser.parser.ParseException;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.AllTableColumns;
@@ -32,6 +36,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	List<Table> tables;
 	List<String> columnNames;
 	Schema resultSchema;
+	List<AggOperator> aggOperators = new ArrayList<AggOperator>();
 
 	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
@@ -60,10 +65,29 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		List<String> names = new ArrayList<String>();
 		for (Table table : tables)
 			names.add(table.getName());
+
 		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
+
 		Expression where = select.getWhere();
-		if (where != null)
+
+		List<Expression> explist = new ArrayList<Expression>();
+
+		if (where != null) {
 			where.accept(eval);
+			// for(int i=0;i<result.getRows().size();i++)
+			// {
+			// String tmp = createexpression(result.getRows().get(i), where);
+			// CCJSqlParser ttmp = new CCJSqlParser(new StringReader(tmp));
+			//
+			// try {
+			// ttmp.Expression().accept(eval);
+			// } catch (ParseException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// }
+		}
+
 		// SelectEvaluator opProjection = new SelectEvaluator();
 		/* Get the group by columns */
 		List<PlainSelect> gbSelect = new ArrayList<PlainSelect>();
@@ -76,27 +100,28 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		boolean isCount = false, isSum = false, isAvg = false;
 
 		for (Object sitem : select.getSelectItems()) {
-			if (sitem.toString().contains("COUNT"))
-				isCount = true;
-			else if (sitem.toString().contains("SUM"))
-				isSum = true;
-			else if (sitem.toString().contains("AVG"))
-				isAvg = true;
-			else
+//			if (sitem.toString().contains("COUNT"))
+//				isCount = true;
+//			else if (sitem.toString().contains("SUM"))
+//				isSum = true;
+//			else if (sitem.toString().contains("AVG"))
+//				isAvg = true;
+//			else
 				((SelectItem) sitem).accept(this);
 		}
 		setFinalProjection(gbSelect, orderbyList, isCount, isSum, isAvg);
-		
+
 		// Set the projected columns to the new relation - this relation is the
 		// final output
 	}
 
+	
 	@Override
 	public void visit(Union arg) {
 		Table union = new Table();
-		for(Object select : arg.getPlainSelects()){
+		for (Object select : arg.getPlainSelects()) {
 			SelectEvaluator s = new SelectEvaluator();
-			((PlainSelect)select).accept(s);
+			((PlainSelect) select).accept(s);
 			union.append(s.getResult());
 		}
 		result = union;
@@ -130,10 +155,21 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	@Override
 	public void visit(SelectExpressionItem arg) {
 		// TODO evaluate expression
+		List<String> names = new ArrayList<String>();
+		for (Table table : tables)
+			names.add(table.getName());
 		Expression exp = arg.getExpression();
-		ExpressionEvaluator eval = new ExpressionEvaluator();
-		exp.accept(eval);
-		columnNames.addAll(eval.getResult());
+		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
+		if (exp instanceof Function) {
+			exp.accept(eval);
+			eval.getAggOperation();
+			aggOperators = eval.getAggOperation();
+
+		} else {
+			exp.accept(eval);
+			result = eval.getOperand();
+			columnNames.addAll(eval.getResult());
+		}
 	}
 
 	/* Set the final projection based on the select items */

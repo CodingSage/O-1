@@ -49,6 +49,7 @@ import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.model.Tuple;
 
 public class ExpressionEvaluator implements ExpressionVisitor {
 
@@ -56,10 +57,12 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	private Table operand;
 	private Evaluator eval;
 	private double dval;
+	private int val;
 	private long l;
 	private String s;
 	private Date date;
 	private boolean res;
+	private List<AggOperator> aggOperators;
 
 	public ExpressionEvaluator() {
 	}
@@ -80,7 +83,16 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(Function arg0) {
-		expressionEvaluate(arg0);
+
+		aggOperators = new ArrayList<AggOperator>();
+		arg0.getParameters();
+		AggOperator aggOp = new AggOperator(arg0.getName());
+		aggOperators.add(aggOp);
+		// expressionEvaluate(arg0);
+	}
+
+	public List<AggOperator> getAggOperation() {
+		return aggOperators;
 	}
 
 	@Override
@@ -121,13 +133,18 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(Parenthesis arg0) {
-		expressionEvaluate(arg0);
+		Expression exp = arg0.getExpression();
+		exp.accept(this);
 	}
 
 	@Override
 	public void visit(StringValue arg) {
 		// TODO Auto-generated method stub
 		s = new String(arg.getValue());
+	}
+
+	public void addColumns(Expression a, Expression b) {
+
 	}
 
 	@Override
@@ -272,16 +289,29 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	private void expressionEvaluate(Expression arg) {
 		eval.reset();
+		Table res = new Table();
+		boolean flag = false;
 		while (eval.hasNext()) {
 			try {
 				eval.next();
 				LeafValue val = eval.eval(arg);
-				if (!((BooleanValue) val).getValue())
-					eval.remove();
+				if (val instanceof BooleanValue) {
+					if (!((BooleanValue) val).getValue())
+						eval.remove();
+				} else {
+					flag = true;
+					long v = ((LongValue) val).getValue();
+					List<String> row = new ArrayList<String>();
+					row.add(v + "");
+					Tuple t = new Tuple(row);
+					res.addRow(t);
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		if (flag)
+			operand = res;
 	}
 
 	public List<String> getColumnNames() {
@@ -332,4 +362,11 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 		this.res = res;
 	}
 
+	public Table getOperand() {
+		return operand;
+	}
+
+	public void setOperand(Table operand) {
+		this.operand = operand;
+	}
 }

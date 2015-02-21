@@ -16,6 +16,10 @@ public class Table {
 	public Table() {
 		rows = new ArrayList<Tuple>();
 	}
+	
+	public void addRow(Tuple tuple){
+		rows.add(tuple);
+	}
 
 	public Table(String tableName) {
 		rows = new ArrayList<Tuple>();
