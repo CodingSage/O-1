@@ -6,12 +6,13 @@ import java.util.List;
 public class CartesianProduct {
 
 	private List<Table> mytable;
-	private List<List<Tuple>> data = new ArrayList<List<Tuple>>();
+	private List<List<Tuple>> data;
 	private List<Tuple> output = new ArrayList<Tuple>();
 	private int siz;
 	private Schema resSchema = null;
 
 	public CartesianProduct(List<Table> tables) {
+		data = new ArrayList<List<Tuple>>();
 		mytable = tables;
 		siz = tables.size();
 		resSchema = new Schema();
