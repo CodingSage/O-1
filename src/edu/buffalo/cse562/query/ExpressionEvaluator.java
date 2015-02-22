@@ -346,9 +346,13 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 						eval.remove();
 				} else {
 					flag = true;
-					double v = ((DoubleValue) val).getValue();
+					String v;
+					if(val instanceof DoubleValue)
+						v = ((DoubleValue) val).getValue() + "";
+					else
+						v = ((LongValue) val).getValue() + "";
 					List<String> row = new ArrayList<String>();
-					row.add(v + "");
+					row.add(v);
 					Tuple t = new Tuple(row);
 					res.addRow(t);
 				}
