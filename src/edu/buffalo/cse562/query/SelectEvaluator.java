@@ -120,7 +120,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	private void extractAlias(String origName, String alias) {
 		if (alias != null && !alias.equals("")) {
 			if (origName == null) {
-				
+
 			} else {
 				Schema s = result.getSchema();
 				List<String> colNames = s.getColName();
@@ -266,7 +266,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			rsResult.setRows(rsResultRows);
 		}
 		result.setRows(rsResultRows);
-		calculateAggr1();
+		aggregate3();
 	}
 
 	public void calculateAggr() {
@@ -335,10 +335,9 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		String colVal1 = null, colVal2 = null;
 		List<String> columns = result.getSchema().getColName();
 
-		for (int i = 1; i < result.getRows().size(); i++) 
-		{
-			
-			//group = true;
+		for (int i = 1; i < result.getRows().size(); i++) {
+
+			// group = true;
 			int j = 0;
 			List<String> lstCols = new ArrayList<String>();
 
@@ -375,39 +374,33 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int colIndex = -1;
 			int oper = -1;
 			boolean addFlag = false;
-			
+
 			Tuple res = new Tuple();
-			
-			for (Map.Entry<Integer, Integer> entry : h.entrySet()) 
-			{
+
+			for (Map.Entry<Integer, Integer> entry : h.entrySet()) {
 
 				colIndex = entry.getKey();
 				oper = entry.getValue();
 
-				if (group) 
-				{
+				if (group) {
 
 					if (oper == 0)
 						ansc += 1;
 					if (oper == 1)
 						anss += Double.valueOf(result.getRows().get(i)
 								.getTupleValue().get(colIndex));
-					if (oper == 2) 
-					{
+					if (oper == 2) {
 						avgcnt += 1;
 						avgs += Double.valueOf(result.getRows().get(i)
 								.getTupleValue().get(colIndex));
 
 					}
-				}
-				else 
-				{
+				} else {
 
 					prev = i;
 					addFlag = true;
 					group = true;
-					if (oper == 0)
-					{
+					if (oper == 0) {
 						lstCols.add(String.valueOf(ansc));
 						ansc = 1;
 					}
@@ -423,36 +416,129 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(colIndex));
 						avgcnt = 1;
 					}
-				
+
 				}
 			}
-			
-			if (addFlag) 
-			{
+
+			if (addFlag) {
 				res = new Tuple(lstCols);
-				rsResultRows.add(res);	
+				rsResultRows.add(res);
 			}
 		}
-		
-		//if(group == false)
+
+		// if(group == false)
 		{
 			List<String> tlstCols = new ArrayList<String>();
-	
-			for (String col : columns)
-			{
+
+			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
-				colVal2 = result.getRows().get(prev).getTupleValue().get(columnId1);
-				
-				if(!col.equals("Sum") & !col.equals("Average") && !col.equals("Count"))
+				colVal2 = result.getRows().get(prev).getTupleValue()
+						.get(columnId1);
+
+				if (!col.equals("Sum") & !col.equals("Average")
+						&& !col.equals("Count"))
 					tlstCols.add(colVal2);
 			}
-			
+
 			tlstCols.add(String.valueOf(ansc));
-		
+
 			rsResultRows.add(new Tuple(tlstCols));
 		}
-		
+
 		result.setRows(rsResultRows);
+	}
+
+	public void aggregate3() {
+		int columnId1 = 0;
+		List<Tuple> rsResultRows = new ArrayList<Tuple>();
+		int ansc = 0;
+		int avgcnt = 0;
+		double anss = 0;
+		double avgs = 0;
+		String colVal1 = null, colVal2 = null;
+		List<String> columns = result.getSchema().getColName();
+
+		for (int i = 0; i < result.getRows().size(); i++) {
+			
+			int j = i + 1;
+
+			while (j < result.getRows().size()) {
+				boolean gp = true;
+
+				for (String col : columns) {
+					columnId1 = result.getSchema().getColIndex(col);
+					if (!col.equals("Sum") && !col.equals("Average")
+							&& !col.equals("Count")) {
+						colVal1 = result.getRows().get(i).getTupleValue()
+								.get(columnId1);
+						colVal2 = result.getRows().get(j).getTupleValue()
+								.get(columnId1);
+
+						if (!colVal1.equals(colVal2)) {
+							gp = false;
+							break;
+						}
+					}
+				}
+
+				if (!gp) {
+					j--;
+					break;
+				}
+				
+				j++;
+			}
+
+			if(j == result.getRows().size())j--;
+			
+			List<String> lstCols = new ArrayList<String>();
+
+			int l = 0;
+			for (String col : columns) {
+				columnId1 = result.getSchema().getColIndex(col);
+				if (col.equals("Count")) {
+					ansc = 0;
+					for (int k = i; k <= j; k++)
+						ansc += 1;
+
+					lstCols.add(String.valueOf(ansc));
+				} else if (col.equals("Sum")) {
+					anss = 0;
+
+					for (int k = i; k <= j; k++)
+						anss += Double.valueOf(result.getRows().get(k)
+								.getTupleValue().get(l));
+
+					lstCols.add(String.valueOf(anss));
+				} else if (col.equals("Average")) {
+					avgcnt = 0;
+					avgs = 0;
+
+					for (int k = i; k <= j; k++) {
+						avgcnt += 1;
+						avgs += Double.valueOf(result.getRows().get(k)
+								.getTupleValue().get(l));
+					}
+
+					double ans = avgs / avgcnt;
+					lstCols.add(String.valueOf(ans));
+				} else {
+					colVal1 = result.getRows().get(i).getTupleValue()
+							.get(columnId1);
+					lstCols.add(colVal1);
+				}
+
+				l++;
+
+			}
+
+			Tuple res = new Tuple(lstCols);
+			rsResultRows.add(res);
+			i = j;
+		}
+
+		result.setRows(rsResultRows);
+
 	}
 
 	public void setRsltGrpBy(HashMap<List<String>, Integer> hmResults) {

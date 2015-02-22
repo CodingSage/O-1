@@ -1,11 +1,13 @@
 package edu.buffalo.cse562.query;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.DoubleValue;
+import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
@@ -30,6 +32,8 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		curIndex = -1;
 	}
 
+	
+	
 	@Override
 	public LeafValue eval(Column arg) throws SQLException {
 		String col = arg.getColumnName();
@@ -58,8 +62,8 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		if (type.toLowerCase().equals("double"))
 			return new DoubleValue(s);
 		if (type.toLowerCase().equals("date"))
-			return new DateValue(s);
-		if (type.equals("string"))
+			return new DateValue("'"+s+"'");
+	    if (type.equals("string"))
 			return new StringValue(s);
 		return new NullValue();
 	}
