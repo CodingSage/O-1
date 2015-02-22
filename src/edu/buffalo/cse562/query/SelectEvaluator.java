@@ -335,7 +335,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		String colVal1 = null, colVal2 = null;
 		List<String> columns = result.getSchema().getColName();
 
-		for (int i = 0; i < result.getRows().size(); i++) {
+		for (int i = 1; i < result.getRows().size(); i++) {
 			group = true;
 			int j = 0;
 			List<String> lstCols = new ArrayList<String>();
@@ -419,9 +419,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(colIndex));
 						avgcnt = 1;
 					}
-					
-					//if(i != result.getRows().size() - 1)group = true;
-					
+				
 				}
 			}
 			
@@ -430,7 +428,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				res = new Tuple(lstCols);
 				rsResultRows.add(res);
 				
-				/*if(group == false && i == result.getRows().size() - 1)
+				if(group == false && i == result.getRows().size() - 1)
 				{
 					List<String> tlstCols = new ArrayList<String>();
 			
@@ -446,7 +444,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					tlstCols.add(String.valueOf(ansc));
 				
 					rsResultRows.add(new Tuple(tlstCols));
-				}*/
+				}
 
 			}
 		}
