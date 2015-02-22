@@ -329,13 +329,13 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void calculateAggr1() {
 		int columnId1 = 0;
 		List<Tuple> rsResultRows = new ArrayList<Tuple>();
-		int ansc = 1, avgcnt = 0, prev = 0, cntindex = -1, sumIndex = -1;
+		int ansc = 0, avgcnt = 0, prev = 0, cntindex = -1, sumIndex = -1;
 		Double anss = (double) 0, avgs = (double) 0;
 		boolean group = true;
 		String colVal1 = null, colVal2 = null;
 		List<String> columns = result.getSchema().getColName();
 
-		for (int i = 1; i < result.getRows().size(); i++) {
+		for (int i = 0; i < result.getRows().size(); i++) {
 			group = true;
 			int j = 0;
 			List<String> lstCols = new ArrayList<String>();
