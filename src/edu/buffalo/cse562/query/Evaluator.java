@@ -35,7 +35,7 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		String col = arg.getColumnName();
 		String tableName = arg.getTable().getName();
 		if (tableName != null)
-			col =  tableName + Constants.COLNAME_DELIMITER + col;
+			col = tableName + Constants.COLNAME_DELIMITER + col;
 		int i = -1;
 		String type = "";
 		// TODO check multiple same tables
@@ -90,6 +90,10 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 	public void remove() {
 		operand.getRows().remove(curIndex);
 		curIndex--;
+	}
+
+	public List<String> getTableNames() {
+		return tableNames;
 	}
 
 }

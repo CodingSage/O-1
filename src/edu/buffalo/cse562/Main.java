@@ -7,7 +7,6 @@ import java.util.List;
 
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.create.table.CreateTable;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.query.Query;
 

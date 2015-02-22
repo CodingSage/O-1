@@ -6,19 +6,31 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
 
 public class Table {
 
-	public List<Tuple> rows;
-	public String name;
+	private Schema schema;
+	private List<Tuple> rows;
+	private String name;
 
 	public Table() {
+		schema = new Schema();
 		rows = new ArrayList<Tuple>();
 	}
-	
-	public void addRow(Tuple tuple){
-		rows.add(tuple);
+
+	public Table(Schema schema) {
+		this.schema = schema;
+	}
+
+	public Table(String singleVal, String valType) {
+		schema = new Schema();
+		schema.addColumn(Constants.COLNAME_DEFAULT, valType);
+		rows = new ArrayList<Tuple>();
+		Tuple t = new Tuple();
+		t.insertColumn(singleVal);
+		rows.add(t);
 	}
 
 	public Table(String tableName) {
@@ -48,20 +60,22 @@ public class Table {
 		}
 	}
 
-	public List<Tuple> getRows() {
-		return rows;
+	public String getValue(int rowIndex, int colIndex) {
+		return rows.get(rowIndex).getValue(colIndex);
 	}
 
-	public void setRows(List<Tuple> rows) {
-		this.rows = rows;
+	public void addTableColumn(Table col) {
+		if (rows.size() == 0)
+			rows = col.getRows();
+		else {
+			for (int i = 0; i < rows.size(); i++) {
+				rows.get(i).insertColumn(col.getValue(i, 0));
+			}
+		}
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void addRow(Tuple tuple) {
+		rows.add(tuple);
 	}
 
 	public ArrayList<String> appendTuples(Tuple X, Tuple Y) {
@@ -71,6 +85,26 @@ public class Table {
 
 	public void append(Table table) {
 		rows.addAll(table.getRows());
+	}
+
+	public Table getColumn(String colName) {
+		List<Tuple> t = new ArrayList<Tuple>();
+		int ci = schema.getColIndex(colName);
+		for (int i = 0; i < rows.size(); i++) {
+			Tuple tup = new Tuple();
+			tup.insertColumn(rows.get(i).getValue(ci));
+			t.add(tup);
+		}
+		Table tab = new Table();
+		tab.setRows(t);
+		return tab;
+	}
+
+	public int columnsCount() {
+		if (rows.size() != 0)
+			if (rows.get(0).getValues().size() != 0)
+				return rows.get(0).getValues().size();
+		return 0;
 	}
 
 	@Override
@@ -88,4 +122,29 @@ public class Table {
 		}
 		return s;
 	}
+
+	public Schema getSchema() {
+		return schema;
+	}
+
+	public void setSchema(Schema schema) {
+		this.schema = schema;
+	}
+
+	public List<Tuple> getRows() {
+		return rows;
+	}
+
+	public void setRows(List<Tuple> rows) {
+		this.rows = rows;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

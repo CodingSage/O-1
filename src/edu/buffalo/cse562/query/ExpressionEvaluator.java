@@ -37,6 +37,7 @@ import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.Between;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExistsExpression;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.GreaterThan;
 import net.sf.jsqlparser.expression.operators.relational.GreaterThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
@@ -61,8 +62,8 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	private long l;
 	private String s;
 	private Date date;
-	private boolean res;
-	private List<AggOperator> aggOperators;
+	private boolean res, sum, avg, cnt;
+	private boolean hasGroupBy;
 
 	public ExpressionEvaluator() {
 	}
@@ -70,6 +71,10 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	public ExpressionEvaluator(Table result, List<String> names) {
 		operand = result;
 		eval = new Evaluator(operand, names);
+		sum = false;
+		avg = false;
+		cnt = false;
+		hasGroupBy = true;
 	}
 
 	public List<String> getResult() {
@@ -83,16 +88,51 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(Function arg0) {
-
-		aggOperators = new ArrayList<AggOperator>();
-		arg0.getParameters();
-		AggOperator aggOp = new AggOperator(arg0.getName());
-		aggOperators.add(aggOp);
-		// expressionEvaluate(arg0);
-	}
-
-	public List<AggOperator> getAggOperation() {
-		return aggOperators;
+		ExpressionList params = arg0.getParameters();
+		List<Table> lres = new ArrayList<Table>();
+		for (Object exp : params.getExpressions()) {
+			Expression e = (Expression) exp;
+			ExpressionEvaluator eval = new ExpressionEvaluator(this.operand,
+					this.eval.getTableNames());
+			e.accept(eval);
+			Table t = eval.getOperand();
+			if (t.columnsCount() > 1) {
+				Table col = new Table();
+				int i = t.getSchema().getColIndex(e.toString());
+				for (Tuple tuple : t.getRows()) {
+					Tuple tup = new Tuple();
+					tup.insertColumn(tuple.getValue(i));
+					col.addRow(tup);
+				}
+				t = col;
+			}
+			lres.add(t);
+		}
+		// TODO CHECK THIS
+		Table res = lres.get(0);
+		double ans = 0;
+		double dsum = 0;
+		int icount = 0;
+		if (!hasGroupBy) {
+			for (Tuple row : res.getRows()) {
+				double v = Double.parseDouble(row.getValue(0));
+				dsum += v;
+				icount++;
+			}
+		}
+		if (arg0.getName().toLowerCase().equals("sum")) {
+			sum = true;
+			ans = dsum;
+		} else if (arg0.getName().toLowerCase().equals("count")) {
+			cnt = true;
+			ans = icount;
+		} else if (arg0.getName().toLowerCase().equals("avg")) {
+			avg = true;
+			ans = dsum / icount;
+		}
+		if (!hasGroupBy)
+			operand = new Table(ans + "", "double");
+		operand = res;
 	}
 
 	@Override
@@ -229,6 +269,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(Column col) {
+		operand = operand.getColumn(col.getWholeColumnName());
 		columnNames.add(col.getWholeColumnName());
 	}
 
@@ -360,6 +401,18 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	public void setRes(boolean res) {
 		this.res = res;
+	}
+
+	public boolean issum() {
+		return sum;
+	}
+
+	public boolean isavg() {
+		return avg;
+	}
+
+	public boolean iscnt() {
+		return cnt;
 	}
 
 	public Table getOperand() {

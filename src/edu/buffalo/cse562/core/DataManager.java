@@ -9,7 +9,7 @@ import edu.buffalo.cse562.model.Table;
 public class DataManager {
 
 	private static DataManager instance;
-	private Map<String, Schema> schemas = new HashMap<String, Schema>();
+	// private Map<String, Schema> schemas = new HashMap<String, Schema>();
 	private Map<String, Table> tables = new HashMap<String, Table>();
 	private String dataPath;
 
@@ -27,13 +27,12 @@ public class DataManager {
 		return instance;
 	}
 
-	public void addNewTable(Schema schema, Table table) {
-		schemas.put(table.getName(), schema);
+	public void addNewTable(Table table) {
 		tables.put(table.getName(), table);
 	}
 
 	public Schema getSchema(String tableName) {
-		return schemas.get(tableName);
+		return tables.get(tableName).getSchema();
 	}
 
 	public Table getTable(String tableName) {

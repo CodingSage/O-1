@@ -76,8 +76,9 @@ public class StatementEvaluator implements StatementVisitor {
 			String type = defn.getColDataType().getDataType();
 			schema.addColumn(name + Constants.COLNAME_DELIMITER + defn.getColumnName(),	type);
 		}
+		t.setSchema(schema);
 		DataManager instance = DataManager.getInstance();
-		instance.addNewTable(schema, t);
+		instance.addNewTable(t);
 	}
 
 }
