@@ -28,11 +28,11 @@ public class DataManager {
 	}
 
 	public void addNewTable(Table table) {
-		tables.put(table.getName(), table);
+		tables.put(table.getName().toLowerCase(), table);
 	}
 
 	public Schema getSchema(String tableName) {
-		return tables.get(tableName).getSchema();
+		return tables.get(tableName.toLowerCase()).getSchema();
 	}
 
 	public Table getTable(String tableName) {
