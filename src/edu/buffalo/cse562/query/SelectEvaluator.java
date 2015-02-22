@@ -1,9 +1,14 @@
 package edu.buffalo.cse562.query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
@@ -236,6 +241,11 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			}
 			result.setRows(rsResultRowsGb);
 		}
+
+		if (ordByColList != null && ordByColList.size() > 0) {
+			calculateorderby(ordByColList);
+
+		}
 	}
 
 	/* Set the final projection based on the select items */
@@ -266,189 +276,10 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			rsResult.setRows(rsResultRows);
 		}
 		result.setRows(rsResultRows);
-		aggregate3();
+		aggregate();
 	}
 
-	public void calculateAggr() {
-		int i;
-		List<Integer> aggr = new ArrayList<Integer>(); // aggr indexes
-		for (i = 0; i < columnNames.size(); i++) {
-			if (!(columnNames.get(i).equals("Average")
-					|| columnNames.get(i).equals("Sum") || columnNames.get(i)
-					.equals("Count")))
-				i++;
-			else
-				aggr.add(i);
-		}
-		Tuple t = new Tuple(columnNames.size());
-		List<Tuple> tuples = new ArrayList<Tuple>();
-		for (Tuple row : result.getRows()) {
-			boolean same = true;
-			int count = 0;
-			for (int j = 0; j <= i; j++)
-				// TODO check group by indexes
-				if (!row.getValue(j).equals(t.getValue(j))) {
-					same = false;
-					break;
-				}
-			if (same) {
-				count++;
-				for (int a = 0; a < aggr.size(); a++) {
-					double v = Double.parseDouble(t.getValue(aggr.get(a)));
-					v += Double.parseDouble(row.getValue(aggr.get(a)));
-					t.setValue(aggr.get(a), v + "");
-				}
-			} else {
-				boolean init = false;
-				for (int a = 0; a < t.getTupleValue().size(); a++) {
-					if (t.getValue(a).isEmpty())
-						init = true;
-				}
-				if (init) {
-					for (int j = 0; j < row.getValues().size(); j++)
-						t.setValue(j, row.getValue(j));
-				} else {
-					for (int a = 0; a < aggr.size(); a++) {
-						if (columnNames.get(aggr.get(a)).equals("Average")) {
-							double avg = Double.parseDouble(t.getValue(aggr
-									.get(a))) / count;
-							t.setValue(aggr.get(a), avg + "");
-						} else if (columnNames.get(aggr.get(a)).equals("Count"))
-							t.setValue(aggr.get(a), count + "");
-					}
-					tuples.add(t);
-					for (int j = 0; j < row.getValues().size(); j++)
-						t.setValue(j, row.getValue(j));
-				}
-				count = 0;
-			}
-		}
-		result.setRows(tuples);
-	}
-
-	public void calculateAggr1() {
-		int columnId1 = 0;
-		List<Tuple> rsResultRows = new ArrayList<Tuple>();
-		int ansc = 1, avgcnt = 0, prev = 0, cntindex = -1, sumIndex = -1;
-		Double anss = (double) 0, avgs = (double) 0;
-		boolean group = true;
-		String colVal1 = null, colVal2 = null;
-		List<String> columns = result.getSchema().getColName();
-
-		for (int i = 1; i < result.getRows().size(); i++) {
-
-			// group = true;
-			int j = 0;
-			List<String> lstCols = new ArrayList<String>();
-
-			HashMap<Integer, Integer> h = new HashMap<Integer, Integer>();
-
-			for (String col : columns) {
-				columnId1 = result.getSchema().getColIndex(col);
-				if (col.equals("Count"))
-					h.put(j, 0);
-				if (col.equals("Sum"))
-					h.put(j, 1);
-				if (col.equals("Average"))
-					h.put(j, 2);
-
-				if (!col.equals("Sum") && !col.equals("Average")
-						&& !col.equals("Count")) {
-					colVal1 = result.getRows().get(prev).getTupleValue()
-							.get(columnId1);
-					colVal2 = result.getRows().get(i).getTupleValue()
-							.get(columnId1);
-					lstCols.add(colVal1);
-					if (!colVal1.equals(colVal2)) {
-						group = false;
-					}
-				}
-				j++;
-			}
-
-			if (h.size() == 0) {
-				rsResultRows.add(result.getRows().get(i));
-				continue;
-			}
-
-			int colIndex = -1;
-			int oper = -1;
-			boolean addFlag = false;
-
-			Tuple res = new Tuple();
-
-			for (Map.Entry<Integer, Integer> entry : h.entrySet()) {
-
-				colIndex = entry.getKey();
-				oper = entry.getValue();
-
-				if (group) {
-
-					if (oper == 0)
-						ansc += 1;
-					if (oper == 1)
-						anss += Double.valueOf(result.getRows().get(i)
-								.getTupleValue().get(colIndex));
-					if (oper == 2) {
-						avgcnt += 1;
-						avgs += Double.valueOf(result.getRows().get(i)
-								.getTupleValue().get(colIndex));
-
-					}
-				} else {
-
-					prev = i;
-					addFlag = true;
-					group = true;
-					if (oper == 0) {
-						lstCols.add(String.valueOf(ansc));
-						ansc = 1;
-					}
-					if (oper == 1) {
-						lstCols.add(String.valueOf(anss));
-						anss = Double.valueOf(result.getRows().get(prev)
-								.getTupleValue().get(colIndex));
-					}
-					if (oper == 2) {
-						double avg = avgs / avgcnt;
-						lstCols.add(String.valueOf(avg));
-						avgs = Double.valueOf(result.getRows().get(prev)
-								.getTupleValue().get(colIndex));
-						avgcnt = 1;
-					}
-
-				}
-			}
-
-			if (addFlag) {
-				res = new Tuple(lstCols);
-				rsResultRows.add(res);
-			}
-		}
-
-		// if(group == false)
-		{
-			List<String> tlstCols = new ArrayList<String>();
-
-			for (String col : columns) {
-				columnId1 = result.getSchema().getColIndex(col);
-				colVal2 = result.getRows().get(prev).getTupleValue()
-						.get(columnId1);
-
-				if (!col.equals("Sum") & !col.equals("Average")
-						&& !col.equals("Count"))
-					tlstCols.add(colVal2);
-			}
-
-			tlstCols.add(String.valueOf(ansc));
-
-			rsResultRows.add(new Tuple(tlstCols));
-		}
-
-		result.setRows(rsResultRows);
-	}
-
-	public void aggregate3() {
+	public void aggregate() {
 		int columnId1 = 0;
 		List<Tuple> rsResultRows = new ArrayList<Tuple>();
 		int ansc = 0;
@@ -459,7 +290,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		List<String> columns = result.getSchema().getColName();
 
 		for (int i = 0; i < result.getRows().size(); i++) {
-			
+
 			int j = i + 1;
 
 			while (j < result.getRows().size()) {
@@ -485,12 +316,13 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					j--;
 					break;
 				}
-				
+
 				j++;
 			}
 
-			if(j == result.getRows().size())j--;
-			
+			if (j == result.getRows().size())
+				j--;
+
 			List<String> lstCols = new ArrayList<String>();
 
 			int l = 0;
@@ -541,6 +373,57 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	}
 
+	public void calculateorderby(List orderbyparameters) {
+		List<String> colList = new ArrayList<String>();
+
+		for (Object col : orderbyparameters)
+			colList.add((col.toString()));
+		HashMap<List<String>, Tuple> h = new HashMap<List<String>, Tuple>();
+		int siz = result.getRows().size();
+		List<Tuple> rsResultRowsGb = new ArrayList<Tuple>();
+
+		int columnId = 0;
+
+		HashMap<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
+		
+		for (int i = 0; i < result.getRows().size(); i++) {
+			List<String> colVal = new ArrayList<String>();
+			
+			for (String column : colList) {
+				String[] dsplit = column.split(" ");
+				if(dsplit.length > 1)
+					column = dsplit[0];
+				columnId = result.getSchema().getColIndex(column);
+				if(dsplit.length > 1 && dsplit[1].equals("DESC"))
+					isdesc.put(columnId, 1);
+				colVal.add(result.getRows().get(i).getTupleValue()
+						.get(columnId));
+			
+			}
+
+			colVal.add(Integer.toString(i));
+
+			h.put(colVal, result.getRows().get(i));
+
+		}
+
+		TreeMap<List<String>, Tuple> test = new TreeMap<List<String>, Tuple>(
+				new ValueComparator(isdesc));
+
+		test.putAll(h);
+
+		Iterator it = test.entrySet().iterator();
+
+		while (it.hasNext()) {
+			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it
+					.next();
+			rsResultRowsGb.add(Pair.getValue());
+			it.remove();
+		}
+		result.setRows(rsResultRowsGb);
+		return;
+	}
+
 	public void setRsltGrpBy(HashMap<List<String>, Integer> hmResults) {
 		List<Tuple> rsResults = new ArrayList<Tuple>();
 		for (List<String> key : hmResults.keySet()) {
@@ -550,5 +433,56 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			rsResults.add(newRow);
 		}
 		result.setRows(rsResults);
+	}
+
+	class ValueComparator implements Comparator<List<String>> {
+
+		 Map<Integer, Integer> base;
+		public ValueComparator(Map<Integer, Integer> base) {
+			this.base = base;
+		 }
+
+		// Note: this comparator imposes orderings that are inconsistent with
+		// equals.
+		public int compare(List<String> a, List<String> b) {
+			int x = a.size(), y = b.size();
+
+			for (int i = 0; i < x; i++)
+			{
+				double v1, v2;
+				if (a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
+					v1 = Double.parseDouble(a.get(i));
+					v2 = Double.parseDouble(b.get(i));
+			
+					if(base.containsKey(i))
+					{
+							if(v1 < v2)return 1;
+							else if (v1 > v2)return -1;
+					}
+					
+					if (v1 > v2)
+						return 1;
+					else if (v1 < v2)
+						return -1;
+				} else 
+				{
+					
+					if(base.containsKey(i))
+					{
+						if(a.get(i).compareTo(b.get(i)) < 0)
+								return 1;
+						else if(a.get(i).compareTo(b.get(i)) > 0)
+								return -1;
+						
+					}
+					if (a.get(i).compareTo(b.get(i)) > 0)
+						return 1;
+					else if (a.get(i).compareTo(b.get(i)) < 0)
+						return -1;
+				}
+			}
+			return -1;
+			// returning 0 would merge keys
+		}
 	}
 }
