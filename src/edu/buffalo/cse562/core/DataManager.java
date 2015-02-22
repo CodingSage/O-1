@@ -36,7 +36,7 @@ public class DataManager {
 	}
 
 	public Table getTable(String tableName) {
-		return tables.get(tableName);
+		return tables.get(tableName.toLowerCase());
 	}
 
 }
