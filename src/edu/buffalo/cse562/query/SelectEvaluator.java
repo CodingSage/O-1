@@ -329,14 +329,16 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void calculateAggr1() {
 		int columnId1 = 0;
 		List<Tuple> rsResultRows = new ArrayList<Tuple>();
-		int ansc = 0, avgcnt = 0, prev = 0, cntindex = -1, sumIndex = -1;
+		int ansc = 1, avgcnt = 0, prev = 0, cntindex = -1, sumIndex = -1;
 		Double anss = (double) 0, avgs = (double) 0;
 		boolean group = true;
 		String colVal1 = null, colVal2 = null;
 		List<String> columns = result.getSchema().getColName();
 
-		for (int i = 0; i < result.getRows().size(); i++) {
-			group = true;
+		for (int i = 1; i < result.getRows().size(); i++) 
+		{
+			
+			//group = true;
 			int j = 0;
 			List<String> lstCols = new ArrayList<String>();
 
@@ -373,7 +375,9 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int colIndex = -1;
 			int oper = -1;
 			boolean addFlag = false;
+			
 			Tuple res = new Tuple();
+			
 			for (Map.Entry<Integer, Integer> entry : h.entrySet()) 
 			{
 
@@ -401,7 +405,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 					prev = i;
 					addFlag = true;
-						
+					group = true;
 					if (oper == 0)
 					{
 						lstCols.add(String.valueOf(ansc));
@@ -426,28 +430,28 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			if (addFlag) 
 			{
 				res = new Tuple(lstCols);
-				rsResultRows.add(res);
-				
-				if(group == false && i == result.getRows().size() - 1)
-				{
-					List<String> tlstCols = new ArrayList<String>();
-			
-					for (String col : columns)
-					{
-						columnId1 = result.getSchema().getColIndex(col);
-						colVal2 = result.getRows().get(prev).getTupleValue().get(columnId1);
-						
-						if(!col.equals("Sum") & !col.equals("Average") && !col.equals("Count"))
-							tlstCols.add(colVal2);
-					}
-					
-					tlstCols.add(String.valueOf(ansc));
-				
-					rsResultRows.add(new Tuple(tlstCols));
-				}
-
+				rsResultRows.add(res);	
 			}
 		}
+		
+		//if(group == false)
+		{
+			List<String> tlstCols = new ArrayList<String>();
+	
+			for (String col : columns)
+			{
+				columnId1 = result.getSchema().getColIndex(col);
+				colVal2 = result.getRows().get(prev).getTupleValue().get(columnId1);
+				
+				if(!col.equals("Sum") & !col.equals("Average") && !col.equals("Count"))
+					tlstCols.add(colVal2);
+			}
+			
+			tlstCols.add(String.valueOf(ansc));
+		
+			rsResultRows.add(new Tuple(tlstCols));
+		}
+		
 		result.setRows(rsResultRows);
 	}
 
