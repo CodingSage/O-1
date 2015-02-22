@@ -90,26 +90,31 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 	public void visit(Function arg0) {
 		ExpressionList params = arg0.getParameters();
 		List<Table> lres = new ArrayList<Table>();
-		for (Object exp : params.getExpressions()) {
-			Expression e = (Expression) exp;
-			ExpressionEvaluator eval = new ExpressionEvaluator(this.operand,
-					this.eval.getTableNames());
-			e.accept(eval);
-			Table t = eval.getOperand();
-			if (t.columnsCount() > 1) {
-				Table col = new Table();
-				int i = t.getSchema().getColIndex(e.toString());
-				for (Tuple tuple : t.getRows()) {
-					Tuple tup = new Tuple();
-					tup.insertColumn(tuple.getValue(i));
-					col.addRow(tup);
+		Table res = null;
+		if (!arg0.isAllColumns()) {
+			for (Object exp : params.getExpressions()) {
+				Expression e = (Expression) exp;
+				ExpressionEvaluator eval = new ExpressionEvaluator(
+						this.operand, this.eval.getTableNames());
+				e.accept(eval);
+				Table t = eval.getOperand();
+				if (t.columnsCount() > 1) {
+					Table col = new Table();
+					int i = t.getSchema().getColIndex(e.toString());
+					for (Tuple tuple : t.getRows()) {
+						Tuple tup = new Tuple();
+						tup.insertColumn(tuple.getValue(i));
+						col.addRow(tup);
+					}
+					t = col;
 				}
-				t = col;
+				lres.add(t);
 			}
-			lres.add(t);
+			res = lres.get(0);
 		}
-		// TODO CHECK THIS
-		Table res = lres.get(0);
+
+		if(arg0.isAllColumns()) res = operand ;
+		
 		double ans = 0;
 		double dsum = 0;
 		int icount = 0;

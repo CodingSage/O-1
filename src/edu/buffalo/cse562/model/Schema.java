@@ -45,4 +45,8 @@ public class Schema {
 	public List<String> getColType() {
 		return colType;
 	}
+
+	public void setColName(List<String> colNames) {
+		this.colName = colNames;
+	}
 }

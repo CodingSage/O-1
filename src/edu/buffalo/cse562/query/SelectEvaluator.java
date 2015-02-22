@@ -109,9 +109,28 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	@Override
 	public void visit(SubSelect arg) {
 		SelectEvaluator eval = new SelectEvaluator();
-		// TODO check alias
 		arg.getSelectBody().accept(eval);
 		result = eval.getResult();
+		// TODO check name is present
+		String origName = result.getName();
+		String alias = arg.getAlias();
+		extractAlias(origName, alias);
+	}
+
+	private void extractAlias(String origName, String alias) {
+		if (alias != null && !alias.equals("")) {
+			if (origName == null) {
+				
+			} else {
+				Schema s = result.getSchema();
+				List<String> colNames = s.getColName();
+				for (String str : colNames) {
+					str.replaceAll(origName, alias);
+				}
+				s.setColName(colNames);
+				result.setSchema(s);
+			}
+		}
 	}
 
 	@Override
@@ -121,6 +140,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	@Override
 	public void visit(AllColumns arg) {
+		aggregatables = result;
 		return;
 	}
 
@@ -133,6 +153,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void visit(SelectExpressionItem arg) {
 		// TODO evaluate expression
 		List<String> names = new ArrayList<String>();
+		// extractAlias(result.getName(), arg.getAlias());
 		for (Table table : tables)
 			names.add(table.getName());
 		Expression exp = arg.getExpression();
@@ -149,10 +170,12 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		} else {
 			aggregatables.addTableColumn(eval.getOperand());
 			List<String> cols = eval.getResult();
-			for (String col : cols) {
-				// TODO check this
-				aggregatables.getSchema().addColumn(col, "string");
-			}
+			if (arg.getAlias() != null)
+				aggregatables.getSchema().addColumn(arg.getAlias(), "string");
+			else
+				for (String col : cols) {
+					aggregatables.getSchema().addColumn(col, "string");
+				}
 		}
 	}
 
@@ -225,7 +248,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			for (int i = 0; i < result.getRows().size(); i++) {
 				Tuple resRow = new Tuple();
 				int aggcnt = 0, j = 0;
-				Schema resSchema = result.getSchema(); 
+				Schema resSchema = result.getSchema();
 				for (String column : resSchema.getColName()) {
 					columnId1 = result.getSchema().getColIndex(column);
 					if (columnId1 != -1) {
@@ -311,13 +334,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		boolean group = true;
 		String colVal1 = null, colVal2 = null;
 		List<String> columns = result.getSchema().getColName();
+
 		for (int i = 0; i < result.getRows().size(); i++) {
 			group = true;
 			int j = 0;
 			List<String> lstCols = new ArrayList<String>();
 
 			HashMap<Integer, Integer> h = new HashMap<Integer, Integer>();
-			
+
 			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
 				if (col.equals("Count"))
@@ -340,7 +364,12 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				}
 				j++;
 			}
-			
+
+			if (h.size() == 0) {
+				rsResultRows.add(result.getRows().get(i));
+				continue;
+			}
+
 			int colIndex = -1;
 			int oper = -1;
 			boolean addFlag = false;
@@ -363,14 +392,13 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(colIndex));
 
 					}
-				} 
-				
-				if(!group || i == result.getRows().size() - 1)
-				{
+				}
+
+				if (!group || i == result.getRows().size() - 1) {
 
 					prev = i;
 					addFlag = true;
-					
+
 					if (oper == 0) {
 						lstCols.add(String.valueOf(ansc));
 						ansc = 1;
@@ -389,11 +417,9 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					}
 
 				}
-				// lstCols = new ArrayList<String>();
 			}
-			
-			if (addFlag) 
-			{
+
+			if (addFlag) {
 				res = new Tuple(lstCols);
 				rsResultRows.add(res);
 			}
