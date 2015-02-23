@@ -393,6 +393,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		for (int i = 0; i < result.getRows().size(); i++) {
 			List<String> colVal = new ArrayList<String>();
 
+			int j = 0;
 			for (String column : colList)
 			{ 
 				String tcolumn = new String(column);
@@ -401,9 +402,10 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 						column = dsplit[0];
 				columnId = result.getSchema().getColIndex(column);
 				if (dsplit.length > 1 && dsplit[1].equals("DESC"))
-					isdesc.put(columnId, 1);
+					isdesc.put(j, 1);
 				colVal.add(result.getRows().get(i).getTupleValue().get(columnId));
 
+				j++;
 			}
 
 			colVal.add(Integer.toString(i));
@@ -470,7 +472,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 						return 1;
 					else if (v1 < v2)
 						return -1;
-				} else {
+				} 
+				else {
 
 					if (base.containsKey(i)) {
 						if (a.get(i).compareTo(b.get(i)) < 0)
