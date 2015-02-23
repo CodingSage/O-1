@@ -98,7 +98,11 @@ public class Table {
 			}
 		} catch (Exception ex) {
 			try {
-				throw new Exception("||" + this.name + " " + colName + "\n"
+				String st = "";
+				for (String  s : this.schema.getColName()) {
+					st += s + ",";
+				}
+				throw new Exception("||" +st+" "+ this.name + " " + colName + "\n"
 						+ ex.getMessage());
 			} catch (Exception e) {
 				e.printStackTrace();
