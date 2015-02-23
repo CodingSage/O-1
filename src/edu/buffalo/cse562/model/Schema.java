@@ -14,16 +14,19 @@ public class Schema {
 	}
 
 	public void addColumn(String name, String type) {
+		name = name.toLowerCase();
 		colName.add(name);
 		colType.add(type);
 	}
 
 	public String getType(String name) {
+		name = name.toLowerCase();
 		int index = getColIndex(name);
 		return colType.get(index);
 	}
 
 	public int getColIndex(String col) {
+		col = col.toLowerCase();
 		int index = colName.indexOf(col);
 		if (index == -1)
 			for (int j = 0; j < colName.size(); j++) {
@@ -34,8 +37,7 @@ public class Schema {
 						index = j;
 						break;
 					}
-				}
-				else if (c.endsWith(col)) {
+				} else if (c.endsWith(col)) {
 					index = j;
 					break;
 				}
@@ -57,5 +59,7 @@ public class Schema {
 
 	public void setColName(List<String> colNames) {
 		this.colName = colNames;
+		for (int i = 0; i < colName.size(); i++)
+			colName.set(i, colName.get(i).toLowerCase());
 	}
 }
