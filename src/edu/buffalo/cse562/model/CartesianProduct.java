@@ -81,7 +81,7 @@ public class CartesianProduct {
 								d2.setMonth(Integer.valueOf(s[1]));
 								d2.setYear(Integer.valueOf(s[0]));
 								
-								if(d1.compareTo(d2) <= 0)
+								if(d1.compareTo(d2) <= 0 || tables.get(i).getRows().get(j).getTupleValue().get(7).equals("null"))
 								{
 									tables.get(i).getRows().remove(j);
 								    j--;
