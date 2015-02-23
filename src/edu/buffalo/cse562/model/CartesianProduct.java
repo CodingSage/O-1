@@ -23,7 +23,7 @@ public class CartesianProduct {
 			{
 				for(int j=0;j<tables.get(i).getRows().size();j++)
 				{
-						if(tables.get(i).getRows().get(j).getTupleValue().get(6).equals("BUILDING"))
+						if(!tables.get(i).getRows().get(j).getTupleValue().get(6).equals("BUILDING"))
 						{
 							tables.get(i).getRows().remove(j);
 						    j--;
