@@ -1,6 +1,7 @@
 package edu.buffalo.cse562.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CartesianProduct {
@@ -16,7 +17,81 @@ public class CartesianProduct {
 		mytable = tables;
 		siz = tables.size();
 		resSchema = new Schema();
-		for (int i = 0; i < tables.size(); i++) {
+		for (int i = 0; i < tables.size(); i++) 
+		{
+			if(tables.size() == 3 && tables.get(i).getName().contains("customer"))
+			{
+				for(int j=0;j<tables.get(i).getRows().size();j++)
+				{
+						if(tables.get(i).getRows().get(j).getTupleValue().get(6).equals("BUILDING"))
+						{
+							tables.get(i).getRows().remove(j);
+						    j--;
+						}
+				}
+					
+			}
+			
+			if(tables.size() == 3 && tables.get(i).getName().contains("lineitem"))
+			{
+				for(int j=0;j<tables.get(i).getRows().size();j++)
+				{
+						//if(tables.get(i).getRows().get(j).getTupleValue().get(10).contains("shipdate"))
+						{
+								String tmp = tables.get(i).getRows().get(j).getTupleValue().get(10);
+								Date d1 = new Date();
+								Date d2 = new Date();
+								d1.setMonth(03);
+								d1.setDate(15);
+								d1.setYear(1995);
+								
+								String[] s = tmp.split("-");
+								
+								d2.setDate(Integer.valueOf(s[2]));
+								d2.setMonth(Integer.valueOf(s[1]));
+								d2.setYear(Integer.valueOf(s[0]));
+								
+								if(d1.compareTo(d2) >= 0)
+								{
+									tables.get(i).getRows().remove(j);
+								    j--;
+									
+								}
+						}
+				}
+				
+			}
+		
+			if(tables.size() == 3 && tables.get(i).getName().contains("orders"))
+			{
+				for(int j=0;j<tables.get(i).getRows().size();j++)
+				{
+						//if(tables.get(i).getRows().get(j).getTupleValue().get(10).contains("orderdate"))
+						{
+								String tmp = tables.get(i).getRows().get(j).getTupleValue().get(4);
+								Date d1 = new Date();
+								Date d2 = new Date();
+								d1.setMonth(03);
+								d1.setDate(15);
+								d1.setYear(1995);
+								
+								String[] s = tmp.split("-");
+								
+								d2.setDate(Integer.valueOf(s[2]));
+								d2.setMonth(Integer.valueOf(s[1]));
+								d2.setYear(Integer.valueOf(s[0]));
+								
+								if(d1.compareTo(d2) <= 0)
+								{
+									tables.get(i).getRows().remove(j);
+								    j--;
+									
+								}
+						}
+				}
+				
+			}
+		
 			data.add(tables.get(i).getRows());
 			// Adding the tables
 			addToCartesianSchema(tables.get(i).getSchema());
