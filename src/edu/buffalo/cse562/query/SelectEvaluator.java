@@ -165,13 +165,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
 		exp.accept(eval);
 		if (exp instanceof Function) {
+			String alias = arg.getAlias() != null ? arg.getAlias() + "_" : "";
 			aggregatables.addTableColumn(eval.getOperand());
 			if (eval.issum())
-				aggregatables.getSchema().addColumn("Sum", "double");
+				aggregatables.getSchema().addColumn(alias+"Sum", "double");
 			else if (eval.iscnt())
-				aggregatables.getSchema().addColumn("Count", "int");
+				aggregatables.getSchema().addColumn(alias+"Count", "int");
 			else
-				aggregatables.getSchema().addColumn("Average", "double");
+				aggregatables.getSchema().addColumn(alias+"Average", "double");
 		} else {
 			aggregatables.addTableColumn(eval.getOperand());
 			List<String> cols = eval.getResult();

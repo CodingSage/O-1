@@ -26,11 +26,18 @@ public class Schema {
 	public int getColIndex(String col) {
 		int index = colName.indexOf(col);
 		if (index == -1)
-			for (int j = 0; j < colName.size(); j++)
-				if (colName.get(j).endsWith(col)) {
+			for (int j = 0; j < colName.size(); j++) {
+				String c = colName.get(j);
+				if (c.contains("_")) {
+					c = c.split("_")[1];
 					index = j;
 					break;
 				}
+				if (c.endsWith(col)) {
+					index = j;
+					break;
+				}
+			}
 		return index;
 	}
 
