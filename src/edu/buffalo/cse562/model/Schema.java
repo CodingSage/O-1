@@ -29,9 +29,11 @@ public class Schema {
 			for (int j = 0; j < colName.size(); j++) {
 				String c = colName.get(j);
 				if (c.contains("_")) {
-					c = c.split("_")[1];
-					index = j;
-					break;
+					c = c.split("_")[0];
+					if (col.equals(c)) {
+						index = j;
+						break;
+					}
 				}
 				if (c.endsWith(col)) {
 					index = j;

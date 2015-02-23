@@ -299,8 +299,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 				for (String col : columns) {
 					columnId1 = result.getSchema().getColIndex(col);
-					if (!col.contains("_Sum") && !col.contains("_Average")
-							&& !col.contains("_Count")) {
+					if (!col.contains("Sum") && !col.contains("Average")
+							&& !col.contains("Count")) {
 						colVal1 = result.getRows().get(i).getTupleValue()
 								.get(columnId1);
 						colVal2 = result.getRows().get(j).getTupleValue()
@@ -329,13 +329,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int l = 0;
 			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
-				if (col.contains("_Count")) {
+				if (col.contains("Count")) 
+				{
 					ansc = 0;
 					for (int k = i; k <= j; k++)
 						ansc += 1;
 
 					lstCols.add(String.valueOf(ansc));
-				} else if (col.contains("_Sum")) {
+				} else if (col.contains("Sum")) {
 					anss = 0;
 
 					for (int k = i; k <= j; k++)
@@ -343,7 +344,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(l));
 
 					lstCols.add(String.valueOf(anss));
-				} else if (col.contains("_Average")) {
+				} else if (col.contains("Average")) {
 					avgcnt = 0;
 					avgs = 0;
 
