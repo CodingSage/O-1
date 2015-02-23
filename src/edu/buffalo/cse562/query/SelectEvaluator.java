@@ -3,6 +3,7 @@ package edu.buffalo.cse562.query;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -457,6 +458,35 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 			for (int i = 0; i < x; i++) {
 				double v1, v2;
+				Date d1 = new Date();
+				Date d2 = new Date();
+				
+				String[] aa = a.get(i).split("-");
+				String[] bb = b.get(i).split("-");
+				
+				if(aa.length == 3 && bb.length == 3)
+				{
+						d1.setYear(Integer.valueOf(aa[0]));
+						d1.setMonth(Integer.valueOf(aa[1]));
+						d1.setDate(Integer.valueOf(aa[2]));
+						
+						d2.setYear(Integer.valueOf(bb[0]));
+						d2.setMonth(Integer.valueOf(bb[1]));
+						d2.setDate(Integer.valueOf(bb[2]));
+						
+						if(base.containsKey(i))
+						{
+								if(d1.compareTo(d2) < 0)
+									return 1;
+								else if(d1.compareTo(d2) > 0)
+									return -1;
+						}
+						
+						if(d1.compareTo(d2) > 0)
+									return 1;
+						if(d1.compareTo(d2) < 0)
+									return -1;
+				}
 				if (!a.get(i).contains("-") && a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
 					v1 = Double.parseDouble(a.get(i));
 					v2 = Double.parseDouble(b.get(i));
