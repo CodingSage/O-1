@@ -3,6 +3,8 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.buffalo.cse562.Constants;
+
 public class Schema {
 
 	private List<String> colName;
@@ -31,8 +33,8 @@ public class Schema {
 		if (index == -1)
 			for (int j = 0; j < colName.size(); j++) {
 				String c = colName.get(j);
-				if (c.contains("_")) {
-					c = c.split("_")[0];
+				if (c.contains(Constants.AGGREGATE_INDICATOR)) {
+					c = c.split(Constants.AGGREGATE_INDICATOR)[0];
 					if (col.equals(c)) {
 						index = j;
 						break;

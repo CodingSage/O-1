@@ -25,6 +25,7 @@ import net.sf.jsqlparser.statement.select.SelectVisitor;
 import net.sf.jsqlparser.statement.select.SubJoin;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.select.Union;
+import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CartesianProduct;
 import edu.buffalo.cse562.model.Schema;
@@ -165,14 +166,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
 		exp.accept(eval);
 		if (exp instanceof Function) {
-			String alias = arg.getAlias() != null ? arg.getAlias() + "_" : "";
+			String alias = arg.getAlias() != null ? arg.getAlias() + Constants.AGGREGATE_INDICATOR : "";
 			aggregatables.addTableColumn(eval.getOperand());
 			if (eval.issum())
-				aggregatables.getSchema().addColumn(alias+"sum", "double");
+				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_SUM, "double");
 			else if (eval.iscnt())
-				aggregatables.getSchema().addColumn(alias+"count", "int");
+				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_COUNT, "int");
 			else
-				aggregatables.getSchema().addColumn(alias+"average", "double");
+				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_AVG, "double");
 		} else {
 			aggregatables.addTableColumn(eval.getOperand());
 			List<String> cols = eval.getResult();
@@ -299,8 +300,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 				for (String col : columns) {
 					columnId1 = result.getSchema().getColIndex(col);
-					if (!col.contains("sum") && !col.contains("average")
-							&& !col.contains("count")) {
+					if (!col.contains(Constants.AGGREGATE_SUM) && !col.contains(Constants.AGGREGATE_AVG)
+							&& !col.contains(Constants.AGGREGATE_COUNT)) {
 						colVal1 = result.getRows().get(i).getTupleValue()
 								.get(columnId1);
 						colVal2 = result.getRows().get(j).getTupleValue()
@@ -329,14 +330,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int l = 0;
 			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
-				if (col.contains("count")) 
+				if (col.contains(Constants.AGGREGATE_COUNT)) 
 				{
 					ansc = 0;
 					for (int k = i; k <= j; k++)
 						ansc += 1;
 
 					lstCols.add(String.valueOf(ansc));
-				} else if (col.contains("sum")) {
+				} else if (col.contains(Constants.AGGREGATE_SUM)) {
 					anss = 0;
 
 					for (int k = i; k <= j; k++)
@@ -344,7 +345,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(l));
 
 					lstCols.add(String.valueOf(anss));
-				} else if (col.contains("average")) {
+				} else if (col.contains(Constants.AGGREGATE_AVG)) {
 					avgcnt = 0;
 					avgs = 0;
 
