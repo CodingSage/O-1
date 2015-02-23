@@ -36,11 +36,11 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	Table result, aggregatables;
 	List<Table> tables;
-	List<String> columnNames;
+	//List<String> columnNames;
 
 	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
-		columnNames = new ArrayList<String>();
+		//columnNames = new ArrayList<String>();
 		aggregatables = new Table();
 	}
 
@@ -168,11 +168,11 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			String alias = arg.getAlias() != null ? arg.getAlias() + "_" : "";
 			aggregatables.addTableColumn(eval.getOperand());
 			if (eval.issum())
-				aggregatables.getSchema().addColumn(alias+"Sum", "double");
+				aggregatables.getSchema().addColumn(alias+"sum", "double");
 			else if (eval.iscnt())
-				aggregatables.getSchema().addColumn(alias+"Count", "int");
+				aggregatables.getSchema().addColumn(alias+"count", "int");
 			else
-				aggregatables.getSchema().addColumn(alias+"Average", "double");
+				aggregatables.getSchema().addColumn(alias+"average", "double");
 		} else {
 			aggregatables.addTableColumn(eval.getOperand());
 			List<String> cols = eval.getResult();
@@ -299,8 +299,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 				for (String col : columns) {
 					columnId1 = result.getSchema().getColIndex(col);
-					if (!col.contains("Sum") && !col.contains("Average")
-							&& !col.contains("Count")) {
+					if (!col.contains("sum") && !col.contains("average")
+							&& !col.contains("count")) {
 						colVal1 = result.getRows().get(i).getTupleValue()
 								.get(columnId1);
 						colVal2 = result.getRows().get(j).getTupleValue()
@@ -329,14 +329,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int l = 0;
 			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
-				if (col.contains("Count")) 
+				if (col.contains("count")) 
 				{
 					ansc = 0;
 					for (int k = i; k <= j; k++)
 						ansc += 1;
 
 					lstCols.add(String.valueOf(ansc));
-				} else if (col.contains("Sum")) {
+				} else if (col.contains("sum")) {
 					anss = 0;
 
 					for (int k = i; k <= j; k++)
@@ -344,7 +344,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 								.getTupleValue().get(l));
 
 					lstCols.add(String.valueOf(anss));
-				} else if (col.contains("Average")) {
+				} else if (col.contains("average")) {
 					avgcnt = 0;
 					avgs = 0;
 
