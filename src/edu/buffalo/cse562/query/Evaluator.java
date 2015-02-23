@@ -62,7 +62,7 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		if (type.toLowerCase().equals("date"))
 			return new DateValue("'"+s+"'");
 	    if (type.equals("string"))
-			return new StringValue(s);
+			return new StringValue("'"+s+"'");
 		return new NullValue();
 	}
 

@@ -35,7 +35,7 @@ public class Schema {
 						break;
 					}
 				}
-				if (c.endsWith(col)) {
+				else if (c.endsWith(col)) {
 					index = j;
 					break;
 				}
