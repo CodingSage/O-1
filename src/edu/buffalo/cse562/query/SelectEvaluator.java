@@ -104,7 +104,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		result = aggregatables;
 		setGroupByonResults(gbSelect, orderbyList);
 		setFinalProjection();
-		//TableCheck();
+		TableCheck();
 
 		// Set the projected columns to the new relation - this relation is the
 		// final output

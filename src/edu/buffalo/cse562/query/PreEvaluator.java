@@ -381,6 +381,8 @@ public class PreEvaluator implements ExpressionVisitor {
 
 	private void expressionEvaluate(Expression arg, Column value) {
 		String tName = value.getTable().getName();
+		if(tName == null && tables.size() == 1)
+			tName = tables.get(0).getName();
 		for (Table t : tables)
 			if (t.getName().equals(tName.toLowerCase())) {
 				eval.setOperand(t);
