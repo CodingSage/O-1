@@ -125,7 +125,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	private void extractAlias(String origName, String alias) {
 		if (alias != null && !alias.equals("")) {
 			if (origName == null) {
-
+				
 			} else {
 				Schema s = result.getSchema();
 				List<String> colNames = s.getColName();
@@ -158,7 +158,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	public void visit(SelectExpressionItem arg) {
 		// TODO evaluate expression
 		List<String> names = new ArrayList<String>();
-		// extractAlias(result.getName(), arg.getAlias());
+		extractAlias(result.getName(), arg.getAlias());
 		for (Table table : tables)
 			names.add(table.getName());
 		Expression exp = arg.getExpression();
@@ -385,20 +385,20 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		int columnId = 0;
 
 		HashMap<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
-		
+
 		for (int i = 0; i < result.getRows().size(); i++) {
 			List<String> colVal = new ArrayList<String>();
-			
+
 			for (String column : colList) {
 				String[] dsplit = column.split(" ");
-				if(dsplit.length > 1)
+				if (dsplit.length > 1)
 					column = dsplit[0];
 				columnId = result.getSchema().getColIndex(column);
-				if(dsplit.length > 1 && dsplit[1].equals("DESC"))
+				if (dsplit.length > 1 && dsplit[1].equals("DESC"))
 					isdesc.put(columnId, 1);
 				colVal.add(result.getRows().get(i).getTupleValue()
 						.get(columnId));
-			
+
 			}
 
 			colVal.add(Integer.toString(i));
@@ -437,43 +437,42 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	class ValueComparator implements Comparator<List<String>> {
 
-		 Map<Integer, Integer> base;
+		Map<Integer, Integer> base;
+
 		public ValueComparator(Map<Integer, Integer> base) {
 			this.base = base;
-		 }
+		}
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
 		public int compare(List<String> a, List<String> b) {
 			int x = a.size(), y = b.size();
 
-			for (int i = 0; i < x; i++)
-			{
+			for (int i = 0; i < x; i++) {
 				double v1, v2;
 				if (a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
 					v1 = Double.parseDouble(a.get(i));
 					v2 = Double.parseDouble(b.get(i));
-			
-					if(base.containsKey(i))
-					{
-							if(v1 < v2)return 1;
-							else if (v1 > v2)return -1;
+
+					if (base.containsKey(i)) {
+						if (v1 < v2)
+							return 1;
+						else if (v1 > v2)
+							return -1;
 					}
-					
+
 					if (v1 > v2)
 						return 1;
 					else if (v1 < v2)
 						return -1;
-				} else 
-				{
-					
-					if(base.containsKey(i))
-					{
-						if(a.get(i).compareTo(b.get(i)) < 0)
-								return 1;
-						else if(a.get(i).compareTo(b.get(i)) > 0)
-								return -1;
-						
+				} else {
+
+					if (base.containsKey(i)) {
+						if (a.get(i).compareTo(b.get(i)) < 0)
+							return 1;
+						else if (a.get(i).compareTo(b.get(i)) > 0)
+							return -1;
+
 					}
 					if (a.get(i).compareTo(b.get(i)) > 0)
 						return 1;
