@@ -393,15 +393,16 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		for (int i = 0; i < result.getRows().size(); i++) {
 			List<String> colVal = new ArrayList<String>();
 
-			for (String column : colList) {
-				String[] dsplit = column.split(" ");
+			for (String column : colList)
+			{ 
+				String tcolumn = new String(column);
+				String[] dsplit = tcolumn.split(" ");
 				if (dsplit.length > 1)
-					column = dsplit[0];
+						column = dsplit[0];
 				columnId = result.getSchema().getColIndex(column);
 				if (dsplit.length > 1 && dsplit[1].equals("DESC"))
 					isdesc.put(columnId, 1);
-				colVal.add(result.getRows().get(i).getTupleValue()
-						.get(columnId));
+				colVal.add(result.getRows().get(i).getTupleValue().get(columnId));
 
 			}
 
