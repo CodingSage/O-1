@@ -89,11 +89,20 @@ public class Table {
 
 	public Table getColumn(String colName) {
 		List<Tuple> t = new ArrayList<Tuple>();
-		int ci = schema.getColIndex(colName);
-		for (int i = 0; i < rows.size(); i++) {
-			Tuple tup = new Tuple();
-			tup.insertColumn(rows.get(i).getValue(ci));
-			t.add(tup);
+		try {
+			int ci = schema.getColIndex(colName);
+			for (int i = 0; i < rows.size(); i++) {
+				Tuple tup = new Tuple();
+				tup.insertColumn(rows.get(i).getValue(ci));
+				t.add(tup);
+			}
+		} catch (Exception ex) {
+			try {
+				throw new Exception("||" + this.name + " " + colName + "\n"
+						+ ex.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		Table tab = new Table();
 		tab.setRows(t);
