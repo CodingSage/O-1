@@ -113,8 +113,9 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 			res = lres.get(0);
 		}
 
-		if(arg0.isAllColumns()) res = operand ;
-		
+		if (arg0.isAllColumns())
+			res = operand;
+
 		double ans = 0;
 		double dsum = 0;
 		int icount = 0;
@@ -214,7 +215,15 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	@Override
 	public void visit(AndExpression arg0) {
-		expressionEvaluate(arg0);
+		try {
+			expressionEvaluate(arg0);
+		} catch (Exception ex) {
+			try {
+				throw new Exception(arg0.toString() + "||"+ ex.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -347,7 +356,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 				} else {
 					flag = true;
 					String v;
-					if(val instanceof DoubleValue)
+					if (val instanceof DoubleValue)
 						v = ((DoubleValue) val).getValue() + "";
 					else
 						v = ((LongValue) val).getValue() + "";
