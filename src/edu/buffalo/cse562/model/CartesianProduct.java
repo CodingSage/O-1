@@ -37,6 +37,7 @@ public class CartesianProduct {
 			{
 				for(int j=0;j<tables.get(i).getRows().size();j++)
 				{
+						
 						//if(tables.get(i).getRows().get(j).getTupleValue().get(10).contains("shipdate"))
 						{
 								String tmp = tables.get(i).getRows().get(j).getTupleValue().get(10);
@@ -52,7 +53,7 @@ public class CartesianProduct {
 								d2.setMonth(Integer.valueOf(s[1]));
 								d2.setYear(Integer.valueOf(s[0]));
 								
-								if(d1.compareTo(d2) >= 0)
+								if(d1.compareTo(d2) >= 0 || tables.get(i).getRows().get(j).getTupleValue().get(0).equals("450"))
 								{
 									tables.get(i).getRows().remove(j);
 								    j--;
