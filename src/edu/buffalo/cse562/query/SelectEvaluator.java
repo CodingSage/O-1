@@ -39,11 +39,12 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 	Table result, aggregatables;
 	List<Table> tables;
-	//List<String> columnNames;
+
+	// List<String> columnNames;
 
 	public SelectEvaluator() {
 		tables = new ArrayList<Table>();
-		//columnNames = new ArrayList<String>();
+		// columnNames = new ArrayList<String>();
 		aggregatables = new Table();
 	}
 
@@ -65,6 +66,15 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				tables.add(ev.getResult());
 			}
 		}
+
+		PreEvaluator preEval = new PreEvaluator(tables);
+		Expression w = select.getWhere();
+		if (w != null) {
+			w.accept(preEval);
+		}
+		if (preEval.getResult() != null)
+			tables = preEval.getResult();
+
 		CartesianProduct prod = new CartesianProduct(tables);
 		result = new Table();
 		result.setRows(prod.getOutput());
@@ -94,8 +104,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		result = aggregatables;
 		setGroupByonResults(gbSelect, orderbyList);
 		setFinalProjection();
-		TableCheck();
-			
+		//TableCheck();
+
 		// Set the projected columns to the new relation - this relation is the
 		// final output
 	}
@@ -130,7 +140,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	private void extractAlias(String origName, String alias) {
 		if (alias != null && !alias.equals("")) {
 			if (origName == null) {
-				
+
 			} else {
 				Schema s = result.getSchema();
 				List<String> colNames = s.getColName();
@@ -144,9 +154,9 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	}
 
 	private void TableCheck() {
-		if(tables.size() != 3)
+		if (tables.size() != 3)
 			return;
-		String[] ss = {"450", "147876.02", "1995-03-05", "0"};
+		String[] ss = { "450", "147876.02", "1995-03-05", "0" };
 		List<String> s = Arrays.asList(ss);
 		Tuple t = new Tuple(s);
 		List<Tuple> tuples = new ArrayList<Tuple>();
@@ -182,14 +192,18 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		ExpressionEvaluator eval = new ExpressionEvaluator(result, names);
 		exp.accept(eval);
 		if (exp instanceof Function) {
-			String alias = arg.getAlias() != null ? arg.getAlias() + Constants.AGGREGATE_INDICATOR : "";
+			String alias = arg.getAlias() != null ? arg.getAlias()
+					+ Constants.AGGREGATE_INDICATOR : "";
 			aggregatables.addTableColumn(eval.getOperand());
 			if (eval.issum())
-				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_SUM, "double");
+				aggregatables.getSchema().addColumn(
+						alias + Constants.AGGREGATE_SUM, "double");
 			else if (eval.iscnt())
-				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_COUNT, "int");
+				aggregatables.getSchema().addColumn(
+						alias + Constants.AGGREGATE_COUNT, "int");
 			else
-				aggregatables.getSchema().addColumn(alias+Constants.AGGREGATE_AVG, "double");
+				aggregatables.getSchema().addColumn(
+						alias + Constants.AGGREGATE_AVG, "double");
 		} else {
 			aggregatables.addTableColumn(eval.getOperand());
 			List<String> cols = eval.getResult();
@@ -316,7 +330,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 				for (String col : columns) {
 					columnId1 = result.getSchema().getColIndex(col);
-					if (!col.contains(Constants.AGGREGATE_SUM) && !col.contains(Constants.AGGREGATE_AVG)
+					if (!col.contains(Constants.AGGREGATE_SUM)
+							&& !col.contains(Constants.AGGREGATE_AVG)
 							&& !col.contains(Constants.AGGREGATE_COUNT)) {
 						colVal1 = result.getRows().get(i).getTupleValue()
 								.get(columnId1);
@@ -346,8 +361,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			int l = 0;
 			for (String col : columns) {
 				columnId1 = result.getSchema().getColIndex(col);
-				if (col.contains(Constants.AGGREGATE_COUNT)) 
-				{
+				if (col.contains(Constants.AGGREGATE_COUNT)) {
 					ansc = 0;
 					for (int k = i; k <= j; k++)
 						ansc += 1;
@@ -397,7 +411,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 		for (Object col : orderbyparameters)
 			colList.add((col.toString()));
-		
+
 		HashMap<List<String>, Tuple> h = new HashMap<List<String>, Tuple>();
 		int siz = result.getRows().size();
 		List<Tuple> rsResultRowsGb = new ArrayList<Tuple>();
@@ -410,16 +424,16 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			List<String> colVal = new ArrayList<String>();
 
 			int j = 0;
-			for (String column : colList)
-			{ 
+			for (String column : colList) {
 				String tcolumn = new String(column);
 				String[] dsplit = tcolumn.split(" ");
 				if (dsplit.length > 1)
-						column = dsplit[0];
+					column = dsplit[0];
 				columnId = result.getSchema().getColIndex(column);
 				if (dsplit.length > 1 && dsplit[1].equals("DESC"))
 					isdesc.put(j, 1);
-				colVal.add(result.getRows().get(i).getTupleValue().get(columnId));
+				colVal.add(result.getRows().get(i).getTupleValue()
+						.get(columnId));
 
 				j++;
 			}
@@ -475,34 +489,33 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				double v1, v2;
 				Date d1 = new Date();
 				Date d2 = new Date();
-				
+
 				String[] aa = a.get(i).split("-");
 				String[] bb = b.get(i).split("-");
-				
-				if(aa.length == 3 && bb.length == 3)
-				{
-						d1.setYear(Integer.valueOf(aa[0]));
-						d1.setMonth(Integer.valueOf(aa[1]));
-						d1.setDate(Integer.valueOf(aa[2]));
-						
-						d2.setYear(Integer.valueOf(bb[0]));
-						d2.setMonth(Integer.valueOf(bb[1]));
-						d2.setDate(Integer.valueOf(bb[2]));
-						
-						if(base.containsKey(i))
-						{
-								if(d1.compareTo(d2) < 0)
-									return 1;
-								else if(d1.compareTo(d2) > 0)
-									return -1;
-						}
-						
-						if(d1.compareTo(d2) > 0)
-									return 1;
-						if(d1.compareTo(d2) < 0)
-									return -1;
+
+				if (aa.length == 3 && bb.length == 3) {
+					d1.setYear(Integer.valueOf(aa[0]));
+					d1.setMonth(Integer.valueOf(aa[1]));
+					d1.setDate(Integer.valueOf(aa[2]));
+
+					d2.setYear(Integer.valueOf(bb[0]));
+					d2.setMonth(Integer.valueOf(bb[1]));
+					d2.setDate(Integer.valueOf(bb[2]));
+
+					if (base.containsKey(i)) {
+						if (d1.compareTo(d2) < 0)
+							return 1;
+						else if (d1.compareTo(d2) > 0)
+							return -1;
+					}
+
+					if (d1.compareTo(d2) > 0)
+						return 1;
+					if (d1.compareTo(d2) < 0)
+						return -1;
 				}
-				if (!a.get(i).contains("-") && a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
+				if (!a.get(i).contains("-") && a.get(i).charAt(0) >= '0'
+						&& a.get(i).charAt(0) <= '9') {
 					v1 = Double.parseDouble(a.get(i));
 					v2 = Double.parseDouble(b.get(i));
 
@@ -517,8 +530,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 						return 1;
 					else if (v1 < v2)
 						return -1;
-				} 
-				else {
+				} else {
 
 					if (base.containsKey(i)) {
 						if (a.get(i).compareTo(b.get(i)) < 0)
