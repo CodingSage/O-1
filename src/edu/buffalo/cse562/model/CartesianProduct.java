@@ -17,6 +17,7 @@ public class CartesianProduct {
 		mytable = tables;
 		siz = tables.size();
 		resSchema = new Schema();
+		
 		for (int i = 0; i < tables.size(); i++) 
 		{
 			if(tables.size() == 3 && tables.get(i).getName().contains("customer"))
@@ -55,7 +56,6 @@ public class CartesianProduct {
 								{
 									tables.get(i).getRows().remove(j);
 								    j--;
-									
 								}
 						}
 				}

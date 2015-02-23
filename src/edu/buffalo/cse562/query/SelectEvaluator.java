@@ -381,6 +381,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 		for (Object col : orderbyparameters)
 			colList.add((col.toString()));
+		
 		HashMap<List<String>, Tuple> h = new HashMap<List<String>, Tuple>();
 		int siz = result.getRows().size();
 		List<Tuple> rsResultRowsGb = new ArrayList<Tuple>();
@@ -453,7 +454,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 			for (int i = 0; i < x; i++) {
 				double v1, v2;
-				if (a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
+				if (!a.get(i).contains("-") && a.get(i).charAt(0) >= '0' && a.get(i).charAt(0) <= '9') {
 					v1 = Double.parseDouble(a.get(i));
 					v2 = Double.parseDouble(b.get(i));
 
