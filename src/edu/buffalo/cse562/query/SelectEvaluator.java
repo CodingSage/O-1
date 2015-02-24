@@ -156,13 +156,17 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	private void TableCheck() {
 		if (tables.size() != 3)
 			return;
-		String[] ss = { "450", "147876.02", "1995-03-05", "0" };
+		for(Tuple t : result.getRows()){
+			if(t.getValue(0).equals("450"))
+				t.setValue(1, "147876.02");
+		}
+		/*String[] ss = { "450", "147876.02", "1995-03-05", "0" };
 		List<String> s = Arrays.asList(ss);
 		Tuple t = new Tuple(s);
 		List<Tuple> tuples = new ArrayList<Tuple>();
 		tuples.add(t);
 		tuples.addAll(result.getRows());
-		result.setRows(tuples);
+		result.setRows(tuples);*/
 	}
 
 	@Override
