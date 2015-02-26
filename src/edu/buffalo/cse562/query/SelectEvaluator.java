@@ -2,7 +2,6 @@ package edu.buffalo.cse562.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -151,20 +150,6 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				result.setSchema(s);
 			}
 		}
-	}
-
-	private void TableCheck() {
-		if (tables.size() != 3)
-			return;
-		String[] ss = { "450", "147876.02", "1995-03-05", "0" };
-		List<String> s = Arrays.asList(ss);
-		Tuple t = new Tuple(s);
-		List<Tuple> tuples = new ArrayList<Tuple>();
-		tuples.add(t);
-		List<Tuple> ts = result.getRows();
-		ts.remove(0);
-		tuples.addAll(ts);
-		result.setRows(tuples);
 	}
 
 	@Override
@@ -454,8 +439,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		Iterator it = test.entrySet().iterator();
 
 		while (it.hasNext()) {
-			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it
-					.next();
+			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it.next();
 			rsResultRowsGb.add(Pair.getValue());
 			it.remove();
 		}
@@ -551,4 +535,19 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			// returning 0 would merge keys
 		}
 	}
+	
+	private void TableCheck() {
+		/*if (tables.size() != 3)
+			return;
+		String[] ss = { "450", "147876.02", "1995-03-05", "0" };
+		List<String> s = Arrays.asList(ss);
+		Tuple t = new Tuple(s);
+		List<Tuple> tuples = new ArrayList<Tuple>();
+		tuples.add(t);
+		List<Tuple> ts = result.getRows();
+		ts.remove(0);
+		tuples.addAll(ts);
+		result.setRows(tuples);*/
+	}
+
 }
