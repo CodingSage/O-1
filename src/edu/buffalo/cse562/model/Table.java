@@ -101,13 +101,13 @@ public class Table {
 		} catch (Exception ex) {
 			try {
 				String st = "";
-				for (String  s : this.schema.getColName()) {
+				for (String s : this.schema.getColName()) {
 					st += s + ",";
 				}
-				throw new Exception("||" +st+" "+ this.name + " " + colName + "\n"
-						+ ex.getMessage());
+				throw new Exception("||" + st + " " + this.name + " " + colName
+						+ "\n" + ex.getMessage());
 			} catch (Exception e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		}
 		Table tab = new Table();
@@ -120,6 +120,14 @@ public class Table {
 			if (rows.get(0).getValues().size() != 0)
 				return rows.get(0).getValues().size();
 		return 0;
+	}
+
+	public void removeRow(int index) {
+		rows.remove(index);
+	}
+
+	public void addRowAt(Tuple t, int index) {
+		rows.add(index, t);
 	}
 
 	@Override
