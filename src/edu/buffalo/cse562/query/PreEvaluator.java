@@ -203,7 +203,7 @@ public class PreEvaluator implements ExpressionVisitor {
 			try {
 				throw new Exception(arg0.toString() + "||" + ex.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}

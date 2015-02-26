@@ -107,7 +107,7 @@ public class Table {
 				throw new Exception("||" +st+" "+ this.name + " " + colName + "\n"
 						+ ex.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		Table tab = new Table();

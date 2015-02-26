@@ -543,7 +543,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		List<String> s = Arrays.asList(ss);
 		Tuple t = new Tuple(s);
 		List<Tuple> tuples = new ArrayList<Tuple>();
-		tuples.add(t);
+		//tuples.add(t);
 		List<Tuple> ts = result.getRows();
 		ts.remove(0);
 		tuples.addAll(ts);
