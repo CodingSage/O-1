@@ -103,7 +103,6 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		result = aggregatables;
 		setGroupByonResults(gbSelect, orderbyList);
 		setFinalProjection();
-		TableCheck();
 
 		// Set the projected columns to the new relation - this relation is the
 		// final output
@@ -439,7 +438,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		Iterator it = test.entrySet().iterator();
 
 		while (it.hasNext()) {
-			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it.next();
+			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it
+					.next();
 			rsResultRowsGb.add(Pair.getValue());
 			it.remove();
 		}
@@ -534,27 +534,6 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 			return -1;
 			// returning 0 would merge keys
 		}
-	}
-	
-	private void TableCheck() {
-		if (tables.size() != 3)
-			return;
-		/*String[] ss = { "450", "147876.02", "1995-03-05", "0" };
-		List<String> s = Arrays.asList(ss);
-		Tuple t = new Tuple(s);
-		List<Tuple> tuples = new ArrayList<Tuple>();
-		tuples.add(t);*/
-		int i = 0;
-		List<Tuple> ts = result.getRows();
-		for(Tuple tp : ts){
-			if(tp.getValue(0).equals("450") && tp.getValue(2).equals("1995-03-05"))
-				break;
-			i++;
-		}
-		//ts.remove(i);
-		ts.get(i).setValue(1, "147876.02");
-		//tuples.addAll(ts);
-		result.setRows(ts);
 	}
 
 }
