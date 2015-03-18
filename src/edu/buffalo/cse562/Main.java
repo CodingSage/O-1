@@ -37,7 +37,9 @@ public class Main {
 						new Query(statement).evaluate();
 				}
 				reader.close();
-			} catch (Exception e) {
+			} catch (Exception e) 
+			{
+				System.out.println(file.toString());
 				e.printStackTrace();
 			}
 		}
