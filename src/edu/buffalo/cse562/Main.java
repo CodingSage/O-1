@@ -34,7 +34,12 @@ public class Main {
 				Statement statement = null;
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				while ((statement = parser.Statement()) != null) {
-						new Query(statement).evaluate();
+						//new Query(statement).evaluate();
+					try{
+						throw new Exception(statement.toString());
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 				}
 				reader.close();
 			} catch (Exception e) 
