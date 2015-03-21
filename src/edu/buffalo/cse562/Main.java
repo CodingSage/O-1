@@ -7,6 +7,10 @@ import java.util.List;
 
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.select.Select;
+import edu.buffalo.cse562.checkpoint1.PlanNode;
+import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.query.Query;
 
@@ -21,7 +25,10 @@ public class Main {
 			if (args[i].contains("--data")) {
 				i++;
 				DataManager.getInstance().setDataPath(args[i]);
-			} else
+			} else if (args[i].contains("--swap")){
+				i++;
+				DataManager.getInstance().setStoragePath(args[i]);
+			}else
 				sqlFiles.add(new File(args[i]));
 		}
 		evaluate(sqlFiles);
@@ -32,15 +39,17 @@ public class Main {
 			try {
 				FileReader reader = new FileReader(file);
 				Statement statement = null;
+				SqlToRA translator = new SqlToRA();
 				CCJSqlParser parser = new CCJSqlParser(reader);
+				PlanNode plan = null;
 				while ((statement = parser.Statement()) != null) {
-						//new Query(statement).evaluate();
-					try{
-						throw new Exception(statement.toString());
-					}catch(Exception e){
-						e.printStackTrace();
-					}
+					if(statement instanceof CreateTable)
+						translator.loadTableSchema((CreateTable) statement);
+					else
+						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 				}
+				Query query = new Query(plan);
+				query.evaluate();
 				reader.close();
 			} catch (Exception e) 
 			{

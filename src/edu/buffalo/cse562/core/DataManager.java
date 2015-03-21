@@ -9,9 +9,9 @@ import edu.buffalo.cse562.model.Table;
 public class DataManager {
 
 	private static DataManager instance;
-	// private Map<String, Schema> schemas = new HashMap<String, Schema>();
 	private Map<String, Table> tables = new HashMap<String, Table>();
 	private String dataPath;
+	private String storagePath;
 
 	public String getDataPath() {
 		return dataPath;
@@ -37,6 +37,14 @@ public class DataManager {
 
 	public Table getTable(String tableName) {
 		return tables.get(tableName.toLowerCase());
+	}
+
+	public void setStoragePath(String path) {
+		storagePath = path;
+	}
+
+	public String getStoragePath() {
+		return storagePath;
 	}
 
 }
