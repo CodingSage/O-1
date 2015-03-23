@@ -70,7 +70,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 
 	public ExpressionEvaluator(Table result, List<String> names) {
 		operand = result;
-		eval = new Evaluator(operand, names);
+		eval = new Evaluator(operand);//, names);
 		sum = false;
 		avg = false;
 		cnt = false;

@@ -72,7 +72,7 @@ public class PreEvaluator implements ExpressionVisitor {
 		List<String> names = new ArrayList<String>();
 		for (Table table : tables)
 			names.add(table.getName());
-		eval = new Evaluator(operand, names);
+		eval = new Evaluator(operand);//, names);
 		sum = false;
 		avg = false;
 		cnt = false;

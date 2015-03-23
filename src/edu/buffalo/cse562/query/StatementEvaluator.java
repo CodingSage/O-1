@@ -25,9 +25,9 @@ public class StatementEvaluator implements StatementVisitor {
 
 	@Override
 	public void visit(Select select) {
-		SelectEvaluator eval = new SelectEvaluator();
+		/*SelectEvaluator eval = new SelectEvaluator();
 		select.getSelectBody().accept(eval);
-		result = eval.getResult();
+		result = eval.getResult();*/
 	}
 
 	@Override

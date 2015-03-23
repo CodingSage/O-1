@@ -3,8 +3,6 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.buffalo.cse562.Constants;
-
 public class Schema {
 
 	private List<String> colName;

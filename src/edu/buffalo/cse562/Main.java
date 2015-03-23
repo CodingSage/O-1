@@ -13,6 +13,7 @@ import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.query.Query;
+import edu.buffalo.cse562.query.StatementEvaluator;
 
 public class Main {
 
@@ -43,8 +44,10 @@ public class Main {
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
 				while ((statement = parser.Statement()) != null) {
-					if(statement instanceof CreateTable)
+					if(statement instanceof CreateTable) {
 						translator.loadTableSchema((CreateTable) statement);
+						statement.accept(new StatementEvaluator());
+					}
 					else
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 				}

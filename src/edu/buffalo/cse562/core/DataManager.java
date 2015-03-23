@@ -1,5 +1,6 @@
 package edu.buffalo.cse562.core;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,19 @@ public class DataManager {
 	private Map<String, Table> tables = new HashMap<String, Table>();
 	private String dataPath;
 	private String storagePath;
+	private static int ansNum = -1;
+
+	public static DataManager getInstance() {
+		if (instance == null)
+			instance = new DataManager();
+		return instance;
+	}
+
+	public String assignFileName() {
+		if(storagePath == null || storagePath.isEmpty())
+			return "";
+		return storagePath + File.separatorChar + (++ansNum) + ".dat";
+	}
 
 	public String getDataPath() {
 		return dataPath;
@@ -19,12 +33,6 @@ public class DataManager {
 
 	public void setDataPath(String dataPath) {
 		this.dataPath = dataPath;
-	}
-
-	public static DataManager getInstance() {
-		if (instance == null)
-			instance = new DataManager();
-		return instance;
 	}
 
 	public void addNewTable(Table table) {

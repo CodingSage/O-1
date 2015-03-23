@@ -24,12 +24,12 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 	private Table operand;
 	private int curIndex;
 
-	public Evaluator(Table table, List<String> tableNames) {
+	public Evaluator(Table table) {
 		operand = table;
-		this.tableNames = tableNames;
+		// this.tableNames = tableNames;
 		curIndex = -1;
 	}
-	
+
 	@Override
 	public LeafValue eval(Column arg) throws SQLException {
 		String col = arg.getColumnName();
@@ -38,18 +38,8 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 			col = tableName + Constants.COLNAME_DELIMITER + col;
 		int i = -1;
 		String type = "";
-		// TODO check multiple same tables
-		int offset = 0;
-		for (String table : tableNames) {
-			Schema schema = DataManager.getInstance().getSchema(table);
-			i = schema.getColIndex(col);
-			if (i != -1) {
-				type = schema.getType(col);
-				i += offset;
-				break;
-			}
-			offset += schema.getNumberColumns();
-		}
+		Schema schema = operand.getSchema();
+		i = schema.getColIndex(col);
 		Tuple current = operand.getRows().get(curIndex);
 		String s = current.getValue(i);
 		// TODO check other types
@@ -60,13 +50,13 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		if (type.toLowerCase().equals("decimal"))
 			return new DoubleValue(s);
 		if (type.toLowerCase().equals("date"))
-			return new DateValue("'"+s+"'");
-	    if (type.equals("string"))
-			return new StringValue("'"+s+"'");
-	    if (type.toLowerCase().startsWith("char"))
-			return new StringValue("'"+s+"'");
-	    if (type.toLowerCase().startsWith("varchar"))
-			return new StringValue("'"+s+"'");
+			return new DateValue("'" + s + "'");
+		if (type.equals("string"))
+			return new StringValue("'" + s + "'");
+		if (type.toLowerCase().startsWith("char"))
+			return new StringValue("'" + s + "'");
+		if (type.toLowerCase().startsWith("varchar"))
+			return new StringValue("'" + s + "'");
 		return new NullValue();
 	}
 

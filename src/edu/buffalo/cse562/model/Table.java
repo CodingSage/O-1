@@ -34,8 +34,13 @@ public class Table {
 	}
 
 	public Table(String tableName) {
+		name = tableName;
+	}
+
+	public void loadData() {
+		// TODO check loading conditions on memory constraints
 		rows = new ArrayList<Tuple>();
-		this.setName(tableName);
+		String tableName = name;
 		File file = new File(DataManager.getInstance().getDataPath()
 				+ File.separator + tableName + ".dat");
 		try {
@@ -59,6 +64,10 @@ public class Table {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isEmpty() {
+		return rows.isEmpty();
 	}
 
 	public String getValue(int rowIndex, int colIndex) {
