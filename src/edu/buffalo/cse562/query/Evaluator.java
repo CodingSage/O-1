@@ -13,7 +13,6 @@ import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.Eval;
-import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;

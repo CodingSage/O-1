@@ -27,10 +27,8 @@ public class SelectOperator implements Operator {
 			try {
 				eval.next();
 				LeafValue val = eval.eval(condition);
-				if (val instanceof BooleanValue) {
-					if (!((BooleanValue) val).getValue())
-						eval.remove();
-				}
+				if (!((BooleanValue) val).getValue())
+					eval.remove();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

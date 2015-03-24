@@ -1,3 +1,4 @@
+
 package edu.buffalo.cse562;
 
 import java.io.File;
@@ -18,18 +19,24 @@ import edu.buffalo.cse562.query.StatementEvaluator;
 public class Main {
 
 	public static void main(String[] args) {
-		/*System.out.print("We, the members of our team, agree that we will not submit any code "
-						+ "that we have not written ourselves, share our code with anyone outside of "
-						+ "our group, or use code that we have not written ourselves as a reference.");*/
+		/*
+		 * System.out.print(
+		 * "We, the members of our team, agree that we will not submit any code "
+		 * +
+		 * "that we have not written ourselves, share our code with anyone outside of "
+		 * +
+		 * "our group, or use code that we have not written ourselves as a reference."
+		 * );
+		 */
 		List<File> sqlFiles = new ArrayList<File>();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].contains("--data")) {
 				i++;
 				DataManager.getInstance().setDataPath(args[i]);
-			} else if (args[i].contains("--swap")){
+			} else if (args[i].contains("--swap")) {
 				i++;
 				DataManager.getInstance().setStoragePath(args[i]);
-			}else
+			} else
 				sqlFiles.add(new File(args[i]));
 		}
 		evaluate(sqlFiles);
@@ -44,18 +51,19 @@ public class Main {
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
 				while ((statement = parser.Statement()) != null) {
-					if(statement instanceof CreateTable) {
+					if (statement instanceof CreateTable) {
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
-					}
-					else
+					} else {
+						System.out.println(plan);
+						System.out.println("------------------------------");
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
+					}
 				}
 				Query query = new Query(plan);
 				query.evaluate();
 				reader.close();
-			} catch (Exception e) 
-			{
+			} catch (Exception e) {
 				System.out.println(file.toString());
 				e.printStackTrace();
 			}

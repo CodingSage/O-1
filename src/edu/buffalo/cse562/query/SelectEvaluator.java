@@ -1,7 +1,6 @@
 package edu.buffalo.cse562.query;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;

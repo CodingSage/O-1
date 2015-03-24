@@ -1,6 +1,9 @@
 package edu.buffalo.cse562.model;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
 public class SIGNWAVE {
 
 	public static void main(String[] args) {
