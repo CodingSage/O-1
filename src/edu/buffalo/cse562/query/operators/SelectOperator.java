@@ -21,13 +21,17 @@ public class SelectOperator extends Operator {
 	protected Table evaluate() {
 		Evaluator eval = new Evaluator(table);
 		eval.reset();
-		while (eval.hasNext()) {
-			try {
+		while (eval.hasNext()) 
+		{
+			try 
+			{
 				eval.next();
 				LeafValue val = eval.eval(condition);
 				if (!((BooleanValue) val).getValue())
 					eval.remove();
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) 
+			{
 				e.printStackTrace();
 			}
 		}
