@@ -58,7 +58,6 @@ public class Main {
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						System.out.println(plan);
 						System.out.println("------------------------------");
-						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 					}
 				}
 				Query query = new Query(plan);
