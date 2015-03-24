@@ -48,7 +48,7 @@ public class Query {
 			String tableName = ((PlanNode.Leaf) tree).toString();
 			int i = tableName.indexOf("[");
 			int j = tableName.indexOf("(");
-			tableName = tableName.substring(i+1, j);
+			tableName = tableName.substring(i + 1, j);
 			res = DataManager.getInstance().getTable(tableName);
 			res.loadData();
 		}
@@ -58,9 +58,9 @@ public class Query {
 	private Table evaluate(PlanNode.Unary node, Table a) {
 		Operator op = null;
 		if (node instanceof LimitNode)
-			;
+			op = new LimitOperator(((LimitNode) node).getCount(), a);
 		else if (node instanceof ProjectionNode) {
-			List<Target> cols = ((ProjectionNode)node).getColumns();
+			List<Target> cols = ((ProjectionNode) node).getColumns();
 			op = new ProjectionOperator(a, cols);
 		} else if (node instanceof SelectionNode)
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
