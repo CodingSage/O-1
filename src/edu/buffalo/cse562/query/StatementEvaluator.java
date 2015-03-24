@@ -63,7 +63,6 @@ public class StatementEvaluator implements StatementVisitor {
 	@Override
 	public void visit(Truncate arg0) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -1,15 +1,20 @@
 package edu.buffalo.cse562.query;
 
+import java.util.List;
+
+import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.LimitNode;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.ProductNode;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode;
+import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.checkpoint1.SelectionNode;
 import edu.buffalo.cse562.checkpoint1.SortNode;
 import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.query.operators.ProjectionOperator;
 import edu.buffalo.cse562.query.operators.SelectOperator;
 
 public class Query {
@@ -39,8 +44,11 @@ public class Query {
 			Table b = evaluateTree(btree.getRHS());
 			res = evaluate(btree, a, b);
 		} else {
-			res = DataManager.getInstance().getTable(
-					((PlanNode.Leaf) tree).toString());
+			String tableName = ((PlanNode.Leaf) tree).toString();
+			int i = tableName.indexOf("[");
+			tableName = tableName.substring(i+1, i+2);
+			res = DataManager.getInstance().getTable(tableName);
+			res.loadData();
 		}
 		return res;
 	}
@@ -49,9 +57,10 @@ public class Query {
 		Operator op = null;
 		if (node instanceof LimitNode)
 			;
-		else if (node instanceof ProjectionNode)
-			;
-		else if (node instanceof SelectionNode)
+		else if (node instanceof ProjectionNode) {
+			List<Target> cols = ((ProjectionNode)node).getColumns();
+			op = new ProjectionOperator(a, cols);
+		} else if (node instanceof SelectionNode)
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
 		else if (node instanceof SortNode)
 			;

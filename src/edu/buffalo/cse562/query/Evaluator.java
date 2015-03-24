@@ -36,9 +36,9 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		if (tableName != null)
 			col = tableName + Constants.COLNAME_DELIMITER + col;
 		int i = -1;
-		String type = "";
 		Schema schema = operand.getSchema();
 		i = schema.getColIndex(col);
+		String type = schema.getType(col);
 		Tuple current = operand.getRows().get(curIndex);
 		String s = current.getValue(i);
 		// TODO check other types
