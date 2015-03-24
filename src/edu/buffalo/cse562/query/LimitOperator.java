@@ -19,7 +19,7 @@ public class LimitOperator extends Operator {
 	protected Table evaluate() {
 		Table res = new Table();
 		List<Tuple> rows = table.getRows();
-		for (int i = 0; i < tableCount; i++)
+		for (int i = 0; i < tableCount && i < rows.size(); i++)
 			res.addRow(rows.get(i));
 		res.setSchema(table.getSchema());
 		return res;
