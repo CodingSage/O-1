@@ -16,6 +16,7 @@ import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
 import edu.buffalo.cse562.query.operators.SelectOperator;
+import edu.buffalo.cse562.query.operators.UnionOperator;
 
 public class Query {
 
@@ -46,7 +47,8 @@ public class Query {
 		} else {
 			String tableName = ((PlanNode.Leaf) tree).toString();
 			int i = tableName.indexOf("[");
-			tableName = tableName.substring(i+1, i+2);
+			int j = tableName.indexOf("(");
+			tableName = tableName.substring(i+1, j);
 			res = DataManager.getInstance().getTable(tableName);
 			res.loadData();
 		}
@@ -74,7 +76,7 @@ public class Query {
 		if (node instanceof ProductNode)
 			;
 		else if (node instanceof UnionNode)
-			;
+			op = new UnionOperator(a, b);
 		else
 			;// Joins
 		return op.execute();
