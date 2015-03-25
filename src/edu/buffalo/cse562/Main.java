@@ -1,4 +1,3 @@
-
 package edu.buffalo.cse562;
 
 import java.io.File;
@@ -9,7 +8,9 @@ import java.util.List;
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
@@ -50,6 +51,7 @@ public class Main {
 				SqlToRA translator = new SqlToRA();
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
+				// TODO union not implemented in plan
 				while ((statement = parser.Statement()) != null) {
 					if (statement instanceof CreateTable) {
 						translator.loadTableSchema((CreateTable) statement);
