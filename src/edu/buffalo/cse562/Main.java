@@ -51,7 +51,7 @@ public class Main {
 				SqlToRA translator = new SqlToRA();
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
-				// TODO union not implemented in plan
+				// TODO union implementation
 				while ((statement = parser.Statement()) != null) {
 					if (statement instanceof CreateTable) {
 						translator.loadTableSchema((CreateTable) statement);

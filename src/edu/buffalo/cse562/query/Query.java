@@ -3,6 +3,7 @@ package edu.buffalo.cse562.query;
 import java.util.List;
 
 import net.sf.jsqlparser.schema.Column;
+import edu.buffalo.cse562.checkpoint1.AggregateNode;
 import edu.buffalo.cse562.checkpoint1.LimitNode;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.ProductNode;
@@ -10,6 +11,7 @@ import edu.buffalo.cse562.checkpoint1.ProjectionNode;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.checkpoint1.SelectionNode;
 import edu.buffalo.cse562.checkpoint1.SortNode;
+import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Operator;
@@ -65,10 +67,13 @@ public class Query {
 			op = new ProjectionOperator(a, cols);
 		} else if (node instanceof SelectionNode)
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
-		else if (node instanceof SortNode)
-			;
-		else
-			;// Aggregate
+		else if (node instanceof SortNode) {
+			SortNode sort = (SortNode) node;
+			List<Ordering> order = sort.getSorts();
+		} else {
+			AggregateNode agg = (AggregateNode) node;
+			List<Target> groups = agg.getGroupByVars();
+		}
 		return op.execute();
 	}
 
