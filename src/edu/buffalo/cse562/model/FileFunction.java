@@ -13,7 +13,7 @@ public class FileFunction {
 	public static String fname = null;
 	public static HashMap<String,BufferedWriter> hfileWriters = new HashMap<String,BufferedWriter>();
 	
-	FileFunction() {
+	public FileFunction() {
 		
 	}
 

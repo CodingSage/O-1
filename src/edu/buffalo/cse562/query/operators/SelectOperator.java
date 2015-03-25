@@ -16,7 +16,7 @@ public class SelectOperator extends Operator {
 	public SelectOperator(Table t, Expression exp) {
 		table = t;
 		condition = exp;
-	}
+	}	
 
 	protected Table evaluate() {
 		Evaluator eval = new Evaluator(table);
@@ -25,7 +25,7 @@ public class SelectOperator extends Operator {
 		{
 			try 
 			{
-				eval.next();
+				eval.next();	
 				LeafValue val = eval.eval(condition);
 				if (!((BooleanValue) val).getValue())
 					eval.remove();
