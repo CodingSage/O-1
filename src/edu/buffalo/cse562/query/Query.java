@@ -2,7 +2,6 @@ package edu.buffalo.cse562.query;
 
 import java.util.List;
 
-import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.AggregateNode;
 import edu.buffalo.cse562.checkpoint1.LimitNode;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
@@ -16,7 +15,6 @@ import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
-import edu.buffalo.cse562.query.operators.AggregateOperator;
 import edu.buffalo.cse562.query.operators.GroupByOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
@@ -76,8 +74,7 @@ public class Query {
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
 			List<AggregateNode.AggColumn> aggColumns = agg.getAggregates();
-			op = new GroupByOperator(a,groups,aggColumns);
-			
+			op = new GroupByOperator(a, groups, aggColumns);
 		}
 		return op.execute();
 	}
