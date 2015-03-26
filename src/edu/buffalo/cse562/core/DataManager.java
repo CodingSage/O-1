@@ -22,7 +22,7 @@ public class DataManager {
 	}
 
 	public String assignFileName() {
-		if(storagePath == null || storagePath.isEmpty())
+		if (storagePath == null || storagePath.isEmpty())
 			return "";
 		return storagePath + File.separatorChar + (++ansNum) + ".dat";
 	}
@@ -52,7 +52,7 @@ public class DataManager {
 	}
 
 	public String getStoragePath() {
-		return storagePath;
+		return storagePath == null ? "" : storagePath;
 	}
 
 }
