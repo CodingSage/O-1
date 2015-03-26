@@ -17,6 +17,7 @@ import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.operators.GroupByOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
+import edu.buffalo.cse562.query.operators.OrderByOperator;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
 import edu.buffalo.cse562.query.operators.SelectOperator;
 import edu.buffalo.cse562.query.operators.UnionOperator;
@@ -70,6 +71,8 @@ public class Query {
 		else if (node instanceof SortNode) {
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
+			op = new OrderByOperator(a,order);
+			System.out.println("Sort the data");
 		} else {
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();

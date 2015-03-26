@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
@@ -14,6 +16,7 @@ public class Table {
 	private Schema schema;
 	private List<Tuple> rows;
 	private String name;
+	public Map<String, Integer> FilesList = new HashMap<String, Integer>();
 
 	public Table() {
 		schema = new Schema();
