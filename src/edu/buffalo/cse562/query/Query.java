@@ -16,6 +16,8 @@ import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.query.operators.AggregateOperator;
+import edu.buffalo.cse562.query.operators.GroupByOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
 import edu.buffalo.cse562.query.operators.SelectOperator;
@@ -73,6 +75,9 @@ public class Query {
 		} else {
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
+			List<AggregateNode.AggColumn> aggColumns = agg.getAggregates();
+			op = new GroupByOperator(a,groups,aggColumns);
+			
 		}
 		return op.execute();
 	}
