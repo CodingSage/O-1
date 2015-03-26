@@ -10,7 +10,7 @@ public class CalculateJoin {
 	private Table TableLeft, TableRight;
 	private int indleft, indright;
 	private String ColumnNameLeft, ColumnNameRight;
-	private List<Tuple> output;
+	private Table ResultTable;
 	
 	public CalculateJoin(Table tl, Table tr, String colleft, String colright) 
 	{
@@ -44,15 +44,9 @@ public class CalculateJoin {
 		TableRight = tableRight;
 	}
 
-	public List<Tuple> getResultTable() {
-		CalculateConditionalJoin(TableLeft, TableRight); 
-		return output;
+	public Table getResultTable() {
+		return InMemoryJoin(TableLeft, TableRight); 
 	}
-
-	public void setResultTable(List<Tuple> resultTable) {
-		output = resultTable;
-	}
-
 	public int getIndleft() {
 		return indleft;
 	}
@@ -86,12 +80,17 @@ public class CalculateJoin {
 	}
 
 	@SuppressWarnings("static-access")
-	public void CalculateConditionalJoin(Table t1, Table t2) {
+	public Table InMemoryJoin(Table t1, Table t2) {
 	
 		List<Tuple> l1 = t1.getRows();
 		List<Tuple> l2 = t2.getRows();
 		
-		output = new ArrayList<Tuple>(); 
+		ResultTable = new Table();
+		
+		ResultTable.setName(t1.getName() + t2.getName());
+		
+		ResultTable.addTableColumn(t1);
+		ResultTable.addTableColumn(t2);
 		
 		for(Tuple tupl: l1)
 		{
@@ -99,14 +98,12 @@ public class CalculateJoin {
 				{
 						if(tupl.getValue(indleft).compareTo(tupr.getValue(indright)) == 0)
 						{
-								output.add(tupl.merge(tupl, tupr));	
+								ResultTable.addRow(tupl.merge(tupl, tupr));	
 						}
 				}
 		}
-		
-		
 			
-		return ;
+		return ResultTable;
 	}
 
 	
