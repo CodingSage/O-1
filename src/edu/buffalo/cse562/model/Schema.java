@@ -3,6 +3,8 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.buffalo.cse562.Constants;
+
 public class Schema {
 
 	private List<String> colName;
@@ -32,9 +34,9 @@ public class Schema {
 			for (int j = 0; j < colName.size(); j++) {
 				String c = colName.get(j);
 				if (c.contains("|")) {
-					
+
 					String[] cString = c.split("\\|");
-					//c = c.split(Constants.AGGREGATE_INDICATOR)[0];
+					// c = c.split(Constants.AGGREGATE_INDICATOR)[0];
 					if (col.equals(cString[0])) {
 						index = j;
 						break;
@@ -45,6 +47,18 @@ public class Schema {
 				}
 			}
 		return index;
+	}
+
+	public void changeTableName(String tableName) {
+		for (int j = 0; j < colName.size(); j++) {
+			String col = colName.get(j);
+			int i = col.indexOf(Constants.COLNAME_DELIMITER);
+			if (i == -1)
+				continue;
+			String newName = tableName + Constants.COLNAME_DELIMITER
+					+ col.substring(i + 1);
+			colName.set(j, newName);
+		}
 	}
 
 	public int getNumberColumns() {
