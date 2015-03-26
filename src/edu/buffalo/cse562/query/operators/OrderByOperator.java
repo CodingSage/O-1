@@ -3,6 +3,7 @@ package edu.buffalo.cse562.query.operators;
 import java.util.List;
 
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
+import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
@@ -25,13 +26,13 @@ import java.util.TreeMap;
 
 public class OrderByOperator extends Operator {
 
-	private List<Target> OrderbyParameters;
-	private Table ResultTableName;
+	private List<Ordering> OrderbyParameters;
+	private Table ResultTableName, OrderedTableName;
 	String line = null;
 	public Map<String, Integer> OrderedFilesList = new HashMap<String, Integer>();
 	public Map<String, Integer> FilesList = new HashMap<String, Integer>();
 	
-	public OrderByOperator(Table t, List<Target> _OrderByParameters, Map<String, Integer> _FilesList) {
+	public OrderByOperator(Table t, List<Ordering> _OrderByParameters, Map<String, Integer> _FilesList) {
 		ResultTableName = t;
 		OrderbyParameters = _OrderByParameters;
 		FilesList = _FilesList;
@@ -94,7 +95,7 @@ public class OrderByOperator extends Operator {
 					 						it2.remove();
 					 			}
 					 			
-					 			f1.close();
+					 			// f1.close();
 					 } 
 					 
 					 catch (IOException e) 
@@ -112,15 +113,23 @@ public class OrderByOperator extends Operator {
 				it.remove();
 		}
 	
-		mergefiles();
+		try {
+			mergefiles();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return OrderedTableName;
 	}
 
 			
-	void mergefiles()
+	protected void mergefiles() throws IOException 
 	{
 					Iterator it = OrderedFilesList.entrySet().iterator();
 					
-				
+					OrderedTableName.setName(ResultTableName.getName() + "ordered");
+					OrderedTableName.setSchema(ResultTableName.getSchema());
+					
 					int siz = OrderedFilesList.size(), siz2 = OrderbyParameters.size();
 					
 					int[] indexes = new int[siz];
@@ -131,6 +140,8 @@ public class OrderByOperator extends Operator {
 					PriorityQueue< List<String> > pq = new PriorityQueue< List<String> >(new ValueComparator2(new HashMap<Integer, Integer>()));
 					
 					int cur = 0;
+					
+					FileFunction res =  new FileFunction();
 					
 					while(it.hasNext())
 					{
@@ -177,7 +188,7 @@ public class OrderByOperator extends Operator {
 						int tot = top.size();
 						int ind = Integer.parseInt(top.get(tot - 1));
 						
-						res.write(top.get(tot - 2));
+						res.getWriter(OrderedTableName.getName()).write(top.get(tot - 2));
 						
 						cur = 0;
 						
@@ -225,6 +236,7 @@ public class OrderByOperator extends Operator {
 						}
 						
 					}
+					
 			}
 			
 			class ValueComparator implements Comparator<List<String>> 
