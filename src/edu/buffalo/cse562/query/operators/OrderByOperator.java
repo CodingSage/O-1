@@ -8,6 +8,7 @@ import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.model.Tuple;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -56,13 +57,52 @@ public class OrderByOperator extends Operator {
 			return extEvaluate();
 
 		} else {
-			extEvaluate();
+			//extEvaluate();
 			return inMemoryEvaluate();
 
 		}
-
 	}
+   
+	protected Table inMemoryEvaluate()
+	{
+		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
 
+		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(new ValueComparator(isdesc));
+		
+		
+		int siz = OrderbyParameters.size();
+		
+		for(int j=0;j<ResultTableName.getRows().size();j++)
+		{
+				Tuple cur = ResultTableName.getRows().get(j);
+				List<String> values = cur.getValues();
+				
+				List<String> keyadd = new ArrayList<String>();
+				
+				for (int i = 0; i < siz; i++) 
+				{
+							int ind = ResultTableName.getSchema().getColIndex(OrderbyParameters.get(i).expr.toString());
+							keyadd.add(cur.getValue(ind));
+				}
+
+				sortedlist.put(keyadd, cur);
+		}
+		
+		OrderedTableName.setSchema(ResultTableName.getSchema());
+		
+		Iterator it = sortedlist.entrySet().iterator();
+		
+		while(it.hasNext())
+		{
+				Map.Entry< List<String> , Tuple> Pair = (Entry< List<String>, Tuple>)it.next();
+				
+				OrderedTableName.addRow(Pair.getValue());
+		}
+		
+		
+		return OrderedTableName;
+			
+	}
 	protected Table extEvaluate() {
 
 		FileReader filereader;
@@ -140,12 +180,6 @@ public class OrderByOperator extends Operator {
 		return OrderedTableName;
 
 	}
-
-	protected Table inMemoryEvaluate() {
-
-		return OrderedTableName;
-	}
-
 	
 	class ValueComparator implements Comparator<List<String>> {
 
