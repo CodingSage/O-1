@@ -41,6 +41,8 @@ public class AggregateOperator extends Operator {
 		if (groups != null) {
 			for (Target g : groups) {
 				String colName = ((Column) g.expr).getWholeColumnName();
+				String colType = s.getType(colName);
+				schema.addColumn(colName, colType);
 				int i = s.getColIndex(colName);
 				is.add(i);
 			}
@@ -52,27 +54,36 @@ public class AggregateOperator extends Operator {
 			Table t = new Table();
 			t.setSchema(s);
 			t.addRow(table.getRows().get(0));
-			for (int j = 1; j < table.getRows().size(); j++) {
+			for (int j = 1; j < table.getRows().size() || !t.isEmpty(); j++) {
 				String rowVal = "";
-				for (Integer i : is){
-					rowVal += table.getRows().get(j).getValue(i);
-				}
-				while (val.equals(rowVal))
+				if (j != table.getRows().size())
+					for (Integer i : is)
+						rowVal += table.getRows().get(j).getValue(i);
+				while (val.equals(rowVal) && j < table.getRows().size()) {
 					t.addRow(table.getRows().get(j));
+					j++;
+					if (j != table.getRows().size()){
+						rowVal = "";
+						for (Integer i : is)
+							rowVal += table.getRows().get(j).getValue(i);
+					}
+				}
 				t.setSchema(s);
 				val = rowVal;
 				Tuple tuple = new Tuple();
-				Tuple tupl = t.getRows().get(0); 
-				for(Integer i  : is)
+				Tuple tupl = t.getRows().get(0);
+				for (Integer i : is)
 					tuple.insertColumn(tupl.getValue(i));
 				for (AggColumn agg : aggregates) {
 					Table tres = aggregation(t, agg);
-					schema.addSchema(tres.getSchema());
+					if (res.isEmpty())
+						schema.addSchema(tres.getSchema());
 					tuple.insertColumn(tres.getRows().get(0).getValue(0));
 				}
 				res.addRow(tuple);
 				t = new Table();
-				t.addRow(table.getRows().get(j));
+				if (j < table.getRows().size())
+					t.addRow(table.getRows().get(j));
 			}
 		} else {
 			for (AggColumn agg : aggregates) {
@@ -93,23 +104,75 @@ public class AggregateOperator extends Operator {
 		if (agg.aggType == AType.COUNT_DISTINCT)
 			return countDistinct(t, agg);
 		if (agg.aggType == AType.MAX)
-			;
+			return max(t, agg);
 		if (agg.aggType == AType.MIN)
-			;
+			return min(t, agg);
 		if (agg.aggType == AType.SUM)
 			return sum(t, agg);
 		return null;
 	}
-	
-	private Table max(Table t, AggColumn agg){
-		return null;
+
+	private Table min(Table t, AggColumn agg) {
+		double min = Double.MAX_VALUE;
+		Expression ex = agg.expr[0];
+		String type = "";
+		Evaluator eval = new Evaluator(t);
+		while (eval.hasNext()) {
+			try {
+				eval.next();
+				LeafValue val = eval.eval(ex);
+				if (val instanceof DoubleValue) {
+					double v = ((DoubleValue) val).getValue();
+					if(v < min)
+						min = v;
+					type = "double";
+				}
+				if (val instanceof LongValue) {
+					long v = ((LongValue) val).getValue();
+					if(v < min)
+						min = v;
+					type = "int";
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return new Table("" + min, type, agg.name);
 	}
-	
-	private Table countDistinct(Table t, AggColumn agg){
-		String name = ((Column)agg.expr[0]).getWholeColumnName();
+
+	private Table max(Table t, AggColumn agg) {
+		double max = 0;
+		Expression ex = agg.expr[0];
+		String type = "";
+		Evaluator eval = new Evaluator(t);
+		while (eval.hasNext()) {
+			try {
+				eval.next();
+				LeafValue val = eval.eval(ex);
+				if (val instanceof DoubleValue) {
+					double v = ((DoubleValue) val).getValue();
+					if(v > max)
+						max = v;
+					type = "double";
+				}
+				if (val instanceof LongValue) {
+					long v = ((LongValue) val).getValue();
+					if(v > max)
+						max = v;
+					type = "int";
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return new Table("" + max, type, agg.name);
+	}
+
+	private Table countDistinct(Table t, AggColumn agg) {
+		String name = ((Column) agg.expr[0]).getWholeColumnName();
 		int col = t.getSchema().getColIndex(name);
 		Set<String> s = new HashSet<String>();
-		for(int i = 0; i < t.getRows().size(); i++)
+		for (int i = 0; i < t.getRows().size(); i++)
 			s.add(t.getRows().get(i).getValue(col));
 		return new Table("" + s.size(), "int", agg.name);
 	}
@@ -140,7 +203,6 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-
 		return new Table("" + sum, type, agg.name);
 	}
 
@@ -153,6 +215,7 @@ public class AggregateOperator extends Operator {
 		while (eval.hasNext()) {
 			count++;
 			try {
+				eval.next();
 				LeafValue val = eval.eval(ex);
 				if (val instanceof DoubleValue) {
 					sum += ((DoubleValue) val).getValue();
