@@ -2,7 +2,9 @@ package edu.buffalo.cse562.query.operators;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
@@ -40,7 +42,6 @@ public class AggregateOperator extends Operator {
 			for (Target g : groups) {
 				String colName = ((Column) g.expr).getWholeColumnName();
 				int i = s.getColIndex(colName);
-				s.addColumn(colName, s.getType(colName));
 				is.add(i);
 			}
 		}
@@ -53,20 +54,25 @@ public class AggregateOperator extends Operator {
 			t.addRow(table.getRows().get(0));
 			for (int j = 1; j < table.getRows().size(); j++) {
 				String rowVal = "";
-				for (Integer i : is)
+				for (Integer i : is){
 					rowVal += table.getRows().get(j).getValue(i);
+				}
 				while (val.equals(rowVal))
 					t.addRow(table.getRows().get(j));
-				t = new Table();
 				t.setSchema(s);
 				val = rowVal;
-				Tuple tuple = new Tuple(t.getRows().get(0).getValues());
+				Tuple tuple = new Tuple();
+				Tuple tupl = t.getRows().get(0); 
+				for(Integer i  : is)
+					tuple.insertColumn(tupl.getValue(i));
 				for (AggColumn agg : aggregates) {
 					Table tres = aggregation(t, agg);
 					schema.addSchema(tres.getSchema());
 					tuple.insertColumn(tres.getRows().get(0).getValue(0));
 				}
 				res.addRow(tuple);
+				t = new Table();
+				t.addRow(table.getRows().get(j));
 			}
 		} else {
 			for (AggColumn agg : aggregates) {
@@ -85,7 +91,7 @@ public class AggregateOperator extends Operator {
 		if (agg.aggType == AType.COUNT)
 			return count(t, agg);
 		if (agg.aggType == AType.COUNT_DISTINCT)
-			;
+			return countDistinct(t, agg);
 		if (agg.aggType == AType.MAX)
 			;
 		if (agg.aggType == AType.MIN)
@@ -93,6 +99,19 @@ public class AggregateOperator extends Operator {
 		if (agg.aggType == AType.SUM)
 			return sum(t, agg);
 		return null;
+	}
+	
+	private Table max(Table t, AggColumn agg){
+		return null;
+	}
+	
+	private Table countDistinct(Table t, AggColumn agg){
+		String name = ((Column)agg.expr[0]).getWholeColumnName();
+		int col = t.getSchema().getColIndex(name);
+		Set<String> s = new HashSet<String>();
+		for(int i = 0; i < t.getRows().size(); i++)
+			s.add(t.getRows().get(i).getValue(col));
+		return new Table("" + s.size(), "int", agg.name);
 	}
 
 	private Table count(Table t, AggColumn agg) {
@@ -107,6 +126,7 @@ public class AggregateOperator extends Operator {
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
 			try {
+				eval.next();
 				LeafValue val = eval.eval(ex);
 				if (val instanceof DoubleValue) {
 					sum += ((DoubleValue) val).getValue();
