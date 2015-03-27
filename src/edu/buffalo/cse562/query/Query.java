@@ -24,6 +24,7 @@ import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.checkpoint1.TableScanNode;
 import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.operators.AggregateOperator;
@@ -43,7 +44,7 @@ public class Query {
 	}
 
 	public void evaluate() {
-		optimizeTree(raTree, null, new HashSet<Expression>());
+		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(), new HashSet<Expression>());
 		System.out.println(raTree);
 		System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
