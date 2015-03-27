@@ -35,6 +35,15 @@ public class Table {
 		t.insertColumn(singleVal);
 		rows.add(t);
 	}
+	
+	public Table(String singleVal, String valType, String colName) {
+		schema = new Schema();
+		schema.addColumn(colName, valType);
+		rows = new ArrayList<Tuple>();
+		Tuple t = new Tuple();
+		t.insertColumn(singleVal);
+		rows.add(t);
+	}
 
 	public Table(String tableName) {
 		name = tableName;

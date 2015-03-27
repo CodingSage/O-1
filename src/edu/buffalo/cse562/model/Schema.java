@@ -60,6 +60,11 @@ public class Schema {
 			colName.set(j, newName);
 		}
 	}
+	
+	public void addSchema(Schema schema){
+		colName.addAll(schema.getColName());
+		colType.addAll(schema.getColType());
+	}
 
 	public int getNumberColumns() {
 		return colName.size();

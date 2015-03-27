@@ -9,12 +9,11 @@ import java.util.Set;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.AggregateNode;
+import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
 import edu.buffalo.cse562.checkpoint1.LimitNode;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
-import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
 import edu.buffalo.cse562.checkpoint1.PlanNode.Unary;
 import edu.buffalo.cse562.checkpoint1.ProductNode;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode;
@@ -44,9 +43,9 @@ public class Query {
 	}
 
 	public void evaluate() {
-		//optimizeTree(raTree, null, new HashSet<Expression>());
-		//System.out.println(raTree);
-		//System.out.println("---------------------------------");
+		optimizeTree(raTree, null, new HashSet<Expression>());
+		System.out.println(raTree);
+		System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
 		if (result != null)
 			System.out.print(result.toString());
