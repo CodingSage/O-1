@@ -58,7 +58,9 @@ public class Main {
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
-					} else {
+					} else 
+					{
+						
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
