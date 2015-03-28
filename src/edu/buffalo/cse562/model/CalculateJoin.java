@@ -89,8 +89,11 @@ public class CalculateJoin {
 		
 		ResultTable.setName(t1.getName() + t2.getName());
 		
-		ResultTable.addTableColumn(t1);
-		ResultTable.addTableColumn(t2);
+		
+		Schema s = new Schema();
+		s.addSchema(t1.getSchema());
+		s.addSchema(t2.getSchema());
+		ResultTable.setSchema(s);
 		
 		for(Tuple tupl: l1)
 		{
@@ -98,11 +101,12 @@ public class CalculateJoin {
 				{
 						if(tupl.getValue(indleft).compareTo(tupr.getValue(indright)) == 0)
 						{
-								ResultTable.addRow(tupl.merge(tupl, tupr));	
+								Tuple tmp1 = tupl;
+								Tuple tmp2 = tupr;
+								ResultTable.addRow(tmp1.merge(tmp1, tmp2));	
 						}
 				}
 		}
-			
 		return ResultTable;
 	}
 

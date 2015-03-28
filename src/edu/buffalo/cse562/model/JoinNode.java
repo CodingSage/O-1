@@ -9,7 +9,7 @@ import edu.buffalo.cse562.checkpoint1.PlanNode;
 
 public class JoinNode extends PlanNode.Binary {
 
-private BinaryExpression exp;
+    public BinaryExpression exp;
 	
 	public JoinNode(BinaryExpression expression) {
 		exp = expression;

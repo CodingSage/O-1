@@ -53,11 +53,18 @@ public class Schema {
 		for (int j = 0; j < colName.size(); j++) {
 			String col = colName.get(j);
 			int i = col.indexOf(Constants.COLNAME_DELIMITER);
-			if (i == -1)
-				continue;
-			String newName = tableName + Constants.COLNAME_DELIMITER
-					+ col.substring(i + 1);
-			colName.set(j, newName);
+			if (i == -1){
+		   
+				StringBuilder sb = new StringBuilder();
+				sb.append(tableName).append(Constants.COLNAME_DELIMITER).append(col);
+				colName.set(j, sb.toString().toLowerCase());
+			}
+			else{
+				String newName = tableName + Constants.COLNAME_DELIMITER
+						+ col.substring(i + 1).toLowerCase();
+				colName.set(j, newName.toLowerCase());
+			}
+			
 		}
 	}
 	
@@ -81,6 +88,6 @@ public class Schema {
 	public void setColName(List<String> colNames) {
 		this.colName = colNames;
 		for (int i = 0; i < colName.size(); i++)
-			colName.set(i, colName.get(i).toLowerCase());
+			 colName.set(i, colName.get(i).toLowerCase());
 	}
 }

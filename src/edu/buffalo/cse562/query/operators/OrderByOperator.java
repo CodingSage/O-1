@@ -39,6 +39,7 @@ public class OrderByOperator extends Operator {
 		ResultTableName = t;
 		OrderbyParameters = _OrderByParameters;
 		FilesList = t.FilesList;
+		
 	}
 
 	public OrderByOperator(Table t, List<Ordering> _OrderByParameters,
@@ -69,7 +70,6 @@ public class OrderByOperator extends Operator {
 
 		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(new ValueComparator(isdesc));
 		
-		
 		int siz = OrderbyParameters.size();
 		
 		for(int j=0;j<ResultTableName.getRows().size();j++)
@@ -88,6 +88,9 @@ public class OrderByOperator extends Operator {
 				sortedlist.put(keyadd, cur);
 		}
 		
+		OrderedTableName = new Table();
+		OrderedTableName.setName(ResultTableName.getName() + "orderedBy");
+		OrderedTableName.setSchema(ResultTableName.getSchema());
 		OrderedTableName.setSchema(ResultTableName.getSchema());
 		
 		Iterator it = sortedlist.entrySet().iterator();
@@ -98,7 +101,6 @@ public class OrderByOperator extends Operator {
 				
 				OrderedTableName.addRow(Pair.getValue());
 		}
-		
 		
 		return OrderedTableName;
 			

@@ -44,7 +44,7 @@ public class GroupByOperator extends Operator {
 			return extEvaluate();
 
 		} else {
-			extEvaluate();
+			//extEvaluate();
 			return inMemoryEvaluate();
             
 		}

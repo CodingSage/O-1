@@ -18,10 +18,12 @@ import edu.buffalo.cse562.checkpoint1.TableScanNode;
 import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.core.Optimizer;
+import edu.buffalo.cse562.model.JoinNode;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.operators.AggregateOperator;
 import edu.buffalo.cse562.query.operators.GroupByOperator;
+import edu.buffalo.cse562.query.operators.JoinOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
 import edu.buffalo.cse562.query.operators.OrderByOperator;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
@@ -43,7 +45,11 @@ public class Query {
 		System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
 		if (result != null)
-			System.out.print(result.toString());
+		{
+			for(int i=0;i<result.getRows().size();i++)
+					System.out.println(result.getRows().get(i));
+			
+		}
 	}
 
 	private Table evaluateTree(PlanNode tree) {
@@ -82,13 +88,18 @@ public class Query {
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
 			op = new OrderByOperator(a, order);
-		} else {
+		}
+		else {
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
 			List<AggColumn> aggColumns = agg.getAggregates();
 			if (groups != null && !groups.isEmpty()) {
 				op = new GroupByOperator(a, groups, aggColumns);
 				a = op.execute();
+				net.sf.jsqlparser.schema.Table range = agg.getRangeVariable();
+				if (range != null)
+					rangeVariable = range.getWholeTableName();
+				
 			}
 			op = new AggregateOperator(groups, aggColumns, a);
 		}
@@ -105,7 +116,9 @@ public class Query {
 		else if (node instanceof UnionNode)
 			op = new UnionOperator(a, b);
 		else
-			;// Joins
+			if(node instanceof JoinNode)
+			   op = new JoinOperator(a,b,((JoinNode) node).exp);	;// Joins  
+				System.out.println("CHE");
 		return op.execute();
 	}
 

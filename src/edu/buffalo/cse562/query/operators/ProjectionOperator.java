@@ -72,6 +72,7 @@ public class ProjectionOperator extends Operator {
 //						res.addTableColumn(table.getColumn(cur.name));	 
 //				}
 		}
+		res.setSchema(table.getSchema());
 		res.FilesList = table.FilesList;
 		return res;
 	}

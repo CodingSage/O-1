@@ -197,7 +197,7 @@ public class AggregateOperator extends Operator {
 				}
 				if (val instanceof LongValue) {
 					sum += ((LongValue) val).getValue();
-					type = "int";
+					type = "double";
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -223,7 +223,7 @@ public class AggregateOperator extends Operator {
 				}
 				if (val instanceof LongValue) {
 					sum += ((LongValue) val).getValue();
-					type = "int";
+					type = "double";
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
