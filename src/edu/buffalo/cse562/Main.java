@@ -10,6 +10,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
@@ -57,9 +58,11 @@ public class Main {
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
+						System.out.println(translator.getKnownTables() + " bug");
 						statement.accept(new StatementEvaluator());
 					} else 
 					{
+						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
 						
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
