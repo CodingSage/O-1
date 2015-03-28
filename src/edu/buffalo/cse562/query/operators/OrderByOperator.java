@@ -82,6 +82,10 @@ public class OrderByOperator extends Operator {
 				for (int i = 0; i < siz; i++) 
 				{
 							int ind = ResultTableName.getSchema().getColIndex(OrderbyParameters.get(i).expr.toString());
+							
+							if(OrderbyParameters.get(i).ascending == false)
+										isdesc.put(ind, 1);
+							
 							keyadd.add(cur.getValue(ind));
 				}
 

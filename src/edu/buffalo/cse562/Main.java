@@ -52,14 +52,16 @@ public class Main {
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
 				// TODO union implementation
-				while ((statement = parser.Statement()) != null) {
-					if (statement instanceof CreateTable) {
+				while ((statement = parser.Statement()) != null) {    
+					if (statement instanceof CreateTable) {  
+						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
+						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
 					} else {
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
-						System.out.println(plan);
-						System.out.println("------------------------------");
+						//System.out.println(plan);
+						//System.out.println("------------------------------");
 					}
 				}
 				Query query = new Query(plan);
