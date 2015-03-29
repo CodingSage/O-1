@@ -50,9 +50,11 @@ public class Main {
 				FileReader reader = new FileReader(file);
 				Statement statement = null;
 				SqlToRA translator = new SqlToRA();
-				CCJSqlParser parser = new CCJSqlParser(reader);
+				CCJSqlParser parser = new CCJSqlParser(reader);																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
 				PlanNode plan = null;
 				// TODO union implementation
+		
+	
 				while ((statement = parser.Statement()) != null) 
 				{    
 					if (statement instanceof CreateTable) 
@@ -65,17 +67,17 @@ public class Main {
 					else 	
 					{
 						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
-						
-						System.out.println("Is this the issue?");
-						
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
+						statement.accept(new StatementEvaluator());
 						System.out.println(plan);
 						System.out.println("------------------------------");
+						Query query = new Query(plan);
+						query.evaluate();
 					}
 				}
 				
-				Query query = new Query(plan);
-				query.evaluate();
+				//Query query = new Query(plan);
+				//query.evaluate();
 				reader.close();
 			} 
 			catch (Exception e) 

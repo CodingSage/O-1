@@ -74,7 +74,7 @@ public class Table {
 					if(tableName.compareToIgnoreCase("LINEITEM") == 0 && datas[10].compareTo("1998-09-03") >= 0)	
 								fg = 1;					
 					
-					if(fg == 1)
+					if(fg == 1)																																																																						
 					{
 						    Tuple row = new Tuple();
 							for (int di=0;di<k;di++)
