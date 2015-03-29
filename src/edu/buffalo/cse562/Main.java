@@ -66,15 +66,13 @@ public class Main {
 					} 
 					else 	
 					{
-						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
-						statement.accept(new StatementEvaluator());
+						System.out.println(translator.selectToPlan(s));
 						Query query = new Query(translator.selectToPlan(s));
-						System.out.println("hello reached here");
 						query.evaluate();
 					}
 				}
