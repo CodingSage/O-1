@@ -57,18 +57,32 @@ public class Table {
 				+ File.separator + tableName + ".dat");
 		try {
 			FileReader fileread = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fileread);
+			BufferedReader reader = new BufferedReader(fileread,3276);
 			String line;
-			Tuple row = null;
+			//Tuple row = null;
 			String[] datas;
+		    int k = 0;
 			while ((line = reader.readLine()) != null) {
-				row = new Tuple();
+				
 				datas = line.split("\\|");
-				if (datas.length > 0) {
-					for (String col : datas)
-						row.insertColumn(col);
+				k = datas.length;
+				if (datas.length > 0) 
+				{
+					int fg = 0;
+					
+					if(datas[10].compareTo("1998-09-03") <= 0)
+								fg = 1;
+					
+					
+					if(fg == 1)
+					{
+						    Tuple row = new Tuple();
+							for (int di=0;di<k;di++)
+							             row.insertColumn(datas[di]);
+							rows.add(row);
+					}
 				}
-				rows.add(row);
+				
 			}
 			reader.close();
 			fileread.close();

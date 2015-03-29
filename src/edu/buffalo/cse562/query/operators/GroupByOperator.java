@@ -184,16 +184,16 @@ public class GroupByOperator extends Operator {
 				GroupedByTable.addRow(row);
 			}
 		}
-		BufferedWriter bwlocal = null;
-		FileFunction re = new FileFunction();
-		bwlocal = re.getWriter(DataManager.getInstance().getDataPath()
-				+ "TestFiledata");
-		try {
-			bwlocal.write(GroupedByTable.toString());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		BufferedWriter bwlocal = null;
+//		FileFunction re = new FileFunction();
+//		bwlocal = re.getWriter(DataManager.getInstance().getDataPath()
+//				+ "TestFiledata");
+//		try {
+//			bwlocal.write(GroupedByTable.toString());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		System.out.println(GroupedByTable.toString());
 //        System.out.println(GroupedByTable.getRows().size());
 		
