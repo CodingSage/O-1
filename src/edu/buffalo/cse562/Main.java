@@ -72,6 +72,7 @@ public class Main {
 						//System.out.println("------------------------------");
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
+						statement.accept(new StatementEvaluator());
 						Query query = new Query(translator.selectToPlan(s));
 						System.out.println("hello reached here");
 						query.evaluate();
