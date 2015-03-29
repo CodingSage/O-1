@@ -59,11 +59,13 @@ public class Main {
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
-						System.out.println(translator.getKnownTables() + " bug");
+						//System.out.println(translator.getKnownTables() + " bug");
 						statement.accept(new StatementEvaluator());
 					} else 
 					{
 						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
+						
+						System.out.println("Is this the issue?");
 						
 						plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						System.out.println(plan);
