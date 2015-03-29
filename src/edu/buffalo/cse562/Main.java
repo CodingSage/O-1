@@ -67,11 +67,12 @@ public class Main {
 					else 	
 					{
 						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
-						plan = translator.selectToPlan(((Select) statement).getSelectBody());
-						statement.accept(new StatementEvaluator());
-						System.out.println(plan);
-						System.out.println("------------------------------");
-						Query query = new Query(plan);
+						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
+						//statement.accept(new StatementEvaluator());
+						//System.out.println(plan);
+						//System.out.println("------------------------------");
+						Query query = new Query(translator.selectToPlan(((Select) statement).getSelectBody()));
+						System.out.println(query.toString());
 						query.evaluate();
 					}
 				}
