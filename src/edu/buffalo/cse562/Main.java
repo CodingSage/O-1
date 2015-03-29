@@ -55,8 +55,8 @@ public class Main {
 				// TODO union implementation
 				while ((statement = parser.Statement()) != null) {    
 					if (statement instanceof CreateTable) {  
-						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
-						((CreateTable) statement).getTable().setName(newName);
+						//String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
+						//((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
 						System.out.println(translator.getKnownTables() + " bug");
 						statement.accept(new StatementEvaluator());
