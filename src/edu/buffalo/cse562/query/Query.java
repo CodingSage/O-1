@@ -39,10 +39,11 @@ public class Query {
 	}
 
 	public void evaluate() {
-		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
-				new HashSet<Expression>());
 		System.out.println(raTree);
 		System.out.println("---------------------------------");
+		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
+				new HashSet<Expression>());
+		
 		Table result = evaluateTree(raTree);
 		if (result != null)
 		{
