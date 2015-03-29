@@ -55,13 +55,14 @@ public class Main {
 				// TODO union implementation
 				while ((statement = parser.Statement()) != null) 
 				{    
-					if (statement instanceof CreateTable) {  
+					if (statement instanceof CreateTable) 
+					{  
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
-						//System.out.println(translator.getKnownTables() + " bug");
 						statement.accept(new StatementEvaluator());
-					} else 
+					} 
+					else 	
 					{
 						//String newP = ((Select)statement).getSelectBody().toString().toUpperCase();
 						
@@ -72,10 +73,13 @@ public class Main {
 						System.out.println("------------------------------");
 					}
 				}
+				
 				Query query = new Query(plan);
 				query.evaluate();
 				reader.close();
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				System.out.println(file.toString());
 				e.printStackTrace();
 			}

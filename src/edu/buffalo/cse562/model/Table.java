@@ -71,7 +71,7 @@ public class Table {
 				{
 					int fg = 0;
 					
-					if(datas[10].compareTo("1998-09-03") >	= 0)
+					if(tableName.compareToIgnoreCase("LINEITEM") == 0 && datas[10].compareTo("1998-09-03") >= 0)	
 								fg = 1;					
 					
 					if(fg == 1)
