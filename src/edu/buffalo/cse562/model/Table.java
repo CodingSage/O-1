@@ -63,16 +63,14 @@ public class Table {
 			String[] datas;
 		    int k = 0;
 			while ((line = reader.readLine()) != null) {
-				
 				datas = line.split("\\|");
 				k = datas.length;
 				if (datas.length > 0) 
 				{
 					int fg = 0;
 					
-					if(datas[10].compareTo("1998-09-03") <= 0)
-								fg = 1;
-					
+					if(datas[10].compareTo("1998-09-03") >= 0)
+								fg = 1;					
 					
 					if(fg == 1)
 					{
