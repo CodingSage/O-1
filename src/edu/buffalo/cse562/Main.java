@@ -72,7 +72,7 @@ public class Main {
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
 						Query query = new Query(translator.selectToPlan(((Select) statement).getSelectBody()));
-						System.out.println(query.toString());
+						System.out.println("hello " + query.toString());
 						query.evaluate();
 					}
 				}
