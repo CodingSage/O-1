@@ -86,9 +86,8 @@ public class Main {
 				SqlToRA translator = new SqlToRA();
 				CCJSqlParser parser = new CCJSqlParser(reader);																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
 				PlanNode plan = null;
-				// TODO union implementation
+				// TODO union implementation	
 		
-	
 				while ((statement = parser.Statement()) != null) 
 				{    
 					if (statement instanceof CreateTable) 
@@ -96,6 +95,7 @@ public class Main {
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
+						System.out.println("My known tables in create - " + translator.getKnownTables());
 						statement.accept(new StatementEvaluator());
 					} 
 					else 	
