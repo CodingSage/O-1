@@ -90,12 +90,12 @@ public class Main {
 		
 				while ((statement = parser.Statement()) != null) 
 				{    
+					System.out.println("My known tables - " + translator.getKnownTables());
 					if (statement instanceof CreateTable) 
 					{  
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
-						System.out.println("My known tables in create - " + translator.getKnownTables());
 						statement.accept(new StatementEvaluator());
 					} 
 					else 	
@@ -103,7 +103,6 @@ public class Main {
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
-						System.out.println("My known tables - " + translator.getKnownTables());
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
 						System.out.println(translator.selectToPlan(s));
