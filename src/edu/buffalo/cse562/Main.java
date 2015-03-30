@@ -79,11 +79,13 @@ public class Main {
 	
 		Table lineitem = pre();
 		
+		SqlToRA translator = new SqlToRA();
+		
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
 				Statement statement = null;
-				SqlToRA translator = new SqlToRA();
+				
 				CCJSqlParser parser = new CCJSqlParser(reader);																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
 				PlanNode plan = null;
 				// TODO union implementation	
@@ -104,11 +106,12 @@ public class Main {
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
-						SqlToRA translator2 = new SqlToRA();
+						
+						System.out.println("I have come to select");
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
-						System.out.println(translator2.selectToPlan(s));
-						Query query = new Query(translator2.selectToPlan(s));
+						System.out.println(translator.selectToPlan(s));
+						Query query = new Query(translator.selectToPlan(s));
 						query.evaluate();
 					}
 				}
