@@ -92,7 +92,7 @@ public class Main {
 		
 				while ((statement = parser.Statement()) != null) 
 				{    
-					System.out.println(statement + "My known tables - " + translator.getKnownTables());
+					//System.out.println(statement + "My known tables - " + translator.getKnownTables());
 					
 					if (statement instanceof CreateTable) 
 					{  
