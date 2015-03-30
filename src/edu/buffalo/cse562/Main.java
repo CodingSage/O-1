@@ -51,7 +51,7 @@ public class Main {
 	//>>> MAL , tax DECIMAL , returnflag CHAR (1) , linestatus CHAR (1) , shipdate DATE ,
 	//>>> commitdate DATE , receiptdate DATE , shipinstruct CHAR (25) , shipmode CHAR (10)
 	//>>>  , comment VARCHAR (44) )
-	public static Table pre()
+	/*public static Table pre()
 	{
 		Table lineitem = new Table("LINEITEM");
 		Schema s = new Schema();
@@ -72,12 +72,12 @@ public class Main {
 		s.addColumn("shipmode", "varchar");
 		s.addColumn("comment", "varchar");
 		return lineitem;
-	}
+	}*/
 	
 
 	private static void evaluate(List<File> sqlFiles) {
 	
-		Table lineitem = pre();
+		//Table lineitem = pre();
 		
 		SqlToRA translator = new SqlToRA();
 		
@@ -107,10 +107,10 @@ public class Main {
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
 						
-						System.out.println("I have come to select");
+						//System.out.println("I have come to select");
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
-						System.out.println(translator.selectToPlan(s));
+						//System.out.println(translator.selectToPlan(s));
 						Query query = new Query(translator.selectToPlan(s));
 						query.evaluate();
 					}

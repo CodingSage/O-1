@@ -42,8 +42,8 @@ public class Query {
 		
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		System.out.println(raTree);
-		System.out.println("---------------------------------");
+		//System.out.println(raTree);
+		//System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
 		if (result != null)
 		{
