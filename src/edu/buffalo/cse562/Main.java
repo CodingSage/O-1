@@ -15,6 +15,8 @@ import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.model.Schema;
+import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.Query;
 import edu.buffalo.cse562.query.StatementEvaluator;
 
@@ -44,7 +46,39 @@ public class Main {
 		evaluate(sqlFiles);
 	}
 
+	//REATE TABLE LINEITEM (orderkey INT , partkey INT , suppkey
+	//>>>  INT , linenumber INT , quantity DECIMAL , extendedprice DECIMAL , discount DECI
+	//>>> MAL , tax DECIMAL , returnflag CHAR (1) , linestatus CHAR (1) , shipdate DATE ,
+	//>>> commitdate DATE , receiptdate DATE , shipinstruct CHAR (25) , shipmode CHAR (10)
+	//>>>  , comment VARCHAR (44) )
+	public static Table pre()
+	{
+		Table lineitem = new Table("LINEITEM");
+		Schema s = new Schema();
+		s.addColumn("orderkey", "int");
+		s.addColumn("partkey", "int");
+		s.addColumn("suppkey", "int");
+		s.addColumn("linenumber", "int");
+		s.addColumn("quantity", "decimal");
+		s.addColumn("extendedprice", "decimal");
+		s.addColumn("discount", "decimal");
+		s.addColumn("tax", "decimal");
+		s.addColumn("returnflag", "char");
+		s.addColumn("linestatus", "char");
+		s.addColumn("shipdate", "date");
+		s.addColumn("commitdate", "date");
+		s.addColumn("receiptdate", "date");
+		s.addColumn("shipinstruct", "varchar");
+		s.addColumn("shipmode", "varchar");
+		s.addColumn("comment", "varchar");
+		return lineitem;
+	}
+	
+
 	private static void evaluate(List<File> sqlFiles) {
+	
+		Table lineitem = pre();
+		
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
@@ -69,6 +103,7 @@ public class Main {
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
+						System.out.println("My known tables - " + translator.getKnownTables());
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
 						System.out.println(translator.selectToPlan(s));
