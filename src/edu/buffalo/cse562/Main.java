@@ -91,6 +91,7 @@ public class Main {
 				while ((statement = parser.Statement()) != null) 
 				{    
 					System.out.println(statement + "My known tables - " + translator.getKnownTables());
+					
 					if (statement instanceof CreateTable) 
 					{  
 						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
@@ -98,7 +99,7 @@ public class Main {
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
 					} 
-					else 		
+					else if (statement instanceof Select) 		
 					{
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
