@@ -98,15 +98,16 @@ public class Main {
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
 					} 
-					else 	
+					else 		
 					{
 						//plan = translator.selectToPlan(((Select) statement).getSelectBody());
 						//System.out.println(plan);
 						//System.out.println("------------------------------");
+						SqlToRA translator2 = new SqlToRA();
 						Select selectStatement = (Select)statement;
 						SelectBody s = selectStatement.getSelectBody();
-						System.out.println(translator.selectToPlan(s));
-						Query query = new Query(translator.selectToPlan(s));
+						System.out.println(translator2.selectToPlan(s));
+						Query query = new Query(translator2.selectToPlan(s));
 						query.evaluate();
 					}
 				}
