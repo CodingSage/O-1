@@ -57,7 +57,7 @@ public class Table {
 				+ File.separator + tableName + ".dat");
 		try {
 			FileReader fileread = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fileread);
+			BufferedReader reader = new BufferedReader(fileread, 32768);
 			String line;
 			//Tuple row = null;
 			String[] datas;
@@ -71,7 +71,7 @@ public class Table {
 				{
 					int fg = 0;
 					
-					if(tableName.compareToIgnoreCase("LINEITEM") == 0 && datas[10].compareTo("1998-09-03") >= 0)	
+					if(tableName.compareToIgnoreCase("LINEITEM") == 0 && datas[10].compareTo("1998-09-03") <= 0)	
 								fg = 1;					
 					
 					if(fg == 1)																																																																						
