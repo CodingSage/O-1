@@ -53,16 +53,17 @@ public class Table {
 		// TODO check loading conditions on memory constraints
 		rows = new ArrayList<Tuple>();
 		String tableName = name;
-		File file = new File(DataManager.getInstance().getDataPath()
-				+ File.separator + tableName + ".dat");
-		try {
+		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		try 
+		{
 			FileReader fileread = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fileread, 32768);
+			BufferedReader reader = new BufferedReader(fileread);
 			String line;
 			//Tuple row = null;
 			String[] datas;
-		    int k = 0;
-			while ((line = reader.readLine()) != null) {
+		    int k = 0, cnt = 0;
+			while ((line = reader.readLine()) != null) 
+			{
 				datas = line.split("\\|");
 				
 				k = datas.length;
@@ -71,11 +72,12 @@ public class Table {
 				{
 					int fg = 0;
 					
-					if(tableName.compareToIgnoreCase("LINEITEM") == 0 && datas[10].compareTo("1998-09-03") <= 0)	
+					if(datas[10].compareTo("1998-09-03") <= 0)	
 								fg = 1;					
 					
 					if(fg == 1)																																																																						
 					{
+							cnt++;
 						    Tuple row = new Tuple();
 							for (int di=0;di<k;di++)
 								row.insertColumn(datas[di]);
@@ -84,6 +86,8 @@ public class Table {
 				}
 				
 			}
+			System.out.printlc("The number of tuples is :" + cnt);
+			
 			reader.close();
 			fileread.close();
 			name = tableName.toLowerCase();
