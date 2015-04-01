@@ -85,6 +85,7 @@ public class Table {
 					}
 				}
 				
+				System.gc();
 			}
 			System.out.println("The number of tuples is :" + cnt);
 			
