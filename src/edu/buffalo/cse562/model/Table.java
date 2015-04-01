@@ -56,6 +56,7 @@ public class Table {
 		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
 		try 
 		{
+			System.gc();
 			FileReader fileread = new FileReader(file);
 			BufferedReader reader = new BufferedReader(fileread);
 			String line;
@@ -85,7 +86,6 @@ public class Table {
 					}
 				}
 				
-				System.gc();
 			}
 			System.out.println("The number of tuples is :" + cnt);
 			
