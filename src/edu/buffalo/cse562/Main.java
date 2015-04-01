@@ -45,8 +45,6 @@ public class Main {
 		}
 		evaluate(sqlFiles);
 	}
-
-	
 	
 
 	private static void evaluate(List<File> sqlFiles) {

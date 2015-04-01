@@ -86,7 +86,7 @@ public class Table {
 				}
 				
 			}
-			System.out.printlc("The number of tuples is :" + cnt);
+			System.out.println("The number of tuples is :" + cnt);
 			
 			reader.close();
 			fileread.close();
