@@ -73,7 +73,6 @@ public class Main {
 				// query.evaluate();
 				reader.close();
 			} catch (Exception e) {
-				System.out.println(file.toString());
 				e.printStackTrace();
 			}
 		}

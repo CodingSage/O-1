@@ -35,7 +35,7 @@ public class Table {
 		t.insertColumn(singleVal);
 		rows.add(t);
 	}
-	
+
 	public Table(String singleVal, String valType, String colName) {
 		schema = new Schema();
 		schema.addColumn(colName, valType);
@@ -53,58 +53,64 @@ public class Table {
 		// TODO check loading conditions on memory constraints
 		rows = new ArrayList<Tuple>();
 		String tableName = name;
-		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName.toLowerCase()+ ".dat");
-		try 
-		{
+		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		try {
 			// System.gc();
 			FileReader fileread = new FileReader(file);
 			BufferedReader reader = new BufferedReader(fileread);
 			String line = null;
-			//Tuple row = null;
+			// Tuple row = null;
 			String[] datas;
-		    int k = 0, cnt = 0;
-		    
-		    List<String> batch = new ArrayList<String>();
-		    
-			while(true) 
+			int k = 0, cnt = 0;
+
+			//List<String> batch = new ArrayList<String>();
+
+			while((line = reader.readLine()) != null)
 			{
-					cnt = 0;
-	
-					while(cnt < 10000 && (line = reader.readLine()) != null)
-					{
-							batch.add(line);
-							cnt++;
-					}
-					
-					for(String s: batch)
-					{
-						datas = s.split("\\|");
-						k = datas.length;
-						if (k > 0) 
-						{
-							int fg = 0;
-					
-							if(datas[10].compareTo("1998-09-03") <= 0)	
-											fg = 1;					
-					
-							if(fg == 1)																																																																						
-							{
-									cnt++;
-									Tuple row = new Tuple();
-									for (int di=0;di<k;di++)
-									row.insertColumn(datas[di]);
-									rows.add(row);
-							}
-						}
-					}
 				
-					if(line == null)break;
-					
-					batch = new ArrayList<String>();	
+				datas = line.split("\\|");
+				k = datas.length;
+				Tuple row = new Tuple();
+				for(int di = 0;di < k;di++)
+						row.insertColumn(datas[di]);
+				rows.add(row);
 			}
 			
-			System.out.println("The number of tuples is :" + cnt);
-			
+			/*while (true) {
+				cnt = 0;
+
+				while (cnt < 10000 && (line = reader.readLine()) != null) {
+					batch.add(line);
+					cnt++;
+				}
+
+				for (String s : batch) {
+					datas = s.split("\\|");
+					k = datas.length;
+					if (k > 0) {
+						int fg = 0;
+
+						if (datas[10].compareTo("1998-09-03") <= 0)
+							fg = 1;
+
+						if (fg == 1) {
+							cnt++;
+							Tuple row = new Tuple();
+							for (int di = 0; di < k; di++)
+								row.insertColumn(datas[di]);
+							rows.add(row);
+						}
+					}
+				}
+
+				if (line == null)
+					break;
+
+				batch = new ArrayList<String>();
+			}*/
+
+			//System.out.println("The number of tuples is :" + cnt);
+
 			reader.close();
 			fileread.close();
 			name = tableName.toLowerCase();
@@ -163,7 +169,7 @@ public class Table {
 				throw new Exception("||" + st + " " + this.name + " " + colName
 						+ "\n" + ex.getMessage());
 			} catch (Exception e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 		Table tab = new Table();

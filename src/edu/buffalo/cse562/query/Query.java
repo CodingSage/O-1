@@ -39,17 +39,16 @@ public class Query {
 	}
 
 	public void evaluate() {
-		System.out.println(raTree);
-		System.out.println("---------------------------------");
+		/*System.out.println(raTree);
+		System.out.println("---------------------------------");*/
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		System.out.println(raTree);
-		System.out.println("---------------------------------");
+		/*System.out.println(raTree);
+		System.out.println("---------------------------------");*/
 		Table result = evaluateTree(raTree);
 		if (result != null) {
 			for (int i = 0; i < result.getRows().size(); i++)
 				System.out.println(result.getRows().get(i));
-
 		}
 	}
 
@@ -115,7 +114,7 @@ public class Query {
 		else if (node instanceof UnionNode)
 			op = new UnionOperator(a, b);
 		else
-			op = new JoinOperator(a, b, ((JoinNode) node).exp);
+			op = new JoinOperator(a, b, ((JoinNode) node).getCondition());
 		return op.execute();
 	}
 
