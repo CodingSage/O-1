@@ -39,17 +39,17 @@ public class Query {
 	}
 
 	public void evaluate() {
-		
+		System.out.println(raTree);
+		System.out.println("---------------------------------");
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		//System.out.println(raTree);
-		//System.out.println("---------------------------------");
+		System.out.println(raTree);
+		System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
-		if (result != null)
-		{
-			for(int i=0;i<result.getRows().size();i++)
-					System.out.println(result.getRows().get(i));
-			
+		if (result != null) {
+			for (int i = 0; i < result.getRows().size(); i++)
+				System.out.println(result.getRows().get(i));
+
 		}
 	}
 
@@ -89,8 +89,7 @@ public class Query {
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
 			op = new OrderByOperator(a, order);
-		}
-		else {
+		} else {
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
 			List<AggColumn> aggColumns = agg.getAggregates();
@@ -100,7 +99,6 @@ public class Query {
 				net.sf.jsqlparser.schema.Table range = agg.getRangeVariable();
 				if (range != null)
 					rangeVariable = range.getWholeTableName();
-				
 			}
 			op = new AggregateOperator(groups, aggColumns, a);
 		}
@@ -117,9 +115,7 @@ public class Query {
 		else if (node instanceof UnionNode)
 			op = new UnionOperator(a, b);
 		else
-			if(node instanceof JoinNode)
-			   op = new JoinOperator(a,b,((JoinNode) node).exp);	;// Joins  
-				//System.out.println("CHE");
+			op = new JoinOperator(a, b, ((JoinNode) node).exp);
 		return op.execute();
 	}
 

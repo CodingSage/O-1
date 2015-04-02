@@ -45,48 +45,34 @@ public class Main {
 		}
 		evaluate(sqlFiles);
 	}
-	
 
 	private static void evaluate(List<File> sqlFiles) {
-
-		
 		SqlToRA translator = new SqlToRA();
-		
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
 				Statement statement = null;
-				
-				CCJSqlParser parser = new CCJSqlParser(reader);																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
+				CCJSqlParser parser = new CCJSqlParser(reader);
 				PlanNode plan = null;
-				// TODO union implementation	
-		
-				while ((statement = parser.Statement()) != null) 
-				{    
-					//System.out.println(statement + "My known tables - " + translator.getKnownTables());
-					
-					if (statement instanceof CreateTable) 
-					{  
-						String newName = ((CreateTable) statement).getTable().getName().toUpperCase();
+				// TODO union implementation
+				while ((statement = parser.Statement()) != null) {
+					if (statement instanceof CreateTable) {
+						String newName = ((CreateTable) statement).getTable()
+								.getName().toUpperCase();
 						((CreateTable) statement).getTable().setName(newName);
 						translator.loadTableSchema((CreateTable) statement);
 						statement.accept(new StatementEvaluator());
-					} 
-					else if (statement instanceof Select) 		
-					{
-						Select selectStatement = (Select)statement;
+					} else if (statement instanceof Select) {
+						Select selectStatement = (Select) statement;
 						SelectBody s = selectStatement.getSelectBody();
 						Query query = new Query(translator.selectToPlan(s));
 						query.evaluate();
 					}
 				}
-				
-				//Query query = new Query(plan);
-				//query.evaluate();
+				// Query query = new Query(plan);
+				// query.evaluate();
 				reader.close();
-			} 
-			catch (Exception e) 
-			{
+			} catch (Exception e) {
 				System.out.println(file.toString());
 				e.printStackTrace();
 			}

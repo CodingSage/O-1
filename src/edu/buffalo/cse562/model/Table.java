@@ -53,7 +53,7 @@ public class Table {
 		// TODO check loading conditions on memory constraints
 		rows = new ArrayList<Tuple>();
 		String tableName = name;
-		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName.toLowerCase()+ ".tbl");
 		try 
 		{
 			// System.gc();
