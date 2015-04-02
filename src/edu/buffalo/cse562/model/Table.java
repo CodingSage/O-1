@@ -56,37 +56,53 @@ public class Table {
 		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
 		try 
 		{
-			System.gc();
+			// System.gc();
 			FileReader fileread = new FileReader(file);
 			BufferedReader reader = new BufferedReader(fileread);
-			String line;
+			String line = null;
 			//Tuple row = null;
 			String[] datas;
 		    int k = 0, cnt = 0;
-			while ((line = reader.readLine()) != null) 
+		    
+		    List<String> batch = new ArrayList<String>();
+		    
+			while(true) 
 			{
-				datas = line.split("\\|");
-				
-				k = datas.length;
-				
-				if (datas.length > 0) 
-				{
-					int fg = 0;
-					
-					if(datas[10].compareTo("1998-09-03") <= 0)	
-								fg = 1;					
-					
-					if(fg == 1)																																																																						
+					cnt = 0;
+	
+					while(cnt < 10000 && (line = reader.readLine()) != null)
 					{
+							batch.add(line);
 							cnt++;
-						    Tuple row = new Tuple();
-							for (int di=0;di<k;di++)
-								row.insertColumn(datas[di]);
-							rows.add(row);
 					}
-				}
+					
+					for(String s: batch)
+					{
+						datas = s.split("\\|");
+						k = datas.length;
+						if (k > 0) 
+						{
+							int fg = 0;
+					
+							if(datas[10].compareTo("1998-09-03") <= 0)	
+											fg = 1;					
+					
+							if(fg == 1)																																																																						
+							{
+									cnt++;
+									Tuple row = new Tuple();
+									for (int di=0;di<k;di++)
+									row.insertColumn(datas[di]);
+									rows.add(row);
+							}
+						}
+					}
 				
+					if(line == null)break;
+					
+					batch = new ArrayList<String>();	
 			}
+			
 			System.out.println("The number of tuples is :" + cnt);
 			
 			reader.close();
