@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jsqlparser.expression.BooleanValue;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LeafValue;
 import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.query.Evaluator;
 
 public class Table {
 
@@ -53,7 +58,8 @@ public class Table {
 		// TODO check loading conditions on memory constraints
 		rows = new ArrayList<Tuple>();
 		String tableName = name;
-		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		File file = new File(DataManager.getInstance().getDataPath()
+				+ File.separator + tableName + ".dat");
 		try {
 			// System.gc();
 			FileReader fileread = new FileReader(file);
@@ -61,59 +67,49 @@ public class Table {
 			String line = null;
 			// Tuple row = null;
 			String[] datas;
-			int k = 0, cnt = 0;
-
-			//List<String> batch = new ArrayList<String>();
-
-			while((line = reader.readLine()) != null)
-			{
-				
+			int k = 0;
+			while ((line = reader.readLine()) != null) {
 				datas = line.split("\\|");
 				k = datas.length;
 				Tuple row = new Tuple();
-				for(int di = 0;di < k;di++)
-						row.insertColumn(datas[di]);
+				for (int di = 0; di < k; di++)
+					row.insertColumn(datas[di]);
 				rows.add(row);
 			}
-			
-			/*while (true) {
-				cnt = 0;
-
-				while (cnt < 10000 && (line = reader.readLine()) != null) {
-					batch.add(line);
-					cnt++;
-				}
-
-				for (String s : batch) {
-					datas = s.split("\\|");
-					k = datas.length;
-					if (k > 0) {
-						int fg = 0;
-
-						if (datas[10].compareTo("1998-09-03") <= 0)
-							fg = 1;
-
-						if (fg == 1) {
-							cnt++;
-							Tuple row = new Tuple();
-							for (int di = 0; di < k; di++)
-								row.insertColumn(datas[di]);
-							rows.add(row);
-						}
-					}
-				}
-
-				if (line == null)
-					break;
-
-				batch = new ArrayList<String>();
-			}*/
-
-			//System.out.println("The number of tuples is :" + cnt);
-
+			System.out.println("The number of tuples is :" + rows.size());
 			reader.close();
 			fileread.close();
 			name = tableName.toLowerCase();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadData(Expression exp){
+		rows = new ArrayList<Tuple>();
+		String tableName = name;
+		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		Table clone = new Table();
+		clone.setSchema(schema);
+		name = tableName.toLowerCase();
+		try {
+			FileReader fileread = new FileReader(file);
+			BufferedReader reader = new BufferedReader(fileread);
+			String line = null;
+			Evaluator eval = new Evaluator(clone);
+			while ((line = reader.readLine()) != null) {
+				String[] datas = line.split("\\|");
+				Tuple row = new Tuple(Arrays.asList(datas));
+				clone.removeRow(0);
+				clone.addRow(row);
+				eval.reset();
+				eval.next();
+				LeafValue val = eval.eval(exp);
+				if(((BooleanValue)val).getValue())
+					rows.add(row);
+			}
+			reader.close();
+			fileread.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -185,7 +181,8 @@ public class Table {
 	}
 
 	public void removeRow(int index) {
-		rows.remove(index);
+		if(rows.size() > index)
+			rows.remove(index);
 	}
 
 	public void addRowAt(Tuple t, int index) {

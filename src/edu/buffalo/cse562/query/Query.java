@@ -27,6 +27,7 @@ import edu.buffalo.cse562.query.operators.JoinOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
 import edu.buffalo.cse562.query.operators.OrderByOperator;
 import edu.buffalo.cse562.query.operators.ProjectionOperator;
+import edu.buffalo.cse562.query.operators.SelectLoadOperator;
 import edu.buffalo.cse562.query.operators.SelectOperator;
 import edu.buffalo.cse562.query.operators.UnionOperator;
 
@@ -39,12 +40,12 @@ public class Query {
 	}
 
 	public void evaluate() {
-		/*System.out.println(raTree);
-		System.out.println("---------------------------------");*/
+		//System.out.println(raTree);
+		//System.out.println("---------------------------------");
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		/*System.out.println(raTree);
-		System.out.println("---------------------------------");*/
+		System.out.println(raTree);
+		System.out.println("---------------------------------");
 		Table result = evaluateTree(raTree);
 		if (result != null) {
 			for (int i = 0; i < result.getRows().size(); i++)
@@ -65,7 +66,7 @@ public class Query {
 		} else {
 			res = DataManager.getInstance().getTable(
 					((TableScanNode) tree).table.getWholeTableName());
-			res.loadData();
+			// res.loadData();
 		}
 		return res;
 	}
@@ -82,9 +83,12 @@ public class Query {
 			net.sf.jsqlparser.schema.Table range = pnode.getRangeVariable();
 			if (range != null)
 				rangeVariable = range.getWholeTableName();
-		} else if (node instanceof SelectionNode)
+		} else if (node instanceof SelectionNode) {
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
-		else if (node instanceof SortNode) {
+			if (node.getChild() instanceof TableScanNode)
+				op = new SelectLoadOperator(a,
+						((SelectionNode) node).getCondition());
+		} else if (node instanceof SortNode) {
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
 			op = new OrderByOperator(a, order);

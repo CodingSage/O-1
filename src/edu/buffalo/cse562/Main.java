@@ -3,6 +3,7 @@ package edu.buffalo.cse562;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.jsqlparser.parser.CCJSqlParser;
@@ -48,6 +49,7 @@ public class Main {
 
 	private static void evaluate(List<File> sqlFiles) {
 		SqlToRA translator = new SqlToRA();
+		System.out.println(new Date(System.currentTimeMillis()));
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
@@ -69,12 +71,11 @@ public class Main {
 						query.evaluate();
 					}
 				}
-				// Query query = new Query(plan);
-				// query.evaluate();
 				reader.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println(new Date(System.currentTimeMillis()));
 	}
 }

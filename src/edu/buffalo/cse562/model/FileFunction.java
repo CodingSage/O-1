@@ -35,7 +35,6 @@ public class FileFunction {
 					hfileWriters.put(fileName, bwlocal);
 					return bwlocal ;
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 			  }
 		}
