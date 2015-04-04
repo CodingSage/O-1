@@ -9,6 +9,7 @@ import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.model.Operator;
+import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
 import edu.buffalo.cse562.query.Evaluator;
@@ -30,7 +31,7 @@ public class ProjectionOperator extends Operator {
 		Table res = new Table();
 		
 		int siz = targets.size();
-		
+		Schema schema = new Schema();
 		for(int i=0; i<siz; i++)
 		{
 				Target cur = targets.get(i);
@@ -46,17 +47,24 @@ public class ProjectionOperator extends Operator {
 											eval.next();
 											LeafValue val = eval.eval(cur.expr);
 											Tuple add = new Tuple();
-											LeafValue value ;
+											LeafValue value;
+											String type = "";
 											if(val instanceof LongValue){
 												value = (LongValue)val ;
 												add.insertColumn(String.valueOf(((LongValue) value).getValue()));
+												type = "int";
 											}
 											else if(val instanceof DoubleValue){
 												value = (DoubleValue)val;
 												add.insertColumn(String.valueOf(((DoubleValue)value).getValue()));
+												type = "double";
 											}
-											else add.insertColumn(val.toString());
-											
+											else {
+												add.insertColumn(val.toString());
+												type = "string";
+											}
+											if(schema.getNumberColumns() < i+1)
+												schema.addColumn(cur.expr.toString(), type);
 											tmp.addRow(add);
 									}
 									catch(SQLException e1)
@@ -72,7 +80,7 @@ public class ProjectionOperator extends Operator {
 //						res.addTableColumn(table.getColumn(cur.name));	 
 //				}
 		}
-		res.setSchema(table.getSchema());
+		res.setSchema(schema);
 		res.FilesList = table.FilesList;
 		return res;
 	}

@@ -9,13 +9,11 @@ public abstract class Operator {
 	protected abstract Table evaluate();
 
 	public Table execute() {
-		Table res = new Table();
+		/*Table res = new Table();
 		String name = DataManager.getInstance().assignFileName();
 		res.setName(name);
-		while (table.isEmpty()) {
-			res.append(evaluate());
-			table.loadData();
-		}
-		return res;
+		res.append(evaluate());
+		return res;*/
+		return evaluate();
 	}
 }

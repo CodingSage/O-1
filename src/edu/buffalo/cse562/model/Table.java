@@ -30,6 +30,7 @@ public class Table {
 
 	public Table(Schema schema) {
 		this.schema = schema;
+		rows = new ArrayList<Tuple>();
 	}
 
 	public Table(String singleVal, String valType) {
@@ -52,6 +53,7 @@ public class Table {
 
 	public Table(String tableName) {
 		name = tableName;
+		rows = new ArrayList<Tuple>();
 	}
 
 	public void loadData() {
@@ -138,6 +140,8 @@ public class Table {
 	}
 
 	public void addRow(Tuple tuple) {
+		if(rows == null)
+			rows = new ArrayList<Tuple>();
 		rows.add(tuple);
 	}
 

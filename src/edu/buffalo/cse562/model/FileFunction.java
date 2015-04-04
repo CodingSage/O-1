@@ -47,6 +47,8 @@ public class FileFunction {
 		BufferedReader reader = readers.get(tableName);
 		Tuple row = null;
 		try {
+			if(!reader.ready())
+				return null;
 			String line = reader.readLine();
 			if(line == null){
 				reader.close();

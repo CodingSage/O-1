@@ -46,8 +46,8 @@ public class Query {
 		//System.out.println("---------------------------------");
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		//System.out.println(raTree);
-		//System.out.println("---------------------------------");
+		System.out.println(raTree);
+		System.out.println("---------------------------------");
 		Table finalRes = new Table();
 		Table result = evaluateTree(raTree);
 		while(result != null){
@@ -63,17 +63,34 @@ public class Query {
 
 	private Table evaluateTree(PlanNode tree) {
 		Table res = new Table();
+		Table a, b;
 		if (tree instanceof PlanNode.Unary) {
-			Table a = evaluateTree(((PlanNode.Unary) tree).getChild());
-			res = evaluate((PlanNode.Unary) tree, a);
+			a = evaluateTree(((PlanNode.Unary) tree).getChild());
+			if(a == null)
+				return null;
+			b = new Table(a.getSchema());
+			b.setName(a.getName());
+			if(tree instanceof JoinNode || tree instanceof AggregateNode || tree instanceof SortNode) {
+				while(a != null) {
+					if(!a.isEmpty())
+						b.append(a);
+					a = evaluateTree(((PlanNode.Unary) tree).getChild());
+				}
+			}else{
+				b.append(a);
+			}
+			res = evaluate((PlanNode.Unary) tree, b);
 		} else if (tree instanceof PlanNode.Binary) {
 			PlanNode.Binary btree = (PlanNode.Binary) tree;
-			Table a = evaluateTree(btree.getLHS());
-			Table b = evaluateTree(btree.getRHS());
+			a = evaluateTree(btree.getLHS());
+			b = evaluateTree(btree.getRHS());
 			res = evaluate(btree, a, b);
 		} else {
 			res = DataManager.getInstance().getTable(
 					((TableScanNode) tree).table.getWholeTableName());
+			a = new Table(res.getSchema());
+			a.setName(res.getName());
+			res = a;
 			Tuple tup = FileFunction.readTable(res.getName());
 			if(tup == null)
 				return null;
@@ -98,9 +115,9 @@ public class Query {
 				rangeVariable = range.getWholeTableName();
 		} else if (node instanceof SelectionNode) {
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
-			if (node.getChild() instanceof TableScanNode)
+			/*if (node.getChild() instanceof TableScanNode)
 				op = new SelectLoadOperator(a,
-						((SelectionNode) node).getCondition());
+						((SelectionNode) node).getCondition());*/
 		} else if (node instanceof SortNode) {
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
