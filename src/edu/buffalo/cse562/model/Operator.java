@@ -11,15 +11,10 @@ public abstract class Operator {
 	public Table execute() {
 		Table res = new Table();
 		String name = DataManager.getInstance().assignFileName();
-		if (name.isEmpty())
-			res = evaluate();
-		else {
+		res.setName(name);
+		while (table.isEmpty()) {
+			res.append(evaluate());
 			table.loadData();
-			res.setName(name);
-			while (table.isEmpty()) {
-				res.append(evaluate());
-				table.loadData();
-			}
 		}
 		return res;
 	}

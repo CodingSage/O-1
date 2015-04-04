@@ -10,11 +10,11 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
+import edu.buffalo.cse562.checkpoint1.PlanNode.Binary;
+import edu.buffalo.cse562.checkpoint1.PlanNode.Unary;
 import edu.buffalo.cse562.checkpoint1.ProductNode;
 import edu.buffalo.cse562.checkpoint1.SelectionNode;
 import edu.buffalo.cse562.checkpoint1.TableScanNode;
-import edu.buffalo.cse562.checkpoint1.PlanNode.Binary;
-import edu.buffalo.cse562.checkpoint1.PlanNode.Unary;
 import edu.buffalo.cse562.model.JoinNode;
 
 public class Optimizer {

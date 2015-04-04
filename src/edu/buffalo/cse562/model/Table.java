@@ -84,11 +84,12 @@ public class Table {
 			e.printStackTrace();
 		}
 	}
-	
-	public void loadData(Expression exp){
+
+	public void loadData(Expression exp) {
 		rows = new ArrayList<Tuple>();
 		String tableName = name;
-		File file = new File(DataManager.getInstance().getDataPath() + File.separator + tableName + ".dat");
+		File file = new File(DataManager.getInstance().getDataPath()
+				+ File.separator + tableName + ".dat");
 		Table clone = new Table();
 		clone.setSchema(schema);
 		name = tableName.toLowerCase();
@@ -97,15 +98,18 @@ public class Table {
 			BufferedReader reader = new BufferedReader(fileread);
 			String line = null;
 			Evaluator eval = new Evaluator(clone);
+			String[] datas;
+			Tuple row;
+			LeafValue val;
 			while ((line = reader.readLine()) != null) {
-				String[] datas = line.split("\\|");
-				Tuple row = new Tuple(Arrays.asList(datas));
+				datas = line.split("\\|");
+				row = new Tuple(Arrays.asList(datas));
 				clone.removeRow(0);
 				clone.addRow(row);
 				eval.reset();
 				eval.next();
-				LeafValue val = eval.eval(exp);
-				if(((BooleanValue)val).getValue())
+				val = eval.eval(exp);
+				if (((BooleanValue) val).getValue())
 					rows.add(row);
 			}
 			reader.close();
@@ -181,7 +185,7 @@ public class Table {
 	}
 
 	public void removeRow(int index) {
-		if(rows.size() > index)
+		if (rows.size() > index)
 			rows.remove(index);
 	}
 

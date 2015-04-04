@@ -82,7 +82,6 @@ public class CalculateJoin {
 		ColumnNameRight = columnNameRight;
 	}
 
-	@SuppressWarnings("static-access")
 	public Table InMemoryJoin(Table t1, Table t2) {
 	
 		List<Tuple> l1 = t1.getRows();

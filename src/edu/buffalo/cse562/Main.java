@@ -9,15 +9,11 @@ import java.util.List;
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
-import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
-import net.sf.jsqlparser.statement.select.Union;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.model.Schema;
-import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.query.Query;
 import edu.buffalo.cse562.query.StatementEvaluator;
 

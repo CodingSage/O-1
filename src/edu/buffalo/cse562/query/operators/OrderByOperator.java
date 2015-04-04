@@ -1,16 +1,5 @@
 package edu.buffalo.cse562.query.operators;
 
-import java.util.List;
-
-import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
-import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
-import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.model.FileFunction;
-import edu.buffalo.cse562.model.Operator;
-import edu.buffalo.cse562.model.Table;
-import edu.buffalo.cse562.model.Tuple;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,6 +14,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
+
+import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
+import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.model.FileFunction;
+import edu.buffalo.cse562.model.Operator;
+import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.model.Tuple;
 
 public class OrderByOperator extends Operator {
 

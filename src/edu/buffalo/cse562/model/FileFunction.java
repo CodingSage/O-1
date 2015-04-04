@@ -1,29 +1,66 @@
 package edu.buffalo.cse562.model;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+
+import edu.buffalo.cse562.core.DataManager;
 
 public class FileFunction {
 
 	
-	public static FileWriter fw = null;
-	public static BufferedWriter bfw = null;
-	public static String fname = null;
-	public static HashMap<String,BufferedWriter> hfileWriters = new HashMap<String,BufferedWriter>();
+	private static FileWriter fw = null;
+	private static BufferedWriter bfw = null;
+	private static String fname = null;
+	private static HashMap<String, BufferedWriter> hfileWriters = new HashMap<String,BufferedWriter>();
+	private static Map<String, BufferedReader> readers = new HashMap<String, BufferedReader>();
 	
 	public FileFunction() {
-		
 	}
 
 	FileFunction(String fileName){
-
-		
+	}
+	
+	public static void addReadTable(String tableName){
+		BufferedReader reader = null;
+		try {
+			//TODO check path for swap folder
+			File file = new File(DataManager.getInstance().getDataPath()
+					+ File.separator + tableName + ".dat");
+			FileReader fileread = new FileReader(file);
+			reader = new BufferedReader(fileread);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		readers.put(tableName, reader);
+	}
+	
+	public static Tuple readTable(String tableName){
+		if(!readers.containsKey(tableName))
+			addReadTable(tableName);
+		BufferedReader reader = readers.get(tableName);
+		Tuple row = null;
+		try {
+			String line = reader.readLine();
+			if(line == null){
+				reader.close();
+				return null;
+			}
+			String[] datas = line.split("\\|");
+			row = new Tuple(Arrays.asList(datas));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return row;
 	}
 	
 	public  BufferedWriter getWriter(String fileName){
-		
 	     FileWriter fwlocal;
 	     BufferedWriter bwlocal = null;
 	     
@@ -42,7 +79,6 @@ public class FileFunction {
 	  }
 
 		public  void closeBuffers(){
-			
 			//iterating over values only
 			for (BufferedWriter value : hfileWriters.values()) {
 			    try {

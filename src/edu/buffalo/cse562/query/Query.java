@@ -18,9 +18,11 @@ import edu.buffalo.cse562.checkpoint1.TableScanNode;
 import edu.buffalo.cse562.checkpoint1.UnionNode;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.core.Optimizer;
+import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.JoinNode;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
+import edu.buffalo.cse562.model.Tuple;
 import edu.buffalo.cse562.query.operators.AggregateOperator;
 import edu.buffalo.cse562.query.operators.GroupByOperator;
 import edu.buffalo.cse562.query.operators.JoinOperator;
@@ -44,12 +46,18 @@ public class Query {
 		//System.out.println("---------------------------------");
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		System.out.println(raTree);
-		System.out.println("---------------------------------");
+		//System.out.println(raTree);
+		//System.out.println("---------------------------------");
+		Table finalRes = new Table();
 		Table result = evaluateTree(raTree);
-		if (result != null) {
-			for (int i = 0; i < result.getRows().size(); i++)
-				System.out.println(result.getRows().get(i));
+		while(result != null){
+			if(!result.isEmpty())
+				finalRes.append(result);
+			result = evaluateTree(raTree);
+		}
+		if (finalRes != null) {
+			for (int i = 0; i < finalRes.getRows().size(); i++)
+				System.out.println(finalRes.getRows().get(i));
 		}
 	}
 
@@ -66,12 +74,17 @@ public class Query {
 		} else {
 			res = DataManager.getInstance().getTable(
 					((TableScanNode) tree).table.getWholeTableName());
-			// res.loadData();
+			Tuple tup = FileFunction.readTable(res.getName());
+			if(tup == null)
+				return null;
+			res.addRow(tup);
 		}
 		return res;
 	}
 
 	private Table evaluate(PlanNode.Unary node, Table a) {
+		if(a == null)
+			return null;
 		Operator op = null;
 		String rangeVariable = "";
 		if (node instanceof LimitNode)

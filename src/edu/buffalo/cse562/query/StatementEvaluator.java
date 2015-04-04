@@ -25,9 +25,10 @@ public class StatementEvaluator implements StatementVisitor {
 
 	@Override
 	public void visit(Select select) {
-		/*SelectEvaluator eval = new SelectEvaluator();
-		select.getSelectBody().accept(eval);
-		result = eval.getResult();*/
+		/*
+		 * SelectEvaluator eval = new SelectEvaluator();
+		 * select.getSelectBody().accept(eval); result = eval.getResult();
+		 */
 	}
 
 	@Override
@@ -73,7 +74,9 @@ public class StatementEvaluator implements StatementVisitor {
 		for (Object def : table.getColumnDefinitions()) {
 			ColumnDefinition defn = (ColumnDefinition) def;
 			String type = defn.getColDataType().getDataType();
-			schema.addColumn(name + Constants.COLNAME_DELIMITER + defn.getColumnName(),	type);
+			schema.addColumn(
+					name + Constants.COLNAME_DELIMITER + defn.getColumnName(),
+					type);
 		}
 		t.setSchema(schema);
 		DataManager instance = DataManager.getInstance();
