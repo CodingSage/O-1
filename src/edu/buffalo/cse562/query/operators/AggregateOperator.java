@@ -35,6 +35,8 @@ public class AggregateOperator extends Operator {
 	@Override
 	protected Table evaluate() {
 		Table res = new Table();
+		if(table.isEmpty())
+			return res;
 		Schema schema = new Schema();
 		Schema s = table.getSchema();
 		List<Integer> is = new ArrayList<Integer>();

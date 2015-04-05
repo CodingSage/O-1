@@ -17,6 +17,7 @@ import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
+import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
 
@@ -26,8 +27,10 @@ public class GroupByOperator extends Operator {
 	private Table ResultTableName;
 	public Table GroupedByTable;
 	String line = null;
-	public Map<String, Integer> FilesList = new HashMap<String, Integer>();
-	public Map<String, List<Tuple>> hmGroupedTuple = new HashMap<String, List<Tuple>>();
+	public static Map<String, Integer> FilesList = new HashMap<String, Integer>();
+	public static Map<String, List<Tuple>> hmGroupedTuple = new HashMap<String, List<Tuple>>();
+	public static String prevname = null;
+	public static Schema tmps = new Schema();
 
 	public GroupByOperator(Table t, List<Target> _target,
 			List<AggColumn> _AggCol) {
@@ -144,45 +147,41 @@ public class GroupByOperator extends Operator {
 	}
 
 	protected Table inMemoryEvaluate() {
-
 		GroupedByTable = new Table();
-		GroupedByTable.setName(ResultTableName.getName() + "groupedby");
-		GroupedByTable.setSchema(ResultTableName.getSchema());
-
-		int x = GroupByParameters.size();
-
-		for (Tuple row : ResultTableName.getRows()) {
-
-			String[] values = row.toString().split("\\|");
-			StringBuilder newhashKey = new StringBuilder();
-
-			for (int i = 0; i < x; i++) {
-
-				int ind = ResultTableName.getSchema().getColIndex(
-						GroupByParameters.get(i).expr.toString().toLowerCase());
-				newhashKey.append("Grouped").append(values[ind]);
-
+			
+		if(ResultTableName != null){
+			int x = GroupByParameters.size();
+			for (Tuple row : ResultTableName.getRows())
+			{
+				String[] values = row.toString().split("\\|");
+				StringBuilder newhashKey = new StringBuilder();
+				for (int i = 0; i < x; i++) {
+					int ind = ResultTableName.getSchema().getColIndex(
+							GroupByParameters.get(i).expr.toString().toLowerCase());
+					newhashKey.append(values[ind]);
+				}
+				if (!hmGroupedTuple.containsKey(newhashKey.toString())) {
+					ArrayList<Tuple> lsTuple = new ArrayList<Tuple>();
+					lsTuple.add(row);
+					hmGroupedTuple.put(newhashKey.toString(), lsTuple);
+				} else {
+					hmGroupedTuple.get(newhashKey.toString()).add(row);
+				}
 			}
-
-			if (hmGroupedTuple.get(newhashKey.toString()) == null) {
-				ArrayList<Tuple> lsTuple = new ArrayList<Tuple>();
-				lsTuple.add(row);
-				hmGroupedTuple.put(newhashKey.toString(), lsTuple);
-			} else {
-				hmGroupedTuple.get(newhashKey.toString()).add(row);
+			prevname = ResultTableName.getName();
+			tmps = ResultTableName.getSchema();
+		}else{
+			GroupedByTable.setName(prevname + "groupedby");
+			GroupedByTable.setSchema(tmps);
+			Iterator<Entry<String, List<Tuple>>> iterator = hmGroupedTuple
+					.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry<String, List<Tuple>> mpEntry = iterator.next();
+				for(Tuple row : mpEntry.getValue()) {
+					GroupedByTable.addRow(row);
+				}
 			}
-		}
-
-		Iterator<Entry<String, List<Tuple>>> iterator = hmGroupedTuple
-				.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-
-			Map.Entry<String, List<Tuple>> mpEntry = iterator.next();
-			for(Tuple row : mpEntry.getValue()) {
-				GroupedByTable.addRow(row);
-			}
-		}
+		}	
 //		BufferedWriter bwlocal = null;
 //		FileFunction re = new FileFunction();
 //		bwlocal = re.getWriter(DataManager.getInstance().getDataPath()

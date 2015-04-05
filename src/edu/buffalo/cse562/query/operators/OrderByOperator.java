@@ -35,7 +35,6 @@ public class OrderByOperator extends Operator {
 		ResultTableName = t;
 		OrderbyParameters = _OrderByParameters;
 		FilesList = t.FilesList;
-		
 	}
 
 	public OrderByOperator(Table t, List<Ordering> _OrderByParameters,
