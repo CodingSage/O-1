@@ -43,11 +43,14 @@ public class AggregateOperator extends Operator {
 		if(table == null){
 			Table res = new Table();
 			List<Integer> avgIs = new ArrayList<Integer>();
+			
 			for(int i = 0; i < aggregates.size(); i++){
 				if(aggregates.get(i).aggType == AType.AVG)
 					avgIs.add(i);
 			}
-			for(String key : groupAgg.keySet()){
+			
+			for(String key : groupAgg.keySet())
+			{
 				String[] cols = key.split("@");
 				Tuple tup = new Tuple();
 				for(int i = 1; i < cols.length; i++)
@@ -106,13 +109,18 @@ public class AggregateOperator extends Operator {
 			String val = "";
 			for (Integer i : is)
 				val += "@" + table.getRows().get(0).getValue(i);
+			
 			if(!groupAgg.containsKey(val))
-				groupAgg.put(val, tuple);
+				groupAgg.put(val, new Tuple(tuple.getValues()));
+			
 			Tuple t = groupAgg.get(val);
-			for(int i = 0; i < aggregates.size(); i++){
+			
+			for(int i = 0; i < aggregates.size(); i++)
+			{
 				Table t1 = aggregation(table, aggregates.get(i), t.getValue(i));
 				t.setValue(i, t1.getValue(0, 0));
 			}
+			
 			groupAgg.put(val, t);
 		}
 		return res;
