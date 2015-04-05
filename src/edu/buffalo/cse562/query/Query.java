@@ -102,7 +102,7 @@ public class Query {
 				return null;
 			op = new LimitOperator(((LimitNode) node).getCount(), a);
 		} else if (node instanceof ProjectionNode) {
-			System.out.println("Projection");
+			//System.out.println("Projection");
 			if (a == null)
 				return null;
 			ProjectionNode pnode = (ProjectionNode) node;
@@ -112,7 +112,7 @@ public class Query {
 			if (range != null)
 				rangeVariable = range.getWholeTableName();
 		} else if (node instanceof SelectionNode) {
-			System.out.println("Select");
+			//System.out.println("Select");
 			if (a == null)
 				return null;
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
@@ -121,22 +121,22 @@ public class Query {
 			 * SelectLoadOperator(a, ((SelectionNode) node).getCondition());
 			 */
 		} else if (node instanceof SortNode) {
-			System.out.println("Sort");
+			//System.out.println("Sort");
 			SortNode sort = (SortNode) node;
 			List<Ordering> order = sort.getSorts();
 			op = new OrderByOperator(a, order);
 		} else {
-			System.out.println("Aggregate");
+			//System.out.println("Aggregate");
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
 			List<AggColumn> aggColumns = agg.getAggregates();
-			if (groups != null && !groups.isEmpty()) {
+			/*if (groups != null && !groups.isEmpty()) {
 				op = new GroupByOperator(a, groups, aggColumns);
 				a = op.execute();
-				net.sf.jsqlparser.schema.Table range = agg.getRangeVariable();
-				if (range != null)
-					rangeVariable = range.getWholeTableName();
-			}
+			}*/
+			net.sf.jsqlparser.schema.Table range = agg.getRangeVariable();
+			if (range != null)
+				rangeVariable = range.getWholeTableName();
 			op = new AggregateOperator(groups, aggColumns, a);
 		}
 		Table res = op.execute();

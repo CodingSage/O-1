@@ -2,8 +2,10 @@ package edu.buffalo.cse562.query.operators;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.jsqlparser.expression.DoubleValue;
@@ -24,6 +26,10 @@ public class AggregateOperator extends Operator {
 
 	private List<AggColumn> aggregates;
 	private List<Target> groups;
+	private static Map<String, Tuple> groupAgg = new HashMap<String, Tuple>();
+	private static Schema schema = null;
+	private static List<Integer> is = null;
+	private static Tuple tuple = null;
 
 	public AggregateOperator(List<Target> groupCols,
 			List<AggColumn> aggColumns, Table a) {
@@ -34,88 +40,102 @@ public class AggregateOperator extends Operator {
 
 	@Override
 	protected Table evaluate() {
+		if(table == null){
+			Table res = new Table();
+			List<Integer> avgIs = new ArrayList<Integer>();
+			for(int i = 0; i < aggregates.size(); i++){
+				if(aggregates.get(i).aggType == AType.AVG)
+					avgIs.add(i);
+			}
+			for(String key : groupAgg.keySet()){
+				String[] cols = key.split("@");
+				Tuple tup = new Tuple();
+				for(int i = 1; i < cols.length; i++)
+					tup.insertColumn(cols[i]);
+				Tuple a = Tuple.merge(tup, groupAgg.get(key));
+				for(Integer i : avgIs)
+				{
+					String[] v = a.getValue(groups.size()+i).split(":");
+					double avg = Double.parseDouble(v[1])/Integer.parseInt(v[0]);
+					a.setValue(groups.size()+i, avg + "");
+				}
+				res.addRow(a);
+			}
+			groupAgg.clear();
+			res.setSchema(schema);
+			schema = null;
+			return res;
+		}
+		
 		Table res = new Table();
 		if(table.isEmpty())
 			return res;
-		Schema schema = new Schema();
-		Schema s = table.getSchema();
-		List<Integer> is = new ArrayList<Integer>();
-		if (groups != null) {
-			for (Target g : groups) {
-				String colName = ((Column) g.expr).getWholeColumnName();
-				String colType = s.getType(colName);
-				schema.addColumn(colName, colType);
-				int i = s.getColIndex(colName);
-				is.add(i);
+		if(schema == null){
+			Schema s = table.getSchema();
+			schema = new Schema();
+			is = new ArrayList<Integer>();
+			tuple = new Tuple();
+			if (groups != null) {
+				for (Target g : groups) {
+					String colName = ((Column) g.expr).getWholeColumnName();
+					String colType = s.getType(colName);
+					schema.addColumn(colName, colType);
+					int i = s.getColIndex(colName);
+					is.add(i);
+				}
+			}
+			for(AggColumn col : aggregates){
+				String type = "";
+				if(col.aggType == AType.AVG || col.aggType == AType.SUM || col.aggType == AType.MAX || col.aggType == AType.MIN) {
+					type = "double";
+				} else {
+					type = "int";
+				}
+				if(col.aggType == AType.AVG)
+					tuple.insertColumn("0:0");
+				else if(col.aggType == AType.MIN)
+					tuple.insertColumn("" + Double.MAX_VALUE);
+				else
+					tuple.insertColumn("0");
+				schema.addColumn(col.name, type);
 			}
 		}
+		
 		if (groups != null && !groups.isEmpty()) {
+			//only one tuple being sent
 			String val = "";
 			for (Integer i : is)
-				val += table.getRows().get(0).getValue(i);
-			Table t = new Table();
-			t.setSchema(s);
-			t.addRow(table.getRows().get(0));
-			for (int j = 1; j < table.getRows().size() || !t.isEmpty(); j++) {
-				String rowVal = "";
-				if (j != table.getRows().size())
-					for (Integer i : is)
-						rowVal += table.getRows().get(j).getValue(i);
-				while (val.equals(rowVal) && j < table.getRows().size()) {
-					t.addRow(table.getRows().get(j));
-					j++;
-					if (j != table.getRows().size()){
-						rowVal = "";
-						for (Integer i : is)
-							rowVal += table.getRows().get(j).getValue(i);
-					}
-				}
-				t.setSchema(s);
-				val = rowVal;
-				Tuple tuple = new Tuple();
-				Tuple tupl = t.getRows().get(0);
-				for (Integer i : is)
-					tuple.insertColumn(tupl.getValue(i));
-				for (AggColumn agg : aggregates) {
-					Table tres = aggregation(t, agg);
-					if (res.isEmpty())
-						schema.addSchema(tres.getSchema());
-					tuple.insertColumn(tres.getRows().get(0).getValue(0));
-				}
-				res.addRow(tuple);
-				t = new Table();
-				if (j < table.getRows().size())
-					t.addRow(table.getRows().get(j));
+				val += "@" + table.getRows().get(0).getValue(i);
+			if(!groupAgg.containsKey(val))
+				groupAgg.put(val, tuple);
+			Tuple t = groupAgg.get(val);
+			for(int i = 0; i < aggregates.size(); i++){
+				Table t1 = aggregation(table, aggregates.get(i), t.getValue(i));
+				t.setValue(i, t1.getValue(0, 0));
 			}
-		} else {
-			for (AggColumn agg : aggregates) {
-				Table tres = aggregation(table, agg);
-				schema.addSchema(tres.getSchema());
-				res.addTableColumn(tres);
-			}
+			groupAgg.put(val, t);
 		}
-		res.setSchema(schema);
 		return res;
 	}
 
-	private Table aggregation(Table t, AggColumn agg) {
+	private Table aggregation(Table t, AggColumn agg, String initialVal) {
 		if (agg.aggType == AType.AVG)
-			return average(t, agg);
+			return average(t, agg, initialVal);
 		if (agg.aggType == AType.COUNT)
-			return count(t, agg);
+			return count(t, agg, initialVal);
 		if (agg.aggType == AType.COUNT_DISTINCT)
-			return countDistinct(t, agg);
+			return countDistinct(t, agg, initialVal);
 		if (agg.aggType == AType.MAX)
-			return max(t, agg);
+			return max(t, agg, initialVal);
 		if (agg.aggType == AType.MIN)
-			return min(t, agg);
+			return min(t, agg, initialVal);
 		if (agg.aggType == AType.SUM)
-			return sum(t, agg);
+			return sum(t, agg, initialVal);
 		return null;
 	}
 
-	private Table min(Table t, AggColumn agg) {
-		double min = Double.MAX_VALUE;
+	private Table min(Table t, AggColumn agg, String initialVal) {
+		double min = Double.parseDouble(initialVal);
 		Expression ex = agg.expr[0];
 		String type = "";
 		Evaluator eval = new Evaluator(t);
@@ -142,8 +162,8 @@ public class AggregateOperator extends Operator {
 		return new Table("" + min, type, agg.name);
 	}
 
-	private Table max(Table t, AggColumn agg) {
-		double max = 0;
+	private Table max(Table t, AggColumn agg, String initialVal) {
+		double max = Double.parseDouble(initialVal);
 		Expression ex = agg.expr[0];
 		String type = "";
 		Evaluator eval = new Evaluator(t);
@@ -170,7 +190,7 @@ public class AggregateOperator extends Operator {
 		return new Table("" + max, type, agg.name);
 	}
 
-	private Table countDistinct(Table t, AggColumn agg) {
+	private Table countDistinct(Table t, AggColumn agg, String initialVal) {
 		String name = ((Column) agg.expr[0]).getWholeColumnName();
 		int col = t.getSchema().getColIndex(name);
 		Set<String> s = new HashSet<String>();
@@ -179,13 +199,13 @@ public class AggregateOperator extends Operator {
 		return new Table("" + s.size(), "int", agg.name);
 	}
 
-	private Table count(Table t, AggColumn agg) {
-		int count = t.getRows().size();
+	private Table count(Table t, AggColumn agg, String initialVal) {
+		int count = t.getRows().size() + Integer.parseInt(initialVal);
 		return new Table("" + count, "int", agg.name);
 	}
 
-	private Table sum(Table t, AggColumn agg) {
-		double sum = 0;
+	private Table sum(Table t, AggColumn agg, String initialVal) {
+		double sum = Double.parseDouble(initialVal);
 		Expression ex = agg.expr[0];
 		String type = "";
 		Evaluator eval = new Evaluator(t);
@@ -199,7 +219,7 @@ public class AggregateOperator extends Operator {
 				}
 				if (val instanceof LongValue) {
 					sum += ((LongValue) val).getValue();
-					type = "double";
+					type = "int";
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -208,9 +228,10 @@ public class AggregateOperator extends Operator {
 		return new Table("" + sum, type, agg.name);
 	}
 
-	private Table average(Table t, AggColumn agg) {
-		int count = 0;
-		double sum = 0;
+	private Table average(Table t, AggColumn agg, String initialVal) {
+		String[] vals = initialVal.split(":");
+		int count = Integer.parseInt(vals[0]);
+		double sum = Double.parseDouble(vals[1]);
 		Expression ex = agg.expr[0];
 		String type = "";
 		Evaluator eval = new Evaluator(t);
@@ -231,7 +252,7 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-		return new Table("" + sum / count, type, agg.name);
+		return new Table(count+ ":" + sum, type, agg.name);
 	}
 
 }
