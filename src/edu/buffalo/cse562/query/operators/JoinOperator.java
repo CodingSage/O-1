@@ -19,8 +19,10 @@ public class JoinOperator extends Operator {
 
 	@Override
 	protected Table evaluate() {
-		String columns[] = expr.toString().split(" = ");
-		CalculateJoin c = new CalculateJoin(table, table2, columns[0], columns[1]);
+		String columns = expr.toString();//.split(" = ");
+		String col0 = columns.substring(0, columns.indexOf('='));
+		String col1 = columns.substring(columns.indexOf('=')+1);
+		CalculateJoin c = new CalculateJoin(table, table2, col0, col1);
 		Table reslt = c.InMemoryJoin(table, table2);
 		DataManager.getInstance().addNewTable(reslt);
 		return reslt;

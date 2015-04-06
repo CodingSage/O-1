@@ -17,6 +17,7 @@ import java.util.TreeMap;
 
 import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
@@ -122,19 +123,16 @@ public class OrderByOperator extends Operator {
 
 				TreeMap<List<String>, String> sortedlist = new TreeMap<List<String>, String>(
 						new ValueComparator(isdesc));
-
 				try {
-
 					while ((line = bufferedreader.readLine()) != null) {
 						int siz = OrderbyParameters.size();
-						String[] values = line.split("\\|");
+						List<String> values = Optimizer.splitStrings('|', line);//line.split("\\|");
 						List<String> keyadd = new ArrayList<String>();
-
 						for (int i = 0; i < siz; i++) {
 
 							int ind = ResultTableName.getSchema().getColIndex(
 									OrderbyParameters.get(i).expr.toString());
-							keyadd.add(values[ind]);
+							keyadd.add(values.get(ind));
 						}
 
 						sortedlist.put(keyadd, line);
@@ -356,34 +354,23 @@ public class OrderByOperator extends Operator {
 		FileFunction res = new FileFunction();
 
 		while (it.hasNext()) {
-			Map.Entry<String, Integer> Pair = (Entry<String, Integer>) it
-					.next();
-
+			Map.Entry<String, Integer> Pair = (Entry<String, Integer>) it.next();
 			FileReader fr = new FileReader(Pair.getKey());
 			BufferedReader br = new BufferedReader(fr);
-
-			int st = 0;
-
 			List<String> params = new ArrayList<String>();
-
 			line = br.readLine();
-
 			if (line != null) {
-
-				String[] values = line.split("|");
-
+				List<String> values = Optimizer.splitStrings('|', line);//line.split("|");
 				for (int i = 0; i < siz2; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
 							OrderbyParameters.get(i).toString());
-					params.add(values[ind]);
+					params.add(values.get(ind));
 				}
-
 				params.add(line);
 				params.add(cur + "");
 				pq.add(params);
 				indexes[cur] += 1;
 			}
-
 			fr.close();
 			cur++;
 			it.remove();

@@ -11,7 +11,6 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
-import edu.buffalo.cse562.checkpoint1.PlanNode;
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.query.Query;
@@ -45,13 +44,12 @@ public class Main {
 
 	private static void evaluate(List<File> sqlFiles) {
 		SqlToRA translator = new SqlToRA();
-		//System.out.println(new Date(System.currentTimeMillis()));
+		System.out.println(new Date(System.currentTimeMillis()));
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
 				Statement statement = null;
 				CCJSqlParser parser = new CCJSqlParser(reader);
-				PlanNode plan = null;
 				// TODO union implementation
 				while ((statement = parser.Statement()) != null) {
 					if (statement instanceof CreateTable) {
@@ -72,6 +70,6 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
-		//System.out.println(new Date(System.currentTimeMillis()));
+		System.out.println(new Date(System.currentTimeMillis()));
 	}
 }

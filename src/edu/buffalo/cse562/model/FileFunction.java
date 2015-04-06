@@ -6,11 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.core.Optimizer;
 
 public class FileFunction {
 
@@ -54,8 +54,9 @@ public class FileFunction {
 				reader.close();
 				return null;
 			}
-			String[] datas = line.split("\\|");
-			row = new Tuple(Arrays.asList(datas));
+			//String[] datas = line.split("\\|");
+			//row = new Tuple(Arrays.asList(datas));
+			row = new Tuple(Optimizer.splitStrings('|', line));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
@@ -72,7 +73,7 @@ public class GroupByOperator extends Operator {
 			BufferedReader bufferedReader = new BufferedReader(filereader);
 			FileFunction fHandle = new FileFunction();
 			while ((line = bufferedReader.readLine()) != null) {
-				String[] values = line.split("\\|");
+				List<String> values = Optimizer.splitStrings('|', line);
 				StringBuilder newfile = new StringBuilder();
 
 				for (int i = 0; i < x; i++) {
@@ -80,7 +81,7 @@ public class GroupByOperator extends Operator {
 							GroupByParameters.get(i).expr.toString()
 									.toLowerCase());
 					newfile.append(DataManager.getInstance().getDataPath());
-					newfile.append(values[ind]);
+					newfile.append(values.get(ind));
 				}
 
 				if (FilesList.get(newfile.toString()) == null)
@@ -153,12 +154,12 @@ public class GroupByOperator extends Operator {
 			int x = GroupByParameters.size();
 			for (Tuple row : ResultTableName.getRows())
 			{
-				String[] values = row.toString().split("\\|");
+				List<String> values = Optimizer.splitStrings('|', row.toString());
 				StringBuilder newhashKey = new StringBuilder();
 				for (int i = 0; i < x; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
 							GroupByParameters.get(i).expr.toString().toLowerCase());
-					newhashKey.append(values[ind]);
+					newhashKey.append(values.get(ind));
 				}
 				if (!hmGroupedTuple.containsKey(newhashKey.toString())) {
 					ArrayList<Tuple> lsTuple = new ArrayList<Tuple>();

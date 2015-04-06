@@ -34,10 +34,8 @@ public class Schema {
 			for (int j = 0; j < colName.size(); j++) {
 				String c = colName.get(j);
 				if (c.contains("|")) {
-
-					String[] cString = c.split("\\|");
-					// c = c.split(Constants.AGGREGATE_INDICATOR)[0];
-					if (col.equals(cString[0])) {
+					String cString = c.substring(0, c.indexOf('|'));
+					if (col.equals(cString)) {
 						index = j;
 						break;
 					}
