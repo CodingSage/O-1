@@ -34,11 +34,9 @@ public class Schema {
 		return colType.get(index);
 	}
 
-	public int getColIndex(String col) {
+	public Integer getColIndex(String col) {
 		col = col.toLowerCase().trim();
 		Integer i = colmap.get(col);
-		if(i == null)
-			System.out.println("'"+col+"'" + " : " + colmap.toString());
 		return i;
 	}
 

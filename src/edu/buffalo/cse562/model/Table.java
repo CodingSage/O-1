@@ -48,6 +48,11 @@ public class Table {
 		name = tableName;
 		rows = new ArrayList<Tuple>();
 	}
+	
+	public boolean containsColumn(String col){
+		Integer i = schema.getColIndex(col);
+		return i != null;
+	}
 
 	public void loadData() {
 		/*rows = new ArrayList<Tuple>();

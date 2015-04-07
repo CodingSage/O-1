@@ -28,10 +28,18 @@ public class JoinOperator extends Operator {
 		BinaryExpression bexpr = ((BinaryExpression)expr);
 		String col0 = ((Column)bexpr.getLeftExpression()).getWholeColumnName();
 		String col1 = ((Column)bexpr.getRightExpression()).getWholeColumnName();
-		if(col0.startsWith("L")){
+		//if(col0.startsWith("L")){
+		if(table2 != null && table2.containsColumn(col0)){
 			String temp = col0;
 			col0 = col1;
-			col1 = temp; 
+			col1 = temp;
+		}
+		
+		if(table != null && table.containsColumn(col1))
+		{
+			String temp = col1;
+			col1 = col0;
+			col0 = temp;
 		}
 		/*String columns = expr.toString();
 		String col0 = columns.substring(0, columns.indexOf('=')).trim();

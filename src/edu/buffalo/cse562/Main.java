@@ -44,7 +44,7 @@ public class Main {
 
 	private static void evaluate(List<File> sqlFiles) {
 		SqlToRA translator = new SqlToRA();
-		//System.out.println(new Date(System.currentTimeMillis()));
+		System.out.println(new Date(System.currentTimeMillis()));
 		for (File file : sqlFiles) {
 			try {
 				FileReader reader = new FileReader(file);
@@ -70,6 +70,6 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
-		//System.out.println(new Date(System.currentTimeMillis()));
+		System.out.println(new Date(System.currentTimeMillis()));
 	}
 }
