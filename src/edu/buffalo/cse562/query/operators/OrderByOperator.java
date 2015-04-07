@@ -64,10 +64,8 @@ public class OrderByOperator extends Operator {
 
 	protected Table inMemoryEvaluate() {
 		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
-
 		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(
 				new ValueComparator(isdesc));
-
 		int siz = OrderbyParameters.size();
 		Schema schema = ResultTableName.getSchema();
 		for (int j = 0; j < ResultTableName.getRows().size(); j++) {

@@ -28,7 +28,8 @@ public class DataManager {
 	}
 
 	public String getDataPath() {
-		return dataPath;
+		//return dataPath;
+		return "";
 	}
 
 	public void setDataPath(String dataPath) {
