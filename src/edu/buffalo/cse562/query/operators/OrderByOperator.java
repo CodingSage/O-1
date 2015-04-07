@@ -67,9 +67,20 @@ public class OrderByOperator extends Operator {
 
 	protected Table inMemoryEvaluate() {
 		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();	
+		
+		int siz = OrderbyParameters.size();
+		
+		/*for (int i = 0; i < siz; i++) 
+		{
+			String colName = OrderbyParameters.get(i).expr.toString();
+			int ind = ResultTableName.getSchema().getColIndex(colName);
+			if (OrderbyParameters.get(i).ascending == false)
+				isdesc.put(ind, 1);
+		}*/
+		
 		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(
 				new ValueComparator(isdesc));
-		int siz = OrderbyParameters.size();
+		
 		Schema schema = ResultTableName.getSchema();
 		for (int j = 0; j < ResultTableName.getRows().size(); j++) {
 			Tuple cur = ResultTableName.getRows().get(j);
@@ -79,7 +90,7 @@ public class OrderByOperator extends Operator {
 				String colName = OrderbyParameters.get(i).expr.toString();
 				int ind = ResultTableName.getSchema().getColIndex(colName);
 				if (OrderbyParameters.get(i).ascending == false)
-					isdesc.put(ind, 1);
+					isdesc.put(keyadd.size(), 1);
 				LeafValue v = cur.getValue(ind);
 				String val = "";
 				if(v instanceof DateValue)
