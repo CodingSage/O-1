@@ -22,14 +22,13 @@ public class DataManager {
 	}
 
 	public String assignFileName() {
-		if (storagePath == null || storagePath.isEmpty())
+		//if (storagePath == null || storagePath.isEmpty())
 			return "";
-		return storagePath + File.separatorChar + (++ansNum) + ".dat";
+		//return storagePath + File.separatorChar + (++ansNum) + ".dat";
 	}
 
 	public String getDataPath() {
-		//return dataPath;
-		return "";
+		return dataPath;
 	}
 
 	public void setDataPath(String dataPath) {
@@ -53,7 +52,8 @@ public class DataManager {
 	}
 
 	public String getStoragePath() {
-		return storagePath == null ? "" : storagePath;
+		return "";
+		//return storagePath == null ? "" : storagePath;
 	}
 
 }
