@@ -1,27 +1,34 @@
 package edu.buffalo.cse562.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.buffalo.cse562.Constants;
 
 public class Schema {
 
 	private List<String> colName;
-	private List<String> colType;
-
+	private List<ColumnType> colType;
+	private Map<String, Integer> colmap;
+	
 	public Schema() {
 		colName = new ArrayList<String>();
-		colType = new ArrayList<String>();
+		colType = new ArrayList<ColumnType>();
+		colmap = new HashMap<String, Integer>();
 	}
 
-	public void addColumn(String name, String type) {
+	public void addColumn(String name, ColumnType type) {
 		name = name.toLowerCase();
+		colmap.put(name, colName.size());
 		colName.add(name);
 		colType.add(type);
 	}
 
-	public String getType(String name) {
+	public ColumnType getType(String name) {
 		name = name.toLowerCase();
 		int index = getColIndex(name);
 		return colType.get(index);
@@ -29,46 +36,28 @@ public class Schema {
 
 	public int getColIndex(String col) {
 		col = col.toLowerCase();
-		int index = colName.indexOf(col);
-		if (index == -1)
-			for (int j = 0; j < colName.size(); j++) {
-				String c = colName.get(j);
-				if (c.contains("|")) {
-					String cString = c.substring(0, c.indexOf('|'));
-					if (col.equals(cString)) {
-						index = j;
-						break;
-					}
-				} else if (c.endsWith(col)) {
-					index = j;
-					break;
-				}
-			}
+		int index = colmap.get(col);
 		return index;
 	}
 
 	public void changeTableName(String tableName) {
-		for (int j = 0; j < colName.size(); j++) {
-			String col = colName.get(j);
-			int i = col.indexOf(Constants.COLNAME_DELIMITER);
-			if (i == -1){
-		   
-				StringBuilder sb = new StringBuilder();
-				sb.append(tableName).append(Constants.COLNAME_DELIMITER).append(col);
-				colName.set(j, sb.toString().toLowerCase());
-			}
-			else{
-				String newName = tableName + Constants.COLNAME_DELIMITER
-						+ col.substring(i + 1).toLowerCase();
-				colName.set(j, newName.toLowerCase());
-			}
-			
+		Iterator<Entry<String, Integer>> it = colmap.entrySet().iterator();
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		while(it.hasNext()) {
+			Entry<String, Integer> entry = it.next();
+			String col = entry.getKey();
+			col = col.substring(col.indexOf(Constants.COLNAME_DELIMITER)+1);
+			String newName = tableName.toLowerCase() + Constants.COLNAME_DELIMITER + col;
+			map.put(newName, entry.getValue());
 		}
+		colmap = map;
 	}
 	
 	public void addSchema(Schema schema){
 		colName.addAll(schema.getColName());
 		colType.addAll(schema.getColType());
+		for(String name : colName)
+			colmap.put(name, colmap.size());
 	}
 
 	public int getNumberColumns() {
@@ -79,7 +68,7 @@ public class Schema {
 		return colName;
 	}
 
-	public List<String> getColType() {
+	public List<ColumnType> getColType() {
 		return colType;
 	}
 

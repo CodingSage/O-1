@@ -15,11 +15,13 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 
+import net.sf.jsqlparser.expression.LeafValue;
 import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
+import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
 
@@ -54,57 +56,48 @@ public class OrderByOperator extends Operator {
 			return extEvaluate();
 
 		} else {
-			//extEvaluate();
+			// extEvaluate();
 			return inMemoryEvaluate();
 
 		}
 	}
-   
-	protected Table inMemoryEvaluate()
-	{
+
+	protected Table inMemoryEvaluate() {
 		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
 
-		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(new ValueComparator(isdesc));
-		
-		int siz = OrderbyParameters.size();
-		
-		for(int j=0;j<ResultTableName.getRows().size();j++)
-		{
-				Tuple cur = ResultTableName.getRows().get(j);
-				List<String> values = cur.getValues();
-				
-				List<String> keyadd = new ArrayList<String>();
-				
-				for (int i = 0; i < siz; i++) 
-				{
-							int ind = ResultTableName.getSchema().getColIndex(OrderbyParameters.get(i).expr.toString());
-							
-							if(OrderbyParameters.get(i).ascending == false)
-										isdesc.put(ind, 1);
-							
-							keyadd.add(cur.getValue(ind));
-				}
+		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(
+				new ValueComparator(isdesc));
 
-				sortedlist.put(keyadd, cur);
+		int siz = OrderbyParameters.size();
+		Schema schema = ResultTableName.getSchema();
+		for (int j = 0; j < ResultTableName.getRows().size(); j++) {
+			Tuple cur = ResultTableName.getRows().get(j);
+			List<LeafValue> values = cur.getValues();
+			List<String> keyadd = new ArrayList<String>();
+			for (int i = 0; i < siz; i++) {
+				int ind = ResultTableName.getSchema().getColIndex(OrderbyParameters.get(i).expr.toString());
+				if (OrderbyParameters.get(i).ascending == false)
+					isdesc.put(ind, 1);
+				//TODO check this
+				keyadd.add(cur.getValue(ind).toString());
+			}
+			sortedlist.put(keyadd, cur);
 		}
-		
+
 		OrderedTableName = new Table();
 		OrderedTableName.setName(ResultTableName.getName() + "orderedBy");
 		OrderedTableName.setSchema(ResultTableName.getSchema());
 		OrderedTableName.setSchema(ResultTableName.getSchema());
-		
 		Iterator it = sortedlist.entrySet().iterator();
-		
-		while(it.hasNext())
-		{
-				Map.Entry< List<String> , Tuple> Pair = (Entry< List<String>, Tuple>)it.next();
-				
-				OrderedTableName.addRow(Pair.getValue());
+		while (it.hasNext()) {
+			Map.Entry<List<String>, Tuple> Pair = (Entry<List<String>, Tuple>) it.next();
+			OrderedTableName.addRow(Pair.getValue());
 		}
-		
+
 		return OrderedTableName;
-			
+
 	}
+
 	protected Table extEvaluate() {
 
 		FileReader filereader;
@@ -126,7 +119,7 @@ public class OrderByOperator extends Operator {
 				try {
 					while ((line = bufferedreader.readLine()) != null) {
 						int siz = OrderbyParameters.size();
-						List<String> values = Optimizer.splitStrings('|', line);//line.split("\\|");
+						List<String> values = Optimizer.splitStrings('|', line);// line.split("\\|");
 						List<String> keyadd = new ArrayList<String>();
 						for (int i = 0; i < siz; i++) {
 
@@ -177,7 +170,7 @@ public class OrderByOperator extends Operator {
 		return OrderedTableName;
 
 	}
-	
+
 	class ValueComparator implements Comparator<List<String>> {
 
 		Map<Integer, Integer> base;
@@ -333,6 +326,7 @@ public class OrderByOperator extends Operator {
 			// returning 0 would merge keys
 		}
 	}
+
 	protected void mergefiles() throws IOException {
 		Iterator it = OrderedFilesList.entrySet().iterator();
 
@@ -354,13 +348,14 @@ public class OrderByOperator extends Operator {
 		FileFunction res = new FileFunction();
 
 		while (it.hasNext()) {
-			Map.Entry<String, Integer> Pair = (Entry<String, Integer>) it.next();
+			Map.Entry<String, Integer> Pair = (Entry<String, Integer>) it
+					.next();
 			FileReader fr = new FileReader(Pair.getKey());
 			BufferedReader br = new BufferedReader(fr);
 			List<String> params = new ArrayList<String>();
 			line = br.readLine();
 			if (line != null) {
-				List<String> values = Optimizer.splitStrings('|', line);//line.split("|");
+				List<String> values = Optimizer.splitStrings('|', line);// line.split("|");
 				for (int i = 0; i < siz2; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
 							OrderbyParameters.get(i).toString());

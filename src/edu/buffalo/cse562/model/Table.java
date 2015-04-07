@@ -1,20 +1,13 @@
 package edu.buffalo.cse562.model;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LeafValue;
 import edu.buffalo.cse562.Constants;
-import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.query.Evaluator;
 
 public class Table {
 
@@ -33,7 +26,7 @@ public class Table {
 		rows = new ArrayList<Tuple>();
 	}
 
-	public Table(String singleVal, String valType) {
+	public Table(LeafValue singleVal, ColumnType valType) {
 		schema = new Schema();
 		schema.addColumn(Constants.COLNAME_DEFAULT, valType);
 		rows = new ArrayList<Tuple>();
@@ -42,7 +35,7 @@ public class Table {
 		rows.add(t);
 	}
 
-	public Table(String singleVal, String valType, String colName) {
+	public Table(LeafValue singleVal, ColumnType valType, String colName) {
 		schema = new Schema();
 		schema.addColumn(colName, valType);
 		rows = new ArrayList<Tuple>();
@@ -57,8 +50,7 @@ public class Table {
 	}
 
 	public void loadData() {
-		// TODO check loading conditions on memory constraints
-		rows = new ArrayList<Tuple>();
+		/*rows = new ArrayList<Tuple>();
 		String tableName = name;
 		File file = new File(DataManager.getInstance().getDataPath()
 				+ File.separator + tableName + ".dat");
@@ -84,11 +76,11 @@ public class Table {
 			name = tableName.toLowerCase();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void loadData(Expression exp) {
-		rows = new ArrayList<Tuple>();
+		/*rows = new ArrayList<Tuple>();
 		String tableName = name;
 		File file = new File(DataManager.getInstance().getDataPath()
 				+ File.separator + tableName + ".dat");
@@ -118,14 +110,14 @@ public class Table {
 			fileread.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public boolean isEmpty() {
 		return rows.isEmpty();
 	}
 
-	public String getValue(int rowIndex, int colIndex) {
+	public LeafValue getValue(int rowIndex, int colIndex) {
 		return rows.get(rowIndex).getValue(colIndex);
 	}
 

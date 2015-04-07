@@ -121,7 +121,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 		int icount = 0;
 		if (!hasGroupBy) {
 			for (Tuple row : res.getRows()) {
-				double v = Double.parseDouble(row.getValue(0));
+				double v = 0;//Double.parseDouble(row.getValue(0));
 				dsum += v;
 				icount++;
 			}
@@ -137,7 +137,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 			ans = dsum / icount;
 		}
 		if (!hasGroupBy)
-			operand = new Table(ans + "", "double");
+			//operand = new Table(ans + "", "double");
 		operand = res;
 	}
 
@@ -362,7 +362,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
 						v = ((LongValue) val).getValue() + "";
 					List<String> row = new ArrayList<String>();
 					row.add(v);
-					Tuple t = new Tuple(row);
+					Tuple t = null;//new Tuple(row);
 					res.addRow(t);
 				}
 			} catch (SQLException e) {

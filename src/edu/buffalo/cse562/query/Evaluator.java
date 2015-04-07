@@ -4,12 +4,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.jsqlparser.expression.DateValue;
-import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LeafValue;
-import net.sf.jsqlparser.expression.LongValue;
-import net.sf.jsqlparser.expression.NullValue;
-import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.Eval;
@@ -38,10 +33,11 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		int i = -1;
 		Schema schema = operand.getSchema();
 		i = schema.getColIndex(col);
-		String type = schema.getType(col);
+		//ColumnType type = schema.getType(col);
 		Tuple current = operand.getRows().get(curIndex);
-		String s = current.getValue(i);
-		// TODO check other types
+		LeafValue s = current.getValue(i);
+		return s;
+		/*// TODO check other types
 		if (type.toLowerCase().equals("int"))
 			return new LongValue(s);
 		if (type.toLowerCase().equals("double"))
@@ -56,7 +52,7 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 			return new StringValue("'" + s + "'");
 		if (type.toLowerCase().startsWith("varchar"))
 			return new StringValue("'" + s + "'");
-		return new NullValue();
+		return new NullValue();*/
 	}
 
 	public Table getOperand() {

@@ -169,7 +169,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 	@Override
 	public void visit(SelectExpressionItem arg) {
 		// TODO evaluate expression
-		List<String> names = new ArrayList<String>();
+		/*List<String> names = new ArrayList<String>();
 		extractAlias(result.getName(), arg.getAlias());
 		for (Table table : tables)
 			names.add(table.getName());
@@ -198,7 +198,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				for (String col : cols) {
 					aggregatables.getSchema().addColumn(col, "string");
 				}
-		}
+		}*/
 	}
 
 	/* The method does a group by on the records */
@@ -217,8 +217,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				List<String> colVal1 = new ArrayList<String>();
 				for (String column : colList) {
 					columnId = result.getSchema().getColIndex(column);
-					colVal1.add(result.getRows().get(i).getTupleValue()
-							.get(columnId));
+					/*colVal1.add(result.getRows().get(i).getTupleValue()
+							.get(columnId));*/
 				}
 				if (h.containsKey(colVal1))
 					continue;
@@ -227,7 +227,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				curRow = new Tuple();
 				for (String col : result.getSchema().getColName()) {
 					int j = result.getSchema().getColIndex(col);
-					curRow.insertColumn(result.getValue(i, j));
+					//curRow.insertColumn(result.getValue(i, j));
 				}
 				rsResultRowsGb.add(curRow);
 				for (int j = i + 1; j < result.getRows().size(); j++) {
@@ -235,8 +235,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					List<String> colVal2 = new ArrayList<String>();
 					for (String column : colList) {
 						columnId = result.getSchema().getColIndex(column);
-						colVal2.add(result.getRows().get(j).getTupleValue()
-								.get(columnId));
+						/*colVal2.add(result.getRows().get(j).getTupleValue()
+								.get(columnId));*/
 					}
 					int found = 0;
 					for (int k = 0; k < colVal1.size(); k++) {
@@ -250,7 +250,7 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 						curRow = new Tuple();
 						for (String col : result.getSchema().getColName()) {
 							int a = result.getSchema().getColIndex(col);
-							curRow.insertColumn(result.getValue(j, a));
+							//curRow.insertColumn(result.getValue(j, a));
 						}
 						rsResultRowsGb.add(curRow);
 					}
@@ -278,14 +278,14 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				Schema resSchema = result.getSchema();
 				for (String column : resSchema.getColName()) {
 					columnId1 = result.getSchema().getColIndex(column);
-					if (columnId1 != -1) {
+					/*if (columnId1 != -1) {
 						colVal = result.getRows().get(i).getTupleValue().get(j);
 						resRow.insertColumn(colVal);
 						j++;
 					} else {
 						resRow.insertColumn(aggregatables.getValue(i, aggcnt));
 						aggcnt++;
-					}
+					}*/
 
 				}
 				rsResultRows.add(resRow);
@@ -318,10 +318,10 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					if (!col.contains(Constants.AGGREGATE_SUM)
 							&& !col.contains(Constants.AGGREGATE_AVG)
 							&& !col.contains(Constants.AGGREGATE_COUNT)) {
-						colVal1 = result.getRows().get(i).getTupleValue()
+						/*colVal1 = result.getRows().get(i).getTupleValue()
 								.get(columnId1);
 						colVal2 = result.getRows().get(j).getTupleValue()
-								.get(columnId1);
+								.get(columnId1);*/
 
 						if (!colVal1.equals(colVal2)) {
 							gp = false;
@@ -356,8 +356,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 					anss = 0;
 
 					for (int k = i; k <= j; k++)
-						anss += Double.valueOf(result.getRows().get(k)
-								.getTupleValue().get(l));
+						/*anss += Double.valueOf(result.getRows().get(k)
+								.getTupleValue().get(l));*/
 
 					lstCols.add(String.valueOf(anss));
 				} else if (col.contains(Constants.AGGREGATE_AVG)) {
@@ -366,15 +366,15 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 					for (int k = i; k <= j; k++) {
 						avgcnt += 1;
-						avgs += Double.valueOf(result.getRows().get(k)
-								.getTupleValue().get(l));
+						/*avgs += Double.valueOf(result.getRows().get(k)
+								.getTupleValue().get(l));*/
 					}
 
 					double ans = avgs / avgcnt;
 					lstCols.add(String.valueOf(ans));
 				} else {
-					colVal1 = result.getRows().get(i).getTupleValue()
-							.get(columnId1);
+					/*colVal1 = result.getRows().get(i).getTupleValue()
+							.get(columnId1);*/
 					lstCols.add(colVal1);
 				}
 
@@ -382,8 +382,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 
 			}
 
-			Tuple res = new Tuple(lstCols);
-			rsResultRows.add(res);
+			//Tuple res = new Tuple(lstCols);
+			//rsResultRows.add(res);
 			i = j;
 		}
 
@@ -417,8 +417,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 				columnId = result.getSchema().getColIndex(column);
 				if (dsplit.length > 1 && dsplit[1].equals("DESC"))
 					isdesc.put(j, 1);
-				colVal.add(result.getRows().get(i).getTupleValue()
-						.get(columnId));
+				/*colVal.add(result.getRows().get(i).getTupleValue()
+						.get(columnId));*/
 
 				j++;
 			}
@@ -451,8 +451,8 @@ public class SelectEvaluator implements SelectVisitor, FromItemVisitor,
 		for (List<String> key : hmResults.keySet()) {
 			Integer value = hmResults.get(key);
 			key.add(String.valueOf(value));
-			Tuple newRow = new Tuple(key);
-			rsResults.add(newRow);
+			/*Tuple newRow = new Tuple(key);
+			rsResults.add(newRow);*/
 		}
 		result.setRows(rsResults);
 	}

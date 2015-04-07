@@ -3,58 +3,58 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jsqlparser.expression.DoubleValue;
+import net.sf.jsqlparser.expression.LeafValue;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.schema.Column;
 
 public class Tuple {
 
-	List<String> tupleVal;
+	List<LeafValue> tupleVal;
+
+	public Tuple() {
+		tupleVal = new ArrayList<LeafValue>();
+	}
+
+	public Tuple(int capacity) {
+		tupleVal = new ArrayList<LeafValue>();
+		for (int i = 0; i < capacity; i++)
+			tupleVal.add(new StringValue(""));
+	}
 
 	public static Tuple merge(Tuple row1, Tuple row2) {
-		List<String> retRow = new ArrayList<String>();
+		List<LeafValue> retRow = new ArrayList<LeafValue>();
 		if (row1 != null)
-			retRow.addAll(row1.getTupleValue());
+			retRow.addAll(row1.getValues());
 		if (row2 != null)
-			retRow.addAll(row2.getTupleValue());
+			retRow.addAll(row2.getValues());
 		Tuple newTuple = new Tuple(retRow);
 		return newTuple;
 	}
 
-	public Tuple() {
-		tupleVal = new ArrayList<String>();
+	public Tuple(List<LeafValue> row) {
+		tupleVal = new ArrayList<LeafValue>(row);
 	}
 
-	public Tuple(int capacity) {
-		tupleVal = new ArrayList<String>();
-		for (int i = 0; i < capacity; i++)
-			tupleVal.add("");
-	}
-
-	public Tuple(List<String> row) {
-		tupleVal = new ArrayList<String>(row);
-	}
-
-	public List<String> getValues() {
+	public List<LeafValue> getValues() {
 		return tupleVal;
 	}
 
-	public ArrayList<String> getTupleValue() {
-		return (ArrayList<String>) tupleVal;
-	}
-
-	public void insertColumn(String data) {
+	public void insertColumn(LeafValue data) {
 		this.tupleVal.add(data);
 	}
 
-	public String eval(Column x) {
+	public LeafValue eval(Column x) {
 		int colID = 1;
 		return tupleVal.get(colID);
 	}
 
-	public String getValue(int index) {
+	public LeafValue getValue(int index) {
 		return tupleVal.get(index);
 	}
 
-	public void setValue(int index, String value) {
+	public void setValue(int index, LeafValue value) {
 		if (index < tupleVal.size())
 			tupleVal.set(index, value);
 	}
@@ -63,9 +63,16 @@ public class Tuple {
 	public String toString() {
 		String s = "";
 		int cnt = 0;
-		for (String str : tupleVal) {
+		for (LeafValue str : tupleVal) {
+			String s1 = "";
+			if(str instanceof StringValue)
+				s1 = ((StringValue)str).getValue();
+			else if(str instanceof DoubleValue)
+				s1 = ((DoubleValue)str).getValue() + "";
+			if(str instanceof LongValue)
+				s1 = ((LongValue)str).getValue() + "";
 			if (cnt > 0)
-				s += "|" + str;
+				s += "|" + s1;
 			else
 				s += str;
 			cnt++;

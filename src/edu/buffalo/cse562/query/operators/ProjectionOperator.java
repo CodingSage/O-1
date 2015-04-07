@@ -8,6 +8,7 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
+import edu.buffalo.cse562.model.ColumnType;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
@@ -48,20 +49,20 @@ public class ProjectionOperator extends Operator {
 											LeafValue val = eval.eval(cur.expr);
 											Tuple add = new Tuple();
 											LeafValue value;
-											String type = "";
+											ColumnType type = null;
 											if(val instanceof LongValue){
 												value = (LongValue)val ;
-												add.insertColumn(String.valueOf(((LongValue) value).getValue()));
-												type = "int";
+												add.insertColumn(value);
+												type = ColumnType.INT;
 											}
 											else if(val instanceof DoubleValue){
 												value = (DoubleValue)val;
-												add.insertColumn(String.valueOf(((DoubleValue)value).getValue()));
-												type = "double";
+												add.insertColumn(value);
+												type = ColumnType.DOUBLE;
 											}
 											else {
-												add.insertColumn(val.toString());
-												type = "string";
+												add.insertColumn(val);
+												type = ColumnType.STRING;
 											}
 											if(schema.getNumberColumns() < i+1)
 												schema.addColumn(cur.expr.toString(), type);

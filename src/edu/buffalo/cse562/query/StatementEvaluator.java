@@ -12,6 +12,7 @@ import net.sf.jsqlparser.statement.truncate.Truncate;
 import net.sf.jsqlparser.statement.update.Update;
 import edu.buffalo.cse562.Constants;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.model.ColumnType;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 
@@ -74,9 +75,23 @@ public class StatementEvaluator implements StatementVisitor {
 		for (Object def : table.getColumnDefinitions()) {
 			ColumnDefinition defn = (ColumnDefinition) def;
 			String type = defn.getColDataType().getDataType();
-			schema.addColumn(
-					name + Constants.COLNAME_DELIMITER + defn.getColumnName(),
-					type);
+			ColumnType leafType = null;
+			if (type.toLowerCase().equals("int")){
+				leafType  = ColumnType.INT;
+			}else if (type.toLowerCase().equals("double")){
+				leafType  = ColumnType.DOUBLE;
+			}else if (type.toLowerCase().equals("decimal")){
+				leafType  = ColumnType.DECIMAL;
+			}else if (type.toLowerCase().equals("date")){
+				leafType = ColumnType.DATE;
+			}else if (type.equals("string")){
+				leafType = ColumnType.STRING;
+			}else if (type.toLowerCase().startsWith("char")){
+				leafType = ColumnType.CHAR;
+			}else if (type.toLowerCase().startsWith("varchar")){
+				leafType = ColumnType.VARCHAR;
+			}
+			schema.addColumn(name + Constants.COLNAME_DELIMITER + defn.getColumnName(), leafType);
 		}
 		t.setSchema(schema);
 		DataManager instance = DataManager.getInstance();

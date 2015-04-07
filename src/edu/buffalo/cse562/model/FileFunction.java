@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.sf.jsqlparser.expression.LeafValue;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.core.Optimizer;
 
@@ -45,8 +47,9 @@ public class FileFunction {
 		if(!readers.containsKey(tableName))
 			addReadTable(tableName);
 		BufferedReader reader = readers.get(tableName);
-		Tuple row = null;
+		Tuple row = new Tuple();
 		try {
+			Schema schema = DataManager.getInstance().getSchema(tableName);
 			if(!reader.ready())
 				return null;
 			String line = reader.readLine();
@@ -54,9 +57,12 @@ public class FileFunction {
 				reader.close();
 				return null;
 			}
-			//String[] datas = line.split("\\|");
-			//row = new Tuple(Arrays.asList(datas));
-			row = new Tuple(Optimizer.splitStrings('|', line));
+			List<String> s = Optimizer.splitStrings('|', line);
+			for(int i = 0; i < schema.getColName().size(); i++) {
+				ColumnType type = schema.getColType().get(i);
+				LeafValue val = Utilities.toLeafValue(s.get(i), type);
+				row.insertColumn(val);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
