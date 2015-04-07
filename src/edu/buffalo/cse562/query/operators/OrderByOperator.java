@@ -55,8 +55,8 @@ public class OrderByOperator extends Operator {
 		// TODO projection implementations
 		if (DataManager.getInstance().getStoragePath() != null
 				&& !(DataManager.getInstance().getStoragePath().equals(""))) {
-
-			return extEvaluate();
+			return inMemoryEvaluate();
+			//return extEvaluate();
 
 		} else {
 			// extEvaluate();
