@@ -3,7 +3,6 @@ package edu.buffalo.cse562.query.operators;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
-import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CalculateJoin;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
