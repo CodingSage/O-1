@@ -15,15 +15,18 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 
+import net.sf.jsqlparser.expression.DateValue;
+import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LeafValue;
+import net.sf.jsqlparser.expression.LongValue;
 import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
 import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
+import edu.buffalo.cse562.model.Utilities;
 
 public class OrderByOperator extends Operator {
 
@@ -63,7 +66,7 @@ public class OrderByOperator extends Operator {
 	}
 
 	protected Table inMemoryEvaluate() {
-		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> isdesc = new HashMap<Integer, Integer>();	
 		TreeMap<List<String>, Tuple> sortedlist = new TreeMap<List<String>, Tuple>(
 				new ValueComparator(isdesc));
 		int siz = OrderbyParameters.size();
@@ -73,11 +76,21 @@ public class OrderByOperator extends Operator {
 			List<LeafValue> values = cur.getValues();
 			List<String> keyadd = new ArrayList<String>();
 			for (int i = 0; i < siz; i++) {
-				int ind = ResultTableName.getSchema().getColIndex(OrderbyParameters.get(i).expr.toString());
+				String colName = OrderbyParameters.get(i).expr.toString();
+				int ind = ResultTableName.getSchema().getColIndex(colName);
 				if (OrderbyParameters.get(i).ascending == false)
 					isdesc.put(ind, 1);
-				//TODO check this
-				keyadd.add(cur.getValue(ind).toString());
+				LeafValue v = cur.getValue(ind);
+				String val = "";
+				if(v instanceof DateValue)
+					val = ((DateValue)v).getValue().toString();
+				if(v instanceof LongValue)
+					val = ((LongValue)v).getValue() + "";
+				if(v instanceof DoubleValue)
+					val = ((DoubleValue)v).getValue() + "";
+				else
+					val = v.toString();
+				keyadd.add(val);
 			}
 			sortedlist.put(keyadd, cur);
 		}
@@ -117,7 +130,7 @@ public class OrderByOperator extends Operator {
 				try {
 					while ((line = bufferedreader.readLine()) != null) {
 						int siz = OrderbyParameters.size();
-						List<String> values = Optimizer.splitStrings('|', line);// line.split("\\|");
+						List<String> values = Utilities.splitStrings('|', line);// line.split("\\|");
 						List<String> keyadd = new ArrayList<String>();
 						for (int i = 0; i < siz; i++) {
 
@@ -353,7 +366,7 @@ public class OrderByOperator extends Operator {
 			List<String> params = new ArrayList<String>();
 			line = br.readLine();
 			if (line != null) {
-				List<String> values = Optimizer.splitStrings('|', line);// line.split("|");
+				List<String> values = Utilities.splitStrings('|', line);// line.split("|");
 				for (int i = 0; i < siz2; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
 							OrderbyParameters.get(i).toString());

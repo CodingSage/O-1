@@ -12,7 +12,6 @@ import java.util.Map;
 
 import net.sf.jsqlparser.expression.LeafValue;
 import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.core.Optimizer;
 
 public class FileFunction {
 
@@ -57,7 +56,7 @@ public class FileFunction {
 				reader.close();
 				return null;
 			}
-			List<String> s = Optimizer.splitStrings('|', line);
+			List<String> s = Utilities.splitStrings('|', line);
 			for(int i = 0; i < schema.getColName().size(); i++) {
 				ColumnType type = schema.getColType().get(i);
 				LeafValue val = Utilities.toLeafValue(s.get(i), type);

@@ -3,6 +3,7 @@ package edu.buffalo.cse562.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
@@ -71,6 +72,8 @@ public class Tuple {
 				s1 = ((DoubleValue)str).getValue() + "";
 			if(str instanceof LongValue)
 				s1 = ((LongValue)str).getValue() + "";
+			if(str instanceof DateValue)
+				s1 = ((DateValue)str).getValue() + "";
 			if(s1.contains("'"))
 				s1= s1.replace("'", "");
 			if (cnt > 0)

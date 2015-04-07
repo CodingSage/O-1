@@ -17,7 +17,6 @@ import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.AggregateNode.AType;
 import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
-import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.ColumnType;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
@@ -53,7 +52,7 @@ public class AggregateOperator extends Operator {
 					avgIs.add(i);
 			}
 			for (String key : groupAgg.keySet()) {
-				List<String> cols = Optimizer.splitStrings('@', key);
+				List<String> cols = Utilities.splitStrings('@', key);
 				Tuple tup = new Tuple();
 				for (int i = 1; i < cols.size(); i++) {
 					ColumnType type = schema.getColType().get(i-1);

@@ -22,7 +22,7 @@ public class Schema {
 	}
 
 	public void addColumn(String name, ColumnType type) {
-		name = name.toLowerCase();
+		name = name.toLowerCase().trim();
 		colmap.put(name, colName.size());
 		colName.add(name);
 		colType.add(type);
@@ -35,15 +35,18 @@ public class Schema {
 	}
 
 	public int getColIndex(String col) {
-		col = col.toLowerCase();
-		int index = colmap.get(col);
-		return index;
+		col = col.toLowerCase().trim();
+		Integer i = colmap.get(col);
+		if(i == null)
+			System.out.println("'"+col+"'" + " : " + colmap.toString());
+		return i;
 	}
 
 	public void changeTableName(String tableName) {
 		Iterator<Entry<String, Integer>> it = colmap.entrySet().iterator();
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		while(it.hasNext()) {
+		while(it.hasNext()) 
+		{
 			Entry<String, Integer> entry = it.next();
 			String col = entry.getKey();
 			col = col.substring(col.indexOf(Constants.COLNAME_DELIMITER)+1);
@@ -56,7 +59,7 @@ public class Schema {
 	public void addSchema(Schema schema){
 		colName.addAll(schema.getColName());
 		colType.addAll(schema.getColType());
-		for(String name : colName)
+		for(String name : schema.getColName())
 			colmap.put(name, colmap.size());
 	}
 

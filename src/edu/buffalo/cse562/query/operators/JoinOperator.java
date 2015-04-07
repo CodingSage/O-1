@@ -1,6 +1,8 @@
 package edu.buffalo.cse562.query.operators;
 
+import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.CalculateJoin;
 import edu.buffalo.cse562.model.Operator;
@@ -19,13 +21,23 @@ public class JoinOperator extends Operator {
 
 	@Override
 	protected Table evaluate() {
-		String columns = expr.toString();//.split(" = ");
-		String col0 = columns.substring(0, columns.indexOf('='));
-		String col1 = columns.substring(columns.indexOf('=')+1);
-		CalculateJoin c = new CalculateJoin(table, table2, col0, col1);
-		Table reslt = c.InMemoryJoin(table, table2);
-		DataManager.getInstance().addNewTable(reslt);
-		return reslt;
+		if(table != null && table.isEmpty())
+			return new Table();
+		if(table2 != null && table2.isEmpty())
+			return new Table();
+		BinaryExpression bexpr = ((BinaryExpression)expr);
+		String col0 = ((Column)bexpr.getLeftExpression()).getWholeColumnName();
+		String col1 = ((Column)bexpr.getRightExpression()).getWholeColumnName();
+		if(col0.startsWith("L")){
+			String temp = col0;
+			col0 = col1;
+			col1 = temp; 
+		}
+		/*String columns = expr.toString();
+		String col0 = columns.substring(0, columns.indexOf('=')).trim();
+		String col1 = columns.substring(columns.indexOf('=')+1).trim();*/
+		CalculateJoin c = new CalculateJoin(table, table2, col0, col1, expr);
+		return c.InMemoryEfficientJoin(table, table2);
 	}
 	
 	@Override

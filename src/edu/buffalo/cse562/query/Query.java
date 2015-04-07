@@ -24,7 +24,6 @@ import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
 import edu.buffalo.cse562.query.operators.AggregateOperator;
-import edu.buffalo.cse562.query.operators.GroupByOperator;
 import edu.buffalo.cse562.query.operators.JoinOperator;
 import edu.buffalo.cse562.query.operators.LimitOperator;
 import edu.buffalo.cse562.query.operators.OrderByOperator;
@@ -45,8 +44,8 @@ public class Query {
 		// System.out.println("---------------------------------");
 		Optimizer.optimizeTree(raTree, null, new HashSet<Expression>(),
 				new HashSet<Expression>());
-		// System.out.println(raTree);
-		// System.out.println("---------------------------------");
+		//System.out.println(raTree);
+		//System.out.println("---------------------------------");
 		Table finalRes = new Table();
 		Table result = evaluateTree(raTree);
 		while (result != null) {
@@ -67,7 +66,7 @@ public class Query {
 			a = evaluateTree(((PlanNode.Unary) tree).getChild());
 			if (a == null)
 				return null;
-			if (tree instanceof JoinNode || tree instanceof AggregateNode) {
+			if (tree instanceof AggregateNode) {
 				while (a != null) {
 					if(!a.isEmpty())
 						evaluate((PlanNode.Unary) tree, a);
@@ -79,7 +78,14 @@ public class Query {
 			PlanNode.Binary btree = (PlanNode.Binary) tree;
 			a = evaluateTree(btree.getLHS());
 			b = evaluateTree(btree.getRHS());
-			res = evaluate(btree, a, b);
+			if(btree instanceof JoinNode){
+				while(a != null){
+					if(!a.isEmpty())
+						evaluate(btree, a, null);
+					a = evaluateTree(btree.getLHS());
+				}
+			}
+			res = evaluate(btree, null, b);
 		} else {
 			res = DataManager.getInstance().getTable(
 					((TableScanNode) tree).table.getWholeTableName());
@@ -140,7 +146,7 @@ public class Query {
 			op = new AggregateOperator(groups, aggColumns, a);
 		}
 		Table res = op.execute();
-		if (!rangeVariable.isEmpty())
+		if (!rangeVariable.isEmpty() && !res.isEmpty())
 			res.getSchema().changeTableName(rangeVariable);
 		return res;
 	}

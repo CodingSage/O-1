@@ -15,12 +15,12 @@ import java.util.Map.Entry;
 import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
 import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
 import edu.buffalo.cse562.core.DataManager;
-import edu.buffalo.cse562.core.Optimizer;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
 import edu.buffalo.cse562.model.Table;
 import edu.buffalo.cse562.model.Tuple;
+import edu.buffalo.cse562.model.Utilities;
 
 public class GroupByOperator extends Operator {
 
@@ -73,7 +73,7 @@ public class GroupByOperator extends Operator {
 			BufferedReader bufferedReader = new BufferedReader(filereader);
 			FileFunction fHandle = new FileFunction();
 			while ((line = bufferedReader.readLine()) != null) {
-				List<String> values = Optimizer.splitStrings('|', line);
+				List<String> values = Utilities.splitStrings('|', line);
 				StringBuilder newfile = new StringBuilder();
 
 				for (int i = 0; i < x; i++) {
@@ -154,7 +154,7 @@ public class GroupByOperator extends Operator {
 			int x = GroupByParameters.size();
 			for (Tuple row : ResultTableName.getRows())
 			{
-				List<String> values = Optimizer.splitStrings('|', row.toString());
+				List<String> values = Utilities.splitStrings('|', row.toString());
 				StringBuilder newhashKey = new StringBuilder();
 				for (int i = 0; i < x; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(

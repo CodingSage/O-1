@@ -159,16 +159,5 @@ public class Optimizer {
 		}
 		return e;
 	}
-	
-	public static List<String> splitStrings(char split, String str){
-		List<String> datas = new ArrayList<String>();
-		int pos = 0, end;
-		while((end = str.indexOf(split, pos)) >= 0){
-			datas.add(str.substring(pos, end));
-			pos = end+1;
-		}
-		datas.add(str.substring(pos));
-		return datas;
-	}
 
 }
