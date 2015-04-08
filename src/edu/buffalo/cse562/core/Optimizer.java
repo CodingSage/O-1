@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.schema.Column;
 import edu.buffalo.cse562.checkpoint1.PlanNode;
@@ -46,6 +47,8 @@ public class Optimizer {
 				Iterator<Expression> it = exprs.iterator();
 				while(it.hasNext()) {
 					Expression exp = it.next();
+					while(exp instanceof Parenthesis)
+						exp = ((Parenthesis)exp).getExpression();
 					Expression lexp = ((BinaryExpression) exp).getLeftExpression();
 					Expression rexp = ((BinaryExpression) exp).getRightExpression();
 					if (lexp instanceof Column && rexp instanceof Column) {
@@ -81,7 +84,7 @@ public class Optimizer {
 								((Column) lhs).getWholeColumnName()))
 							continue;
 					PlanNode.Unary a = new SelectionNode(exp);
-					addNode(parent, node, a);
+					parent = addNode(parent, node, a);
 					remove.add(exp);
 					i.remove();
 				}
@@ -132,10 +135,10 @@ public class Optimizer {
 		join.setRHS(node.getRHS());
 	}
 
-	private static void addNode(PlanNode parent, PlanNode node, Unary a) {
+	private static PlanNode addNode(PlanNode parent, PlanNode node, Unary a) {
 		a.setChild(node);
 		if (parent == null)
-			return;
+			return a;
 		if (parent instanceof PlanNode.Unary) {
 			((PlanNode.Unary) parent).setChild(a);
 		} else {
@@ -145,6 +148,7 @@ public class Optimizer {
 			else
 				binary.setRHS(a);
 		}
+		return a;
 	}
 
 	private static List<Expression> extractExpression(Expression exp) {
