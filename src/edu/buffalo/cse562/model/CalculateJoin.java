@@ -149,18 +149,20 @@ public class CalculateJoin {
 		
 			Tuple tupl = t1.getRows().get(0);
 			
-			if (!info.hash.containsKey(tupl.getValue(indleft)))
+			String value = tupl.getValue(indleft).toString();
+			
+			if (!info.hash.containsKey(value))
 			{
 				List<Tuple> tmp = new ArrayList<Tuple>();
 				tmp.add(tupl);
-				info.hash.put(tupl.getValue(indleft).toString(), tmp);
+				info.hash.put(value, tmp);
 			} 
 			else 
 			{
-				List<Tuple> tmp = info.hash.get(tupl.getValue(indleft));
+				List<Tuple> tmp = info.hash.get(value);
 				tmp.add(tupl);
-				info.hash.put(tupl.getValue(indleft).toString(), tmp);
-			}
+				info.hash.put(value, tmp);
+			}	
 		
 			return new Table();
 		}

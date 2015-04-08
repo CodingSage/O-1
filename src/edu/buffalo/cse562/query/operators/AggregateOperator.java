@@ -55,13 +55,14 @@ public class AggregateOperator extends Operator {
 				List<String> cols = Utilities.splitStrings('@', key);
 				Tuple tup = new Tuple();
 				for (int i = 1; i < cols.size(); i++) {
-					ColumnType type = schema.getColType().get(i-1);
+					ColumnType type = schema.getColType().get(i - 1);
 					LeafValue val = Utilities.toLeafValue(cols.get(i), type);
 					tup.insertColumn(val);
 				}
 				Tuple a = Tuple.merge(tup, groupAgg.get(key));
 				for (Integer i : avgIs) {
-					String v = ((StringValue)a.getValue(groups.size() + i)).getValue().toString();
+					String v = ((StringValue) a.getValue(groups.size() + i))
+							.getValue().toString();
 					String v1 = v.substring(v.indexOf(':') + 1);
 					String v2 = v.substring(0, v.indexOf(':'));
 					double avg = Double.parseDouble(v1) / Integer.parseInt(v2);
@@ -97,7 +98,7 @@ public class AggregateOperator extends Operator {
 				if (col.aggType == AType.AVG || col.aggType == AType.SUM
 						|| col.aggType == AType.MAX || col.aggType == AType.MIN)
 					type = ColumnType.DOUBLE;
-				else 
+				else
 					type = ColumnType.INT;
 				if (col.aggType == AType.AVG)
 					tuple.insertColumn(new StringValue("'0:0'"));
@@ -112,35 +113,39 @@ public class AggregateOperator extends Operator {
 		}
 
 		if (groups != null && !groups.isEmpty()) {
-			// only one tuple being sent
-			String val = "";
-			for (Integer i : is)
-				val += "@" + table.getRows().get(0).getValue(i);
-			if (!groupAgg.containsKey(val))
-				groupAgg.put(val, new Tuple(tuple.getValues()));
-			Tuple t = groupAgg.get(val);
-			for (int i = 0; i < aggregates.size(); i++) {
-				Table t1 = aggregation(table, aggregates.get(i), t.getValue(i));
-				t.setValue(i, t1.getValue(0, 0));
+			for (int j = 0; j < table.getRows().size(); j++) {
+				String val = "";
+				for (Integer i : is)
+					val += "@" + table.getRows().get(j).getValue(i);
+				if (!groupAgg.containsKey(val))
+					groupAgg.put(val, new Tuple(tuple.getValues()));
+				Tuple t = groupAgg.get(val);
+				Table t2 = new Table();
+				t2.addRow(table.getRows().get(j));
+				t2.setSchema(table.getSchema());
+				for (int i = 0; i < aggregates.size(); i++) {
+					Table t1 = aggregation(t2, aggregates.get(i), t.getValue(i));
+					t.setValue(i, t1.getValue(0, 0));
+				}
+				groupAgg.put(val, t);
 			}
-			groupAgg.put(val, t);
 		}
 		return res;
 	}
 
 	private Table aggregation(Table t, AggColumn agg, LeafValue initialVal) {
 		if (agg.aggType == AType.AVG)
-			return average(t, agg, (StringValue)initialVal);
+			return average(t, agg, (StringValue) initialVal);
 		if (agg.aggType == AType.COUNT)
-			return count(t, agg, (LongValue)initialVal);
+			return count(t, agg, (LongValue) initialVal);
 		if (agg.aggType == AType.COUNT_DISTINCT)
-			return countDistinct(t, agg, (LongValue)initialVal);
+			return countDistinct(t, agg, (LongValue) initialVal);
 		if (agg.aggType == AType.MAX)
-			return max(t, agg, (DoubleValue)initialVal);
+			return max(t, agg, (DoubleValue) initialVal);
 		if (agg.aggType == AType.MIN)
-			return min(t, agg, (DoubleValue)initialVal);
+			return min(t, agg, (DoubleValue) initialVal);
 		if (agg.aggType == AType.SUM)
-			return sum(t, agg, (DoubleValue)initialVal);
+			return sum(t, agg, (DoubleValue) initialVal);
 		return null;
 	}
 
@@ -231,8 +236,10 @@ public class AggregateOperator extends Operator {
 
 	private Table average(Table t, AggColumn agg, StringValue ival) {
 		String initialVal = ival.getValue();
-		int count = Integer.parseInt(initialVal.substring(0, initialVal.indexOf(':')));
-		double sum = Double.parseDouble(initialVal.substring(initialVal.indexOf(':') + 1));
+		int count = Integer.parseInt(initialVal.substring(0,
+				initialVal.indexOf(':')));
+		double sum = Double.parseDouble(initialVal.substring(initialVal
+				.indexOf(':') + 1));
 		Expression ex = agg.expr[0];
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
@@ -250,7 +257,8 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-		return new Table(new StringValue("'" + count + ":" + sum + "'"), ColumnType.STRING, agg.name);
+		return new Table(new StringValue("'" + count + ":" + sum + "'"),
+				ColumnType.STRING, agg.name);
 	}
 
 }
