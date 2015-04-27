@@ -14,6 +14,7 @@ public class Schema {
 	private List<String> colName;
 	private List<ColumnType> colType;
 	private Map<String, Integer> colmap;
+	private String primaryKey;
 	
 	public Schema() {
 		colName = new ArrayList<String>();
@@ -77,5 +78,13 @@ public class Schema {
 		this.colName = colNames;
 		for (int i = 0; i < colName.size(); i++)
 			 colName.set(i, colName.get(i).toLowerCase());
+	}
+
+	public String getPrimaryKey() {
+		return primaryKey;
+	}
+
+	public void setPrimaryKey(String primaryKey) {
+		this.primaryKey = primaryKey;
 	}
 }

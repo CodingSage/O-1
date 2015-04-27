@@ -1,6 +1,5 @@
 package edu.buffalo.cse562.model;
 
-import edu.buffalo.cse562.core.DataManager;
 
 public abstract class Operator {
 

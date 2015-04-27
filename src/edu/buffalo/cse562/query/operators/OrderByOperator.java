@@ -19,7 +19,7 @@ import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
-import edu.buffalo.cse562.checkpoint1.SortNode.Ordering;
+import edu.buffalo.cse562.checkpoint1.plan.SortNode.Ordering;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;

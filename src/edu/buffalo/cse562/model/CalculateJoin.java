@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jsqlparser.expression.Expression;
-import edu.buffalo.cse562.core.DataManager;
 
 public class CalculateJoin {
 

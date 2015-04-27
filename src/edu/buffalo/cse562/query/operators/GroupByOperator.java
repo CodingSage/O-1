@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.buffalo.cse562.checkpoint1.AggregateNode.AggColumn;
-import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
+import edu.buffalo.cse562.checkpoint1.plan.AggregateNode.AggColumn;
+import edu.buffalo.cse562.checkpoint1.plan.ProjectionNode.Target;
 import edu.buffalo.cse562.core.DataManager;
 import edu.buffalo.cse562.model.FileFunction;
 import edu.buffalo.cse562.model.Operator;

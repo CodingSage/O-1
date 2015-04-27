@@ -6,7 +6,7 @@ import java.util.List;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
-import edu.buffalo.cse562.checkpoint1.PlanNode;
+import edu.buffalo.cse562.checkpoint1.plan.PlanNode;
 
 public class JoinNode extends PlanNode.Binary {
 

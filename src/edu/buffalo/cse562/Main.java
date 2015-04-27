@@ -3,7 +3,6 @@ package edu.buffalo.cse562;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import net.sf.jsqlparser.parser.CCJSqlParser;

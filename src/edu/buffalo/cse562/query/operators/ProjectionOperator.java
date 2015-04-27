@@ -7,7 +7,7 @@ import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LeafValue;
 import net.sf.jsqlparser.expression.LongValue;
-import edu.buffalo.cse562.checkpoint1.ProjectionNode.Target;
+import edu.buffalo.cse562.checkpoint1.plan.ProjectionNode.Target;
 import edu.buffalo.cse562.model.ColumnType;
 import edu.buffalo.cse562.model.Operator;
 import edu.buffalo.cse562.model.Schema;
