@@ -13,6 +13,7 @@ public class DataManager {
 	private Map<String, Table> tables = new HashMap<String, Table>();
 	private String dataPath;
 	private String storagePath;
+	private String loadPath;
 	private static int ansNum = -1;
 
 	public static DataManager getInstance() {
@@ -53,6 +54,14 @@ public class DataManager {
 
 	public String getStoragePath() {
 		return storagePath == null ? "" : storagePath;
+	}
+
+	public String getLoadPath() {
+		return loadPath;
+	}
+
+	public void setLoadPath(String loadPath) {
+		this.loadPath = loadPath;
 	}
 
 }

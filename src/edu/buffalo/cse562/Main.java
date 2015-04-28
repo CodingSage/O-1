@@ -32,9 +32,11 @@ public class Main {
 			if (args[i].contains("--data")) {
 				i++;
 				DataManager.getInstance().setDataPath(args[i]);
-			} else if (args[i].contains("--swap")) {
+			} else if (args[i].contains("--db")) {
 				i++;
 				DataManager.getInstance().setStoragePath(args[i]);
+			} else if (args[i].contains("--load")) {
+				//DataManager.getInstance().setStoragePath(args[i]);
 			} else
 				sqlFiles.add(new File(args[i]));
 		}
