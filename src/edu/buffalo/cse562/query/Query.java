@@ -118,7 +118,6 @@ public class Query {
 			if (range != null)
 				rangeVariable = range.getWholeTableName();
 		} else if (node instanceof SelectionNode) {
-			//System.out.println("Select");
 			if (a == null)
 				return null;
 			op = new SelectOperator(a, ((SelectionNode) node).getCondition());
@@ -132,7 +131,6 @@ public class Query {
 			List<Ordering> order = sort.getSorts();
 			op = new OrderByOperator(a, order);
 		} else {
-			//System.out.println("Aggregate");
 			AggregateNode agg = (AggregateNode) node;
 			List<Target> groups = agg.getGroupByVars();
 			List<AggColumn> aggColumns = agg.getAggregates();
@@ -146,7 +144,7 @@ public class Query {
 			op = new AggregateOperator(groups, aggColumns, a);
 		}
 		Table res = op.execute();
-		if (!rangeVariable.isEmpty() && !res.isEmpty())
+		if (rangeVariable != null && !rangeVariable.isEmpty() && !res.isEmpty())
 			res.getSchema().changeTableName(rangeVariable);
 		return res;
 	}
