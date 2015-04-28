@@ -36,7 +36,7 @@ public class Main {
 				i++;
 				DataManager.getInstance().setStoragePath(args[i]);
 			} else if (args[i].contains("--load")) {
-				//DataManager.getInstance().setStoragePath(args[i]);
+				//load phase
 			} else
 				sqlFiles.add(new File(args[i]));
 		}
@@ -53,6 +53,12 @@ public class Main {
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				// TODO union implementation
 				while ((statement = parser.Statement()) != null) {
+					try {
+						throw new Exception(statement.toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					/*
 					if (statement instanceof CreateTable) {
 						String newName = ((CreateTable) statement).getTable()
 								.getName().toUpperCase();
@@ -65,6 +71,7 @@ public class Main {
 						Query query = new Query(translator.selectToPlan(s));
 						query.evaluate();
 					}
+					*/
 				}
 				reader.close();
 			} catch (Exception e) {
