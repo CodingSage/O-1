@@ -27,6 +27,8 @@ public class Main {
 		 * "our group, or use code that we have not written ourselves as a reference."
 		 * );
 		 */
+		
+		boolean loadPhase = false;
 		List<File> sqlFiles = new ArrayList<File>();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].contains("--data")) {
@@ -36,11 +38,12 @@ public class Main {
 				i++;
 				DataManager.getInstance().setStoragePath(args[i]);
 			} else if (args[i].contains("--load")) {
-				//load phase
+				loadPhase = true;
 			} else
 				sqlFiles.add(new File(args[i]));
 		}
-		evaluate(sqlFiles);
+		if(!loadPhase)
+			evaluate(sqlFiles);
 	}
 
 	private static void evaluate(List<File> sqlFiles) {
@@ -53,12 +56,6 @@ public class Main {
 				CCJSqlParser parser = new CCJSqlParser(reader);
 				// TODO union implementation
 				while ((statement = parser.Statement()) != null) {
-					try {
-						throw new Exception(statement.toString());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					/*
 					if (statement instanceof CreateTable) {
 						String newName = ((CreateTable) statement).getTable()
 								.getName().toUpperCase();
@@ -71,7 +68,6 @@ public class Main {
 						Query query = new Query(translator.selectToPlan(s));
 						query.evaluate();
 					}
-					*/
 				}
 				reader.close();
 			} catch (Exception e) {
