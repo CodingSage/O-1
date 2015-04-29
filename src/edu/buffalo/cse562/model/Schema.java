@@ -38,6 +38,13 @@ public class Schema {
 	public Integer getColIndex(String col) {
 		col = col.toLowerCase().trim();
 		Integer i = colmap.get(col);
+		if(i == null){
+			for(int j = 0; j < colName.size(); j++){
+				String c = Utilities.splitStrings('.', colName.get(j)).get(1);
+				if(c.equals(col))
+					return j;
+			}
+		}
 		return i;
 	}
 
