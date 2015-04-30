@@ -129,6 +129,20 @@ public class AggregateOperator extends Operator {
 				}
 				groupAgg.put(val, t);
 			}
+		} else {
+			if(groupAgg.isEmpty())
+				groupAgg.put("", new Tuple(tuple.getValues()));
+			for (int j = 0; j < table.getRows().size(); j++) {
+				Tuple t = groupAgg.get("");
+				Table t2 = new Table();
+				t2.addRow(table.getRows().get(j));
+				t2.setSchema(table.getSchema());
+				for (int i = 0; i < aggregates.size(); i++) {
+					Table t1 = aggregation(t2, aggregates.get(i), t.getValue(i));
+					t.setValue(i, t1.getValue(0, 0));
+				}
+				groupAgg.put("", t);
+			}
 		}
 		return res;
 	}

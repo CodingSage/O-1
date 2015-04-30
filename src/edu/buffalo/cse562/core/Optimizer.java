@@ -23,7 +23,7 @@ public class Optimizer {
 	public static void optimizeTree(PlanNode node, PlanNode parent, Set<Expression> exprs, Set<Expression> remove) {
 		if (node instanceof PlanNode.Unary) {
 			List<Expression> exps = null;
-			if (node instanceof SelectionNode) {
+			if (node instanceof SelectionNode && !(((PlanNode.Unary) node).getChild() instanceof TableScanNode)) {
 				exps = extractExpression(((SelectionNode) node).getCondition());
 				exprs.addAll(exps);
 			}
