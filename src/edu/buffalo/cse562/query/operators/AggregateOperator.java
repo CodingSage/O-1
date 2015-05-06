@@ -2,12 +2,15 @@ package edu.buffalo.cse562.query.operators;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LeafValue;
@@ -29,10 +32,10 @@ public class AggregateOperator extends Operator {
 
 	private List<AggColumn> aggregates;
 	private List<Target> groups;
-	private static Map<String, Tuple> groupAgg = new HashMap<String, Tuple>();
+	private static Map<String, List<Object>> groupAgg = new HashMap<String, List<Object>>();
 	private static Schema schema = null;
 	private static List<Integer> is = null;
-	private static Tuple tuple = null;
+	private static List<Object> tuple = null;
 
 	public AggregateOperator(List<Target> groupCols,
 			List<AggColumn> aggColumns, Table a) {
@@ -59,14 +62,11 @@ public class AggregateOperator extends Operator {
 					LeafValue val = Utilities.toLeafValue(cols.get(i), type);
 					tup.insertColumn(val);
 				}
-				Tuple a = Tuple.merge(tup, groupAgg.get(key));
-				for (Integer i : avgIs) {
-					String v = ((StringValue) a.getValue(groups.size() + i))
-							.getValue().toString();
-					String v1 = v.substring(v.indexOf(':') + 1);
-					String v2 = v.substring(0, v.indexOf(':'));
-					double avg = Double.parseDouble(v1) / Integer.parseInt(v2);
-					a.setValue(groups.size() + i, new DoubleValue(avg));
+				List<Object> tupleValues = groupAgg.get(key);
+				Tuple tup1 = listToTuple(tupleValues);
+				Tuple a = Tuple.merge(tup, tup1);
+				for(Integer i : avgIs){
+					
 				}
 				res.addRow(a);
 			}
@@ -83,7 +83,7 @@ public class AggregateOperator extends Operator {
 			Schema s = table.getSchema();
 			schema = new Schema();
 			is = new ArrayList<Integer>();
-			tuple = new Tuple();
+			tuple = new ArrayList<Object>();
 			if (groups != null) {
 				for (Target g : groups) {
 					String colName = ((Column) g.expr).getWholeColumnName();
@@ -101,13 +101,13 @@ public class AggregateOperator extends Operator {
 				else
 					type = ColumnType.INT;
 				if (col.aggType == AType.AVG)
-					tuple.insertColumn(new StringValue("'0:0'"));
+					tuple.add(Arrays.asList(0.0, 0.0));
 				else if (col.aggType == AType.MIN)
-					tuple.insertColumn(new DoubleValue(Double.MAX_VALUE));
+					tuple.add(Double.MAX_VALUE);
 				else if (col.aggType == AType.MAX || col.aggType == AType.SUM)
-					tuple.insertColumn(new DoubleValue(0));
+					tuple.add(0.0);
 				else
-					tuple.insertColumn(new LongValue(0));
+					tuple.add(0);
 				schema.addColumn(col.name, type);
 			}
 		}
@@ -118,28 +118,28 @@ public class AggregateOperator extends Operator {
 				for (Integer i : is)
 					val += "@" + table.getRows().get(j).getValue(i);
 				if (!groupAgg.containsKey(val))
-					groupAgg.put(val, new Tuple(tuple.getValues()));
-				Tuple t = groupAgg.get(val);
+					groupAgg.put(val, new ArrayList<Object>(tuple));
+				List<Object> t = groupAgg.get(val);
 				Table t2 = new Table();
 				t2.addRow(table.getRows().get(j));
 				t2.setSchema(table.getSchema());
 				for (int i = 0; i < aggregates.size(); i++) {
-					Table t1 = aggregation(t2, aggregates.get(i), t.getValue(i));
-					t.setValue(i, t1.getValue(0, 0));
+					Object o = aggregation(t2, aggregates.get(i), t.get(i));
+					t.set(i, o);
 				}
 				groupAgg.put(val, t);
 			}
 		} else {
-			if(groupAgg.isEmpty())
-				groupAgg.put("", new Tuple(tuple.getValues()));
+			if (groupAgg.isEmpty())
+				groupAgg.put("", new ArrayList<Object>(tuple));
 			for (int j = 0; j < table.getRows().size(); j++) {
-				Tuple t = groupAgg.get("");
+				List<Object> t = groupAgg.get("");
 				Table t2 = new Table();
 				t2.addRow(table.getRows().get(j));
 				t2.setSchema(table.getSchema());
 				for (int i = 0; i < aggregates.size(); i++) {
-					Table t1 = aggregation(t2, aggregates.get(i), t.getValue(i));
-					t.setValue(i, t1.getValue(0, 0));
+					Object o = aggregation(t2, aggregates.get(i), t.get(i));
+					t.set(i, o);
 				}
 				groupAgg.put("", t);
 			}
@@ -147,24 +147,44 @@ public class AggregateOperator extends Operator {
 		return res;
 	}
 
-	private Table aggregation(Table t, AggColumn agg, LeafValue initialVal) {
+	private Tuple listToTuple(List<Object> tupleValues) {
+		List<LeafValue> leaves = new ArrayList<LeafValue>();
+		for (Object obj : tupleValues) {
+			if (obj instanceof String)
+				leaves.add(new StringValue("'" + obj.toString() + "'"));
+			else if (obj instanceof Double)
+				leaves.add(new DoubleValue((double) obj));
+			else if (obj instanceof Integer)
+				leaves.add(new LongValue((Integer) obj));
+			else if (obj instanceof Date)
+				leaves.add(new DateValue("'" + obj.toString() + "'"));
+			else if(obj instanceof List){
+				List<Object> list = (List<Object>) obj;
+				Double avg = ((Double)list.get(1))/((Double)list.get(0));
+				leaves.add(new DoubleValue(avg));
+			}
+		}
+		return new Tuple(leaves);
+	}
+
+	private Object aggregation(Table t, AggColumn agg, Object initialVal) {
 		if (agg.aggType == AType.AVG)
-			return average(t, agg, (StringValue) initialVal);
+			return average(t, agg, (List<Double>) initialVal);
 		if (agg.aggType == AType.COUNT)
-			return count(t, agg, (LongValue) initialVal);
+			return count(t, agg, (Integer) initialVal);
 		if (agg.aggType == AType.COUNT_DISTINCT)
-			return countDistinct(t, agg, (LongValue) initialVal);
+			return countDistinct(t, agg, (Integer) initialVal);
 		if (agg.aggType == AType.MAX)
-			return max(t, agg, (DoubleValue) initialVal);
+			return max(t, agg, (Double) initialVal);
 		if (agg.aggType == AType.MIN)
-			return min(t, agg, (DoubleValue) initialVal);
+			return min(t, agg, (Double) initialVal);
 		if (agg.aggType == AType.SUM)
-			return sum(t, agg, (DoubleValue) initialVal);
+			return sum(t, agg, (Double) initialVal);
 		return null;
 	}
 
-	private Table min(Table t, AggColumn agg, DoubleValue initialVal) {
-		double min = initialVal.getValue();
+	private Object min(Table t, AggColumn agg, Double initialVal) {
+		Double min = initialVal;
 		Expression ex = agg.expr[0];
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
@@ -179,17 +199,17 @@ public class AggregateOperator extends Operator {
 				if (val instanceof LongValue) {
 					long v = ((LongValue) val).getValue();
 					if (v < min)
-						min = v;
+						min = (double) v;
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		return new Table(new DoubleValue(min), ColumnType.DOUBLE, agg.name);
+		return min;
 	}
 
-	private Table max(Table t, AggColumn agg, DoubleValue initialVal) {
-		double max = initialVal.getValue();
+	private Object max(Table t, AggColumn agg, Double initialVal) {
+		double max = initialVal;
 		Expression ex = agg.expr[0];
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
@@ -210,25 +230,25 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-		return new Table(new DoubleValue(max), ColumnType.DOUBLE, agg.name);
+		return max;
 	}
 
-	private Table countDistinct(Table t, AggColumn agg, LongValue initialVal) {
+	private Object countDistinct(Table t, AggColumn agg, Integer initialVal) {
 		String name = ((Column) agg.expr[0]).getWholeColumnName();
 		int col = t.getSchema().getColIndex(name);
 		Set<LeafValue> s = new HashSet<LeafValue>();
 		for (int i = 0; i < t.getRows().size(); i++)
 			s.add(t.getRows().get(i).getValue(col));
-		return new Table(new LongValue(s.size()), ColumnType.INT, agg.name);
+		return s.size();
 	}
 
-	private Table count(Table t, AggColumn agg, LongValue initialVal) {
-		long count = t.getRows().size() + initialVal.getValue();
-		return new Table(new LongValue(count), ColumnType.INT, agg.name);
+	private Object count(Table t, AggColumn agg, Integer initialVal) {
+		int count = t.getRows().size() + initialVal;
+		return count;
 	}
 
-	private Table sum(Table t, AggColumn agg, DoubleValue initialVal) {
-		double sum = initialVal.getValue();
+	private Object sum(Table t, AggColumn agg, Double initialVal) {
+		double sum = initialVal;
 		Expression ex = agg.expr[0];
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
@@ -245,15 +265,12 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-		return new Table(new DoubleValue(sum), ColumnType.DOUBLE, agg.name);
+		return sum;
 	}
 
-	private Table average(Table t, AggColumn agg, StringValue ival) {
-		String initialVal = ival.getValue();
-		int count = Integer.parseInt(initialVal.substring(0,
-				initialVal.indexOf(':')));
-		double sum = Double.parseDouble(initialVal.substring(initialVal
-				.indexOf(':') + 1));
+	private Object average(Table t, AggColumn agg, List<Double> ival) {
+		Double count = ival.get(0);
+		Double sum = ival.get(1);
 		Expression ex = agg.expr[0];
 		Evaluator eval = new Evaluator(t);
 		while (eval.hasNext()) {
@@ -271,8 +288,7 @@ public class AggregateOperator extends Operator {
 				e.printStackTrace();
 			}
 		}
-		return new Table(new StringValue("'" + count + ":" + sum + "'"),
-				ColumnType.STRING, agg.name);
+		return Arrays.asList(count, sum);
 	}
 
 }
