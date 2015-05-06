@@ -78,8 +78,7 @@ public class GroupByOperator extends Operator {
 
 				for (int i = 0; i < x; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
-							GroupByParameters.get(i).expr.toString()
-									.toLowerCase());
+							GroupByParameters.get(i).expr.toString());
 					newfile.append(DataManager.getInstance().getDataPath());
 					newfile.append(values.get(ind));
 				}
@@ -158,7 +157,7 @@ public class GroupByOperator extends Operator {
 				StringBuilder newhashKey = new StringBuilder();
 				for (int i = 0; i < x; i++) {
 					int ind = ResultTableName.getSchema().getColIndex(
-							GroupByParameters.get(i).expr.toString().toLowerCase());
+							GroupByParameters.get(i).expr.toString());
 					newhashKey.append(values.get(ind));
 				}
 				if (!hmGroupedTuple.containsKey(newhashKey.toString())) {

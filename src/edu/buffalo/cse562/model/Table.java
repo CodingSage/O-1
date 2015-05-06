@@ -152,7 +152,6 @@ public class Table {
 	}
 
 	public Table getColumn(String colName) {
-		colName = colName.toLowerCase();
 		List<Tuple> t = new ArrayList<Tuple>();
 		try {
 			int ci = schema.getColIndex(colName);

@@ -11,7 +11,7 @@ import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.schema.Column;
 
 public class Tuple {
-
+	
 	List<LeafValue> tupleVal;
 
 	public Tuple() {

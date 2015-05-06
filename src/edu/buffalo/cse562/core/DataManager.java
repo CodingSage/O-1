@@ -37,15 +37,15 @@ public class DataManager {
 	}
 
 	public void addNewTable(Table table) {
-		tables.put(table.getName().toLowerCase(), table);
+		tables.put(table.getName(), table);
 	}
 
 	public Schema getSchema(String tableName) {
-		return tables.get(tableName.toLowerCase()).getSchema();
+		return tables.get(tableName).getSchema();
 	}
 
 	public Table getTable(String tableName) {
-		return tables.get(tableName.toLowerCase());
+		return tables.get(tableName);
 	}
 
 	public void setStoragePath(String path) {

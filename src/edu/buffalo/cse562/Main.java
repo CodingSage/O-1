@@ -1,5 +1,8 @@
 package edu.buffalo.cse562;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -11,8 +14,19 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
+
+import com.sleepycat.je.Cursor;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+
 import edu.buffalo.cse562.checkpoint1.SqlToRA;
 import edu.buffalo.cse562.core.DataManager;
+import edu.buffalo.cse562.model.ColumnType;
+import edu.buffalo.cse562.model.Schema;
+import edu.buffalo.cse562.model.Tuple;
 import edu.buffalo.cse562.query.Query;
 import edu.buffalo.cse562.query.StatementEvaluator;
 
@@ -45,6 +59,69 @@ public class Main {
 		}
 		if(!loadPhase)
 			evaluate(sqlFiles);
+		//else
+			//createDB();
+	}
+
+	private static void createDB() {
+		Environment environment = null;
+		Database db = null;
+		Cursor cursor = null;
+		try {
+			String filePath = "/home/vinayak/CourseWork/Databases/TrialBDB/";
+			String sqlFile = "sample.sql";
+			String tableName = "CUSTOMER";
+			FileReader reader = new FileReader(filePath + sqlFile);
+			CCJSqlParser parser = new CCJSqlParser(reader);
+			CreateTable statement = (CreateTable) parser.Statement();
+			Schema schema = null;//extractSchema(statement, tableName);
+
+			EnvironmentConfig envConfig = new EnvironmentConfig();
+			envConfig.setAllowCreate(true);
+			environment = new Environment(new File(filePath + "db"), envConfig);
+			DatabaseConfig dbConfig = new DatabaseConfig();
+			dbConfig.setAllowCreate(true);
+			db = environment.openDatabase(null, "Sample", dbConfig);
+
+			FileReader fileread = new FileReader(filePath + tableName + ".dat");
+			BufferedReader buffReader = new BufferedReader(fileread);
+			String line;
+			Tuple row = new Tuple();
+			int rowNum = 0;
+			while ((line = buffReader.readLine()) != null) {
+				System.out.println(rowNum + " starting");
+				rowNum++;
+				String[] s = line.split("\\|");
+
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				DataOutputStream dataOut = new DataOutputStream(out);
+
+				for (int i = 0; i < schema.getColName().size(); i++) {
+					ColumnType type = schema.getColType().get(i);
+					if (type == ColumnType.CHAR || type == ColumnType.STRING
+							|| type == ColumnType.VARCHAR || type == ColumnType.DATE)
+						dataOut.writeUTF(s[i]);
+					else if (type == ColumnType.DECIMAL || type == ColumnType.DOUBLE)
+						dataOut.writeDouble(Double.parseDouble(s[i]));
+					else if (type == ColumnType.INT)
+						dataOut.writeInt(Integer.parseInt(s[i]));
+				}
+				byte[] tupleData = out.toByteArray();
+				String skey = s[schema.getPrimaryKeyIndex()];
+				DatabaseEntry key = new DatabaseEntry(skey.getBytes("UTF-8"));
+				DatabaseEntry value = new DatabaseEntry(tupleData);
+				db.put(null, key, value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (cursor != null)
+				cursor.close();
+			if (db != null)
+				db.close();
+			if (environment != null)
+				environment.close();
+		}
 	}
 
 	private static void evaluate(List<File> sqlFiles) {
