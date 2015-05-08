@@ -14,12 +14,13 @@ public class Schema {
 	private List<String> colName;
 	private List<ColumnType> colType;
 	private Map<String, Integer> colmap;
-	private int primaryKeyIndex;
+	private List<Integer> primaryKeyIndex;
 
 	public Schema() {
 		colName = new ArrayList<String>();
 		colType = new ArrayList<ColumnType>();
 		colmap = new HashMap<String, Integer>();
+		primaryKeyIndex = new ArrayList<Integer>();
 	}
 
 	public void addColumn(String name, ColumnType type) {
@@ -85,11 +86,11 @@ public class Schema {
 			colName.set(i, colName.get(i));
 	}
 
-	public void setPrimaryKey(String key) {
-		primaryKeyIndex = getColIndex(key);
+	public void addPrimaryKey(String key) {
+		primaryKeyIndex.add(getColIndex(key));
 	}
 
-	public Integer getPrimaryKeyIndex() {
+	public List<Integer> getPrimaryKeyIndex() {
 		return primaryKeyIndex;
 	}
 }

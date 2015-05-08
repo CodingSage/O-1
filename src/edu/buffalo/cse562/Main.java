@@ -132,7 +132,10 @@ public class Main {
 						dataOut.writeInt(Integer.parseInt(s[i]));
 				}
 				byte[] tupleData = out.toByteArray();
-				String skey = s[schema.getPrimaryKeyIndex()];
+				List<Integer> pkeys = schema.getPrimaryKeyIndex();
+				String skey = "";
+				for(Integer pkey : pkeys)
+					skey += s[pkey];
 				DatabaseEntry key = new DatabaseEntry(skey.getBytes("UTF-8"));
 				DatabaseEntry value = new DatabaseEntry(tupleData);
 				db.put(null, key, value);

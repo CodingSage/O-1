@@ -1,8 +1,11 @@
 package edu.buffalo.cse562.query;
 
+import java.util.List;
+
 import net.sf.jsqlparser.statement.StatementVisitor;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.create.table.Index;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.drop.Drop;
 import net.sf.jsqlparser.statement.insert.Insert;
@@ -93,6 +96,14 @@ public class StatementEvaluator implements StatementVisitor {
 			}
 			schema.addColumn(name + Constants.COLNAME_DELIMITER + defn.getColumnName(), leafType);
 		}
+		List<Index> indexes = table.getIndexes();
+		if (indexes != null)
+			for (Index ind : indexes) {
+				if (ind.getType().equals("PRIMARY KEY")){
+					for(Object colName : ind.getColumnsNames())
+						schema.addPrimaryKey(colName.toString().toUpperCase());
+				}
+			}
 		t.setSchema(schema);
 		DataManager instance = DataManager.getInstance();
 		instance.addNewTable(t);
