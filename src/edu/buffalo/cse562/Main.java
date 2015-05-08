@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.crypto.Data;
+
 import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
@@ -57,39 +59,62 @@ public class Main {
 			} else
 				sqlFiles.add(new File(args[i]));
 		}
-		if(!loadPhase)
-			evaluate(sqlFiles);
-		//else
-			//createDB();
+		evaluate(sqlFiles, loadPhase);
 	}
 
-	private static void createDB() {
+	private static void evaluate(List<File> sqlFiles, boolean loadPhase) {
+		SqlToRA translator = new SqlToRA();
+		//System.out.println(new Date(System.currentTimeMillis()));
+		for (File file : sqlFiles) {
+			try {
+				FileReader reader = new FileReader(file);
+				Statement statement = null;
+				CCJSqlParser parser = new CCJSqlParser(reader);
+				// TODO union implementation
+				while ((statement = parser.Statement()) != null) {
+					if (statement instanceof CreateTable) {
+						String newName = ((CreateTable) statement).getTable()
+								.getName().toUpperCase();
+						((CreateTable) statement).getTable().setName(newName);
+						translator.loadTableSchema((CreateTable) statement);
+						statement.accept(new StatementEvaluator());
+						if(loadPhase)
+							createDB(newName);
+					} else if (statement instanceof Select) {
+						Select selectStatement = (Select) statement;
+						SelectBody s = selectStatement.getSelectBody();
+						Query query = new Query(translator.selectToPlan(s));
+						query.evaluate();
+					}
+				}
+				reader.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		//System.out.println(new Date(System.currentTimeMillis()));
+	}
+
+	private static void createDB(String tableName) {
 		Environment environment = null;
 		Database db = null;
 		Cursor cursor = null;
+		DataManager instance = DataManager.getInstance();
 		try {
-			String filePath = "/home/vinayak/CourseWork/Databases/TrialBDB/";
-			String sqlFile = "sample.sql";
-			String tableName = "CUSTOMER";
-			FileReader reader = new FileReader(filePath + sqlFile);
-			CCJSqlParser parser = new CCJSqlParser(reader);
-			CreateTable statement = (CreateTable) parser.Statement();
-			Schema schema = null;//extractSchema(statement, tableName);
-
+			Schema schema = instance.getSchema(tableName);
 			EnvironmentConfig envConfig = new EnvironmentConfig();
 			envConfig.setAllowCreate(true);
-			environment = new Environment(new File(filePath + "db"), envConfig);
+			environment = new Environment(new File(instance.getStoragePath()), envConfig);
 			DatabaseConfig dbConfig = new DatabaseConfig();
 			dbConfig.setAllowCreate(true);
-			db = environment.openDatabase(null, "Sample", dbConfig);
+			db = environment.openDatabase(null, tableName, dbConfig);
 
-			FileReader fileread = new FileReader(filePath + tableName + ".dat");
+			FileReader fileread = new FileReader(instance.getDataPath() + File.separator + tableName + ".dat");
 			BufferedReader buffReader = new BufferedReader(fileread);
 			String line;
 			Tuple row = new Tuple();
 			int rowNum = 0;
 			while ((line = buffReader.readLine()) != null) {
-				System.out.println(rowNum + " starting");
 				rowNum++;
 				String[] s = line.split("\\|");
 
@@ -122,36 +147,5 @@ public class Main {
 			if (environment != null)
 				environment.close();
 		}
-	}
-
-	private static void evaluate(List<File> sqlFiles) {
-		SqlToRA translator = new SqlToRA();
-		//System.out.println(new Date(System.currentTimeMillis()));
-		for (File file : sqlFiles) {
-			try {
-				FileReader reader = new FileReader(file);
-				Statement statement = null;
-				CCJSqlParser parser = new CCJSqlParser(reader);
-				// TODO union implementation
-				while ((statement = parser.Statement()) != null) {
-					if (statement instanceof CreateTable) {
-						String newName = ((CreateTable) statement).getTable()
-								.getName().toUpperCase();
-						((CreateTable) statement).getTable().setName(newName);
-						translator.loadTableSchema((CreateTable) statement);
-						statement.accept(new StatementEvaluator());
-					} else if (statement instanceof Select) {
-						Select selectStatement = (Select) statement;
-						SelectBody s = selectStatement.getSelectBody();
-						Query query = new Query(translator.selectToPlan(s));
-						query.evaluate();
-					}
-				}
-				reader.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		//System.out.println(new Date(System.currentTimeMillis()));
 	}
 }

@@ -2,6 +2,8 @@ package edu.buffalo.cse562.model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,7 +12,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sleepycat.je.Cursor;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
+
+import net.sf.jsqlparser.expression.DateValue;
+import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LeafValue;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.StringValue;
 import edu.buffalo.cse562.core.DataManager;
 
 public class FileFunction {
@@ -20,7 +36,10 @@ public class FileFunction {
 	private static BufferedWriter bfw = null;
 	private static String fname = null;
 	private static HashMap<String, BufferedWriter> hfileWriters = new HashMap<String,BufferedWriter>();
-	private static Map<String, BufferedReader> readers = new HashMap<String, BufferedReader>();
+	private static Map<String, Cursor> readers = new HashMap<String, Cursor>();
+	private static Map<String, Database> dbs = new HashMap<String, Database>();
+	private static EnvironmentConfig envConfig = null;
+	private static Environment environment = null;
 	
 	public FileFunction() {
 	}
@@ -29,43 +48,69 @@ public class FileFunction {
 	}
 	
 	public static void addReadTable(String tableName){
-		BufferedReader reader = null;
-		try {
-			//TODO check path for swap folder
-			File file = new File(DataManager.getInstance().getDataPath()
-					+ File.separator + tableName + ".dat");
-			FileReader fileread = new FileReader(file);
-			reader = new BufferedReader(fileread);
-		}catch(Exception ex){
-			ex.printStackTrace();
+		try{
+			if(envConfig == null)
+				envConfig = new EnvironmentConfig();
+			if(environment == null)
+				environment = new Environment(new File(DataManager.getInstance().getStoragePath()), envConfig);
+			DatabaseConfig dbConfig = new DatabaseConfig();
+			Database db = environment.openDatabase(null, tableName, dbConfig);
+			dbs.put(tableName, db);
+			Cursor cursor = db.openCursor(null, null);
+			readers.put(tableName, cursor);
+		} catch(Exception e){
+			e.printStackTrace();
 		}
-		readers.put(tableName, reader);
 	}
 	
 	public static Tuple readTable(String tableName){
 		if(!readers.containsKey(tableName))
 			addReadTable(tableName);
-		BufferedReader reader = readers.get(tableName);
-		Tuple row = new Tuple();
+		Cursor cursor = readers.get(tableName);
+		if(cursor == null)
+			return null;
+		Schema schema = DataManager.getInstance().getSchema(tableName);
+		DatabaseEntry key = new DatabaseEntry();
+		DatabaseEntry value = new DatabaseEntry();
+		Tuple tuple = null;
 		try {
-			Schema schema = DataManager.getInstance().getSchema(tableName);
-			if(!reader.ready())
-				return null;
-			String line = reader.readLine();
-			if(line == null){
-				reader.close();
-				return null;
+			if(cursor.getNext(key, value, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+				byte[] tupData = value.getData();
+				ByteArrayInputStream in = new ByteArrayInputStream(tupData);
+				DataInputStream data = new DataInputStream(in);
+				tuple = new Tuple();
+				for (int i = 0; i < schema.getColName().size(); i++) {
+					ColumnType type = schema.getColType().get(i);
+					if (type == ColumnType.CHAR || type == ColumnType.STRING
+							|| type == ColumnType.VARCHAR)
+						tuple.insertColumn(new StringValue("'" + data.readUTF() + "'"));
+					else if (type == ColumnType.DATE)
+						tuple.insertColumn(new DateValue("'" + data.readUTF() + "'"));
+					else if (type == ColumnType.DECIMAL || type == ColumnType.DOUBLE)
+						tuple.insertColumn(new DoubleValue(data.readDouble()));
+					else if (type == ColumnType.INT)
+						tuple.insertColumn(new LongValue(data.readInt()));
+				}
+			} else {
+				readers.get(tableName).close();
+				readers.put(tableName, null);
+				dbs.get(tableName).close();
+				dbs.put(tableName, null);
+				if(dbs.size() == DataManager.getInstance().getTableCount()){
+					for(String a : dbs.keySet()){
+						if(dbs.get(a) != null){
+							return tuple;
+						}
+					}
+					environment.close();
+				}
 			}
-			List<String> s = Utilities.splitStrings('|', line);
-			for(int i = 0; i < schema.getColName().size(); i++) {
-				ColumnType type = schema.getColType().get(i);
-				LeafValue val = Utilities.toLeafValue(s.get(i), type);
-				row.insertColumn(val);
-			}
+		} catch (DatabaseException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return row;
+		return tuple;
 	}
 	
 	public  BufferedWriter getWriter(String fileName){
