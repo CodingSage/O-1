@@ -20,7 +20,6 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 
 	public Evaluator(Table table) {
 		operand = table;
-		// this.tableNames = tableNames;
 		curIndex = -1;
 	}
 
@@ -33,26 +32,9 @@ public class Evaluator extends Eval implements Iterator<Tuple> {
 		int i = -1;
 		Schema schema = operand.getSchema();
 		i = schema.getColIndex(col);
-		//ColumnType type = schema.getType(col);
 		Tuple current = operand.getRows().get(curIndex);
 		LeafValue s = current.getValue(i);
 		return s;
-		/*// TODO check other types
-		if (type.toLowerCase().equals("int"))
-			return new LongValue(s);
-		if (type.toLowerCase().equals("double"))
-			return new DoubleValue(s);
-		if (type.toLowerCase().equals("decimal"))
-			return new DoubleValue(s);
-		if (type.toLowerCase().equals("date"))
-			return new DateValue("'" + s + "'");
-		if (type.equals("string"))
-			return new StringValue("'" + s + "'");
-		if (type.toLowerCase().startsWith("char"))
-			return new StringValue("'" + s + "'");
-		if (type.toLowerCase().startsWith("varchar"))
-			return new StringValue("'" + s + "'");
-		return new NullValue();*/
 	}
 
 	public Table getOperand() {
